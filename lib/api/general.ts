@@ -8,6 +8,7 @@ export  const uploadImage = async (imageUrl:string) => {
     const blob = await response.blob();
     
     const result = (await axios.post(`${endpoint}/uploadthing`,blob)).data
+    console.log(result)
     return result?.imageId;
   } catch (error:any) {
     console.error('Error uploading image:', error.message);

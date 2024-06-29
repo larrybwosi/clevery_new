@@ -7,7 +7,7 @@ const ServerLayout = () => {
       <Stack>
         <Stack.Screen name="server/[id]" options={{ presentation: 'modal', headerShown: false  }} />
         <Stack.Screen name="channel/[id]" options={{ presentation: 'card', headerShown: false  }} />
-        <Stack.Screen name="create-channel/[server-id]" options={{ presentation: 'card', headerShown: false  }} />
+        <Stack.Screen name="create-channel/[serverid]" options={{ presentation: 'card', headerShown: false  }} />
         <Stack.Screen name="create-server" options={{ headerShown: false }} />
       </Stack>
 

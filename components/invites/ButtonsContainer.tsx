@@ -1,6 +1,6 @@
 import { TouchableOpacity} from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { View, Text  } from '../Themed';
+import { View, Text  } from '@/components/Themed';
 import * as Clipboard from 'expo-clipboard';
 import Share from 'react-native-share';
 import { SocialIcon } from 'react-native-elements';

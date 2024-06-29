@@ -35,8 +35,8 @@ const SignIn = () => {
     if (!password)return showToastMessage("Passwords don't match")
     try {
 
-      const result = await axios.post(`${endpoint}sign-in`)
-      console.log(result)
+      const result = await axios.post(`${endpoint}/sign-in`)
+      console.log(JSON.stringify(result.data))
       // await signIn(form.email, form.password);
       // const result = await getCurrentUser();
       // setUser(result);
@@ -45,6 +45,7 @@ const SignIn = () => {
       // Alert.alert("Success", "User signed in successfully");
       // router.replace("/home");
     } catch (error) {
+      console.log(error)
       showToastMessage("An error occured")
     } 
   };

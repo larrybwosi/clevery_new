@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useGetTopCreators, useGetTopServers, useSearchUser, useSearchAll, useSearchPosts } from '../react-query/queries';
+import { useGetTopCreators, useGetTopServers, useSearchUser, useSearchAll, useSearchPosts, useGetUsers } from '../react-query/queries';
 import useDebounce from './useDebounce';
 
 export const useCombinedSearchResults = (peopleTerm: string, allTerm: string, postsTerm: string) => {
   const { data: topCreators, isPending: loadingCreators, isError: creatorsError } = useGetTopCreators();
   const { data: topServers, isPending: loadingServer, isError: serversError } = useGetTopServers();
+  const { data: people, } = useGetUsers();
 
   const { data: userRes, isPending: loadingUserRes, error: userResError } = useSearchUser(useDebounce(peopleTerm,1000));
   const { data: allRes, isPending: loadingAllRes, error: allResError } = useSearchAll(useDebounce(allTerm,1000));
@@ -32,5 +33,5 @@ export const useCombinedSearchResults = (peopleTerm: string, allTerm: string, po
 
   return { searchResult, resultName, loadingCreators, loadingServer, creatorsError, 
     serversError, loadingUserRes, userResError, loadingAllRes, allResError, loadingPostsRes, 
-    postsResError,topCreators,topServers };
+    postsResError,topCreators,topServers, people };
 };

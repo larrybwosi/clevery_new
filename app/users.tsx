@@ -1,4 +1,4 @@
-import { useAddFriend, useAuth, useGetUserFriends, useGetUsers } from '@/lib';
+import { selector, useAddFriend, useGetUserFriends, useGetUsers } from '@/lib';
 import { ErrorMessage, InviteFriends, Loader } from '@/components';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -11,13 +11,13 @@ interface User {
 
 const AddFriends: React.FC = () => {
   const  [filteredUsers, setFilteredUsers] = useState([])
-  const { user:profile } = useAuth()
+  const profile = selector((state) => state.profile.profile);
   const { data: allUsers, isPending: loadingUsers, isError: errorUsers } = useGetUsers();
-  const { mutateAsync: addFriend } = useAddFriend(profile._id);
-  const { data: friends, isPending: loadingFriends, isError: errorFriends } = useGetUserFriends(profile._id);
+  const { mutateAsync: addFriend } = useAddFriend();
+  const { data: friends, isPending: loadingFriends, isError: errorFriends } = useGetUserFriends('');
 
   const handleAddFriend = async (user:User) => {
-    await addFriend({ user1: user._id, user2: profile._id });
+    await addFriend( user._id);
   };
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { Loader,View,Create } from '@/components';
 interface ServerDetails {
   name: string;
   description: string;
-  image: string;
+  icon: string;
   members: string[];
 }
 
@@ -16,7 +16,7 @@ const CreateChannel: React.FC = () => {
   const [serverDetails, setServerDetails] = useState<ServerDetails>({
     name: `${profile.name}'s channel`,
     description: '',
-    image: '',
+    icon: '',
     members: [],
   });
   const {serverid} = useLocalSearchParams()
@@ -62,7 +62,7 @@ const CreateChannel: React.FC = () => {
   const chooseImage=async()=>{
     const image = await selectImage()
     if(image){
-      setServerDetails({ ...serverDetails, image:image[0]})
+      setServerDetails({ ...serverDetails, icon:image[0]})
     }
   } 
   
@@ -74,8 +74,9 @@ if(creatingServer)return <Loader loadingText='Creating your server'/>
         serverDetails={serverDetails}
         setServerDetails={setServerDetails}
         handleSubmit={handleSubmit}
+        loading={creatingServer}
         type='channel'
-      />
+      /> 
     </View>
   );
 };

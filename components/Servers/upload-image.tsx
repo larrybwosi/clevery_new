@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons'
 import { Text, View } from '../Themed'
 
 const UploadImage = ({image,chooseImage,removeImage}:{image:string,chooseImage:()=>void,removeImage:any}) => {
+  console.log(image)
   return (
     <View>
       {image ? (

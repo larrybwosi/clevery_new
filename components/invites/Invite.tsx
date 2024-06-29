@@ -4,13 +4,8 @@ import ButtonsContainer from './ButtonsContainer';
 import SearchBar from './SearchBar'; 
 import { Text, View } from '../Themed';
 import { urlForImage } from '@/lib';
-import { Image } from 'expo-image';
-
-interface User {
-  _id: string;
-  image: string;
-  name: string;
-}
+import { Image } from 'expo-image'
+import { User } from '@/types';
 
 interface Props {
   onInvitePress: (user: User) => void;

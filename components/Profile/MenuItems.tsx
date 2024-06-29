@@ -16,7 +16,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ iconName, label, route }) => {
       onPress={() => onButtonPress(route)}>
       <View
        className='items-center flex-row gap-2'>
-        <Feather name={iconName} size={20} color="black" />
+        <Feather name={iconName} size={20} color="gray" />
         <Text className='font-rregular text-[16px] ml-2.5'
         >{label}</Text>
       </View>

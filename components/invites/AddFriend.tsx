@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { TouchableOpacity, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Text } from '../Themed';
+import { TouchableOpacity, TextInput } from 'react-native';
+
+import { View, Text } from '@/components/Themed';
 import ButtonsContainer from './ButtonsContainer';
 
 const AddFriend = () => {

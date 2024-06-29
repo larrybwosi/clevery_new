@@ -1,4 +1,4 @@
-import { Message} from "@/types";
+import { Message, User} from "@/types";
 import { uploadImage } from "./general";
 import axios from 'axios'
 import { endpoint } from "../env";
@@ -14,6 +14,15 @@ export const getConversation=async({
 }:{friendId:string}): Promise<conversation>=> {
   try {
     const response = await axios.post(`${endpoint}conversations?friendid=${friendId}`)
+    return response.data
+  } catch (error:any) {
+    console.log(error.message)
+    throw error
+  }
+}
+export const getConversations=async(): Promise<User[]>=> {
+  try {
+    const response = await axios.get(`${endpoint}conversations`)
     return response.data
   } catch (error:any) {
     console.log(error.message)

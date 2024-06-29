@@ -16,17 +16,17 @@ interface Message {
 }
 
 
-  export async function createServer ({creatorId,description,icon,members,name}:NewServer) {
-    console.log(creatorId,name)
+  export async function createServer ({description,icon,members,name}:NewServer) {
     if (icon){
       const imageurl = await uploadImage(icon);
       icon=imageurl
     }
     try {
-      const response = await axios.post(`${endpoint}/servers/create`, { creatorId,description,icon,members,name });
+      const response = await axios.post(`${endpoint}/servers`, { description,image:icon,members,name });
+      console.log(JSON.stringify(response))
       return response.data;
     } catch (error) {
-      console.error('Error creating server:', error);
+      console.log(error);
       throw new Error('Error creating server.');
     }
   };
@@ -36,7 +36,7 @@ interface Message {
       const topServers = await axios.get(`${endpoint}/servers/top`);
       return topServers.data
     } catch (error) {
-      console.error('Error fetching top servers:', error);
+      console.error(error);
       return [];
     }
   }
@@ -55,8 +55,8 @@ interface Message {
     try {
       const response = await axios.get(`${endpoint}/servers/?page=${page}`);
       return response.data;
-    } catch (error) {
-      throw new Error('An error occurred while fetching the servers.');
+    } catch (error:any) {
+      throw new Error(error);
     }
   }
   
@@ -78,7 +78,7 @@ interface Message {
       const result = await axios.get(`${endpoint}/channels/${id}`);
       return result.data
     } catch (error) {
-      console.error('An error occurred while fetching the server:', error);
+      console.error(error);
       throw error;
     }
   };
@@ -88,7 +88,7 @@ interface Message {
       const response = await axios.post(`${endpoint}/servers/${channel.serverId}/channels/`, { channel });
       return response.data;
     } catch (error) {
-       console.error('Failed to add channel to server:', error);
+       console.error(error);
        throw error;
     }
   };
@@ -99,7 +99,7 @@ interface Message {
       return response.data;
     } catch (error:any) {
       console.error('Error sending message:', error.message);
-      throw new Error('Error sending message.');
+      throw Error(error);
     }
   };
 
@@ -108,7 +108,7 @@ interface Message {
       const response = await axios.put(`${endpoint}/channels/editmessage/${messageKey}`, { channelId,updatedMessage });
       return response.data;
     } catch (error) {
-       console.error('Failed to edit message in channel:', error);
+       console.error(error);
        throw error;
     }
   };

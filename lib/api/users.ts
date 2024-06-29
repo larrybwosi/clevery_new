@@ -14,7 +14,7 @@ export const getUserById = async (id:string) => {
 
 export const getCurrentUser =async()=> {
   try {
-    const currentUser = await axios.get(`${endpoint}/users/profile`)
+    const currentUser = await axios.get(`${endpoint}/users/me`)
     return currentUser.data
     
   } catch (error:any) {
@@ -38,7 +38,7 @@ export const createEmailUser = async (user:NewUser) => {
 
 export const getUsers = async (page = 1) => { 
   try {
-    const response = await axios.post(`${endpoint}/users?page=${page}`);
+    const response = await axios.get(`${endpoint}/users?page=${page}`);
     return response.data 
     
   } catch (error:any) {
@@ -56,9 +56,9 @@ export const getUserFriends = async (userId:string) => {
   }
 };
 
-export async function addFriend({user2id}:{user1id: string, user2id: string}) {
+export async function addFriend(user2id:string) {
   try {
-    const response = await axios.post(`${endpoint}/users/profile`,{user2id})
+    const response = await axios.post(`${endpoint}/users/profile/friends`,{user2id})
     return response.data
   } catch (error) {
     console.log('Error adding friend:', error);

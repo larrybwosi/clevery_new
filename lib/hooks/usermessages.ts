@@ -12,7 +12,7 @@ export const userMessages =({currentuserid,userid}:{currentuserid:string,userid:
     data: conversation,
     isPending:loadingconversation,
     isError:conversationError,
-  } =useGetConversation({user1Id:currentuserid,user2Id:userid});
+  } =useGetConversation(userid);
   const {
     data: messagesdata,
     isPending:loadingMessages,

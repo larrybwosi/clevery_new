@@ -1,6 +1,5 @@
-import { FlatList, TextInput } from 'react-native';
+import { FlatList, TextInput,TouchableOpacity } from 'react-native';
 import { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { ErrorMessage, Loader, SearchResults, Suggestions, SearchTabBar as TabBar, Text, View} from '@/components';
@@ -30,7 +29,7 @@ const ExploreComponent = () => {
 
   const { 
     searchResult, resultName, loadingCreators, loadingServer,
-    topCreators,topServers 
+    topCreators,topServers ,people
   }= useCombinedSearchResults(peopleTerm,allTerm,postsTerm)
   const [selectedTabBar, setSelectedTabBar] = useState<TabBarOptions>("recents")
   const profile = selector((state) => state.profile.profile);
@@ -59,7 +58,7 @@ const ExploreComponent = () => {
       {selectedTabBar === 'recents' &&
       searchResult.length<1?
         <Suggestions
-        suggestedUsers={topCreators!} 
+        suggestedUsers={people!} 
         suggestedServers={topServers!}
         onClearAllSearches={()=>{}}
         onClearSearchHistory={(index)=>{}}
@@ -73,7 +72,7 @@ const ExploreComponent = () => {
       }
       {selectedTabBar === 'people' &&
         <FlatList
-        data={topCreators}
+        data={people}
         renderItem={({item})=>(
           <TouchableOpacity 
             className='flex-row items-center p-1.5' key={item?._id} 

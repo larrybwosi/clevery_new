@@ -59,7 +59,7 @@ const CreateServer = () => {
   };
 if(creatingServer)return <Loader loadingText='Creating your server'/>
    return (
-    <ScrollView className='mt-7 p-3 flex-1 bg-[#36393f] pb-2' >
+    <ScrollView className='mt-7 p-3 flex-1 bg-primary pb-2' >
       
       <Create
         serverDetails={serverDetails}
@@ -67,7 +67,7 @@ if(creatingServer)return <Loader loadingText='Creating your server'/>
         handleSubmit={handleSubmit}
         setPopupVisible={setPopupVisible}
         selectedUsers={selectedUsers}
-        disabled={creatingServer}
+        loading={creatingServer}
         type='server'
       />
       <Modal visible={isPopupVisible} onTouchCancel={()=>{}} onDismiss={()=>setPopupVisible(false)} animationType="slide">

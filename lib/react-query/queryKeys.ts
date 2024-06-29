@@ -12,6 +12,7 @@ export enum QUERY_KEYS {
   SEND_MESSAGE_ID = 'sendUserMessage',
   GET_MESSAGES_BY_IDS = 'getUserMessages',
   GET_USER_MESSAGES = 'usermessages',
+  GET_CONVERSATIONS = 'userconversations',
   GET_USER_GALLERY = 'getUserGallery',
 
   //COMMUNITiES

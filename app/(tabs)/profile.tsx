@@ -99,14 +99,12 @@ const ProfilePage = () => {
   const [activeButton, setActiveButton] = useState('profile');
 
   const profile = selector((state) => state.profile.profile);
-  
-  const { data: friends, isPending: loadingFriends, error: friendsError } = useGetUserFriends(profile?._id);
-  const { data: posts, isPending: loadingPosts, error: postsError } = useGetUserPosts(profile?._id);
-  const { data: gallery, isPending: loadingGallery, error: galleryError } = useGetUserGallery(profile?._id);
+   
+  const { data: posts, isPending: loadingPosts, error: postsError } = useGetUserPosts(profile?._id); 
 
   const stats = {
     Posts: posts?.length || 0,
-    Friends: friends?.length || 0,
+    Friends:  0,
   };
 
   
@@ -114,7 +112,7 @@ const ProfilePage = () => {
     if (item.type === 'menu') {
       return <MenuItems />;
     } else if (item.type === 'friends') {
-      return <FriendsComponent friends={friends} loadingFriends={loadingFriends} friendsError={friendsError} />;
+      // return <FriendsComponent friends={friends} loadingFriends={loadingFriends} friendsError={friendsError} />;
     }
     return <Text>Error</Text>
   };
@@ -147,7 +145,8 @@ const ProfilePage = () => {
           keyExtractor={item => item.type}
         />
       :
-      <Gallery images={gallery} loading={loadingGallery} />
+      // <Gallery images={gallery} loading={loadingGallery} />
+      <Text>Gallery</Text>
       }
     </View>
   );

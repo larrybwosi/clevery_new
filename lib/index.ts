@@ -42,6 +42,7 @@ export {
     useSendGroupMessage,
     useGetInfiniteMessages,
     useGetConversation,
+    useGetConversations,
     useSendUserMessage,
     useGetGroups,
     useGeGroupById,

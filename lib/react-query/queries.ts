@@ -7,7 +7,7 @@ import {
 
 import { QUERY_KEYS } from "@/lib/react-query/queryKeys";
 import { Channel, NewChannel, NewChannelMessage, NewPost, NewServer, NewUser, UserUpdate, channelMessage, newChannel} from "@/types";
-import { sendMessage,fetchGroupMessages, fetchGroups,getConversation,getGroupById,sendGroupMessage } from "@/lib/api/conversation";
+import { sendMessage,fetchGroupMessages, fetchGroups,getConversation,getGroupById,sendGroupMessage, getConversations } from "@/lib/api/conversation";
 import { createPost, deletePost,getInfinitePosts, getPostById, getTopCreators, getUserPosts, handleComment, likePost, savePost,updatePost } from "@/lib/api/posts";
 import { addFriend,createEmailUser,getGallery,getUserById, getUserFriends, getUsers, updateUser } from "@/lib/api/users";
 import { createChannel, createServer, getChannelById, getChannelMessages, getServerById, getServers, getTopServers, sendChannelMessage } from "@/lib/api/server";
@@ -197,13 +197,13 @@ export const useGetUserFriends=(userId:string)=> {
   })
 }
 
-export const useAddFriend=(userId:string)=> {
+export const useAddFriend=()=> {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn:(data:{user1:string,user2:string})=> addFriend({user1id:data.user1,user2id:data.user2}),
+    mutationFn:(data:string)=> addFriend(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_USER_FRIENDS,userId],
+        queryKey: [QUERY_KEYS.GET_USER_FRIENDS],
       });
     },
   })
@@ -316,6 +316,12 @@ export const useGetConversation = (friendId:string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USER_MESSAGES,friendId],
     queryFn: () => getConversation({friendId}),
+  });
+};
+export const useGetConversations = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_CONVERSATIONS],
+    queryFn: () => getConversations(),
   });
 };
 
