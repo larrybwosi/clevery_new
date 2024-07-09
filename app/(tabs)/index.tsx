@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 
 import { ErrorMessage, Loader, Post, View } from '@/components';
-import { useGetInfinitePosts } from '@/lib';
+import { endpoint, useGetInfinitePosts } from '@/lib';
 import PostsSkeleton from '@/components/skeletons/posts';
 
 export default function Home() {
@@ -23,15 +23,20 @@ export default function Home() {
     setRefreshing(false);
     refetchPosts();
   };
-  
   const loadNextPage = () => {
     if (!hasNextPage) return 
     fetchNextPage();
   };
 
+  const result = async()=>{
+   const res= await fetch(`${endpoint}/profile`) 
+   const data = await res.json()
+   console.log(data)
+  }
+    result()
 
   if (feedLoading) return <PostsSkeleton/>;
-  if (postsError)return <ErrorMessage message="There was an error communicating with the servers. Please ensure you have an internet connection then refresh" onRetry={() => handleRefresh()} />
+  // if (postsError)return <ErrorMessage message="There was an error communicating with the servers. Please ensure you have an internet connection then refresh" onRetry={() => handleRefresh()} />
   
 
   const renderItem = ({ item }: { item: any }) => {
@@ -45,6 +50,7 @@ export default function Home() {
         data={posts?.pages[0]}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
+        ListEmptyComponent={<PostsSkeleton/>}
         showsVerticalScrollIndicator={false}
         removeClippedSubviews={true}
         onEndReachedThreshold={0.5} 

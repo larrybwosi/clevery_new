@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { image, Search } from '../../../types';
+import { image, Search } from '@/types';
 
 
 interface SearchState {

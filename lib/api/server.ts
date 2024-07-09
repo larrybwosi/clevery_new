@@ -93,11 +93,10 @@ interface Message {
 
   export const addMessageToChannel = async ({channelId, message}:MessageData) => {
     try {
-      const response = await axios.patch(`${endpoint}/channels/${channelId}/message`, { message });
+      const response = await axios.post(`${endpoint}/channels/${channelId}/message`, message);
       return response.data;
     } catch (error:any) {
-      console.error('Error sending message:', error.message);
-      throw Error(error);
+      throw Error(error.message);
     }
   };
 
@@ -132,7 +131,7 @@ interface Message {
       files =  await uploadImages(files)
     }
     try {
-      const response = await axios.post(`${endpoint}/channels/${channelId}/message`, {caption,files});
+      const response = await axios.post(`${endpoint}/channels/${channelId}/messages`, {caption,files});
       return response.data;
       
     } catch (error) {

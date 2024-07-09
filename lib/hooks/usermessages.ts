@@ -13,22 +13,23 @@ export const userMessages =(userid:string)=> {
     isPending:loadingconversation,
     isError:conversationError,
   } =useGetConversation(userid);
-  const {
-    data: messagesdata,
-    isPending:loadingMessages,
-    isError:messagesError,
-    hasNextPage,
-    refetch:refetchMessages
-  } =useGetInfiniteMessages({convId:conversation?._id!});
+  // const {
+  //   data: messagesdata,
+  //   isPending:loadingMessages,
+  //   isError:messagesError,
+  //   hasNextPage,
+  //   refetch:refetchMessages
+  // } =useGetInfiniteMessages({convId:conversation?._id!});
   const {
     mutateAsync:sendMessage,
     isPending:sendingMessage,
     isError:sendMessageError
-  }= useSendUserMessage()
+  }= useSendUserMessage(userid)
 
 return {
-    user,loadingUser,userError,conversation,loadingconversation,loadingMessages,conversationError,messagesdata,messagesError,hasNextPage,
-    refetchMessages,sendMessage,sendingMessage,sendMessageError,refetchUser
+    user,loadingUser,userError,conversation,loadingconversation,conversationError,
+    // messagesdata,messagesError,hasNextPage, refetchMessages,loadingMessages
+    sendMessage,sendingMessage,sendMessageError,refetchUser
 }
   
 }

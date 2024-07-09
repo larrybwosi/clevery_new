@@ -7,23 +7,33 @@ import { View } from '@/components/Themed'
 import ImageWithCaption from './ImageCont'
 import PopupComponent from './Popup'
 import Header from './Header'
+import LoadingMessages from '../skeletons/messages'
 
   interface newMessage {
     caption:string;
     file:any[]
   }
   
-  interface Props{
-    messages:Message[];
-    setNewMessage:(text:string)=>void;
-    closeFile:()=>void;
-    newMessage:newMessage;
-    createdAt:string;
-    user?:User;
-    channel?:Channel
+interface Props{
+  messages:Message[];
+  setNewMessage:(text:string)=>void;
+  closeFile:()=>void;
+  newMessage:newMessage;
+  createdAt:string;
+  user?:User;
+  channel?:Channel
 }
 
-const Messages = ({messages,setNewMessage,closeFile,newMessage,createdAt,user,channel}:Props) => {
+const Messages = ({
+  messages,
+  setNewMessage,
+  closeFile,
+  newMessage,
+  createdAt,
+  user,
+  channel
+}:Props) => {
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [popupVisible, setPopupVisible] = useState(false);
 
@@ -58,6 +68,7 @@ const Messages = ({messages,setNewMessage,closeFile,newMessage,createdAt,user,ch
        />
       )}
       keyExtractor={(item) => item?._id}
+      // ListEmptyComponent={<LoadingMessages/>}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={() => <Header user={user} messages={messages} created={createdAt} channel={channel}/>}
       ListFooterComponent={ 

@@ -1,9 +1,9 @@
+import { FlatList,KeyboardAvoidingView } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+
 import { ErrorMessage, Loader, MessageInput, Post, Text, UserComment, View } from '@/components'
 import { selector, useCommentPost, useGetPostById } from '@/lib'
-import { useLocalSearchParams, usePathname } from 'expo-router';
-import { useState } from 'react';
-import { FlatList } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native';
 
 export default function PostComponent() {
   const [comment, setComment] = useState('')

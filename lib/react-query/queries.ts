@@ -283,9 +283,15 @@ export const useGetUserGallery =(userid:string)=> {
 //USER MESSAGES=======================
 //====================================
 
-export const useSendUserMessage = () => {
+export const useSendUserMessage = (frienid:string) => {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: { conversationId: string, message:NewMessage}) => sendMessage(data.conversationId, data.message),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_MESSAGES, frienid],
+      }); 
+    },
     mutationKey: [QUERY_KEYS.SEND_MESSAGE_ID],
   });
   

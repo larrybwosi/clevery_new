@@ -1,9 +1,11 @@
 import  *as Google  from 'expo-auth-session/providers/google'
 import  *as Facebook  from 'expo-auth-session/providers/facebook'
-import { env } from '../env';
-import { useAuthRequest } from 'expo-auth-session/providers/google';
+import { endpoint, env } from '../env';
+import { useAuthRequest,useAutoDiscovery } from 'expo-auth-session';
 
 export const authHooks = () => {
+  
+const discovery = useAutoDiscovery("https://clevery.vercel.app/api/auth/signin")
   const [googleReq, googleRes, googleAsync] = Google.useAuthRequest({
     androidClientId: env.androidClient,
     iosClientId: env.iosClient,
@@ -14,11 +16,11 @@ export const authHooks = () => {
     androidClientId: '419395183801398',
     scopes: ['profile', 'email'],
     });
-    const [gitReq, gitRes, gitAsync] = useAuthRequest({
-        clientId: env.androidClient,
-        redirectUri: 'https://clevery.vercel.app/api/auth/signin',
-    }
-    );
+    if(!discovery) return
+    const [gitReq, gitRes, gitAsync] = useAuthRequest({clientId:env.expoClientId!,redirectUri:"/"},{
+      authorizationEndpoint:"https://clevery.vercel.app/api/auth/signin",
+      userInfoEndpoint:`${endpoint}/profile`,
+    });
 
     async function handleResponse() {
       if (googleRes?.type === 'success') {

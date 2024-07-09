@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 import { TextInput} from 'react-native';
@@ -69,4 +68,4 @@ const ImageWithCaption: React.FC<ImageWithCaptionProps> = ({
   );
 };
 
-export default memo(ImageWithCaption);
+export default ImageWithCaption;

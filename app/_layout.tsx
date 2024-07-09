@@ -1,22 +1,51 @@
 import { useEffect } from 'react';
+import {SplashScreen, Stack, router} from 'expo-router';
+import * as TaskManager from 'expo-task-manager';
 import { useFonts } from 'expo-font';
-import {SplashScreen, Stack} from 'expo-router';
 import { DarkTheme, DefaultTheme, ThemeProvider, useIsFocused} from '@react-navigation/native';
 
 import { Providers,pusherConnector, selector } from '@/lib';
-import * as Notifications from 'expo-notifications';
 import { Linking, useColorScheme } from 'react-native';
-import * as TaskManager from "expo-task-manager"
-import { registerGlobals } from '@livekit/react-native';
+import * as Notifications from 'expo-notifications';
 
 export { 
   ErrorBoundary,
 } from 'expo-router';
 
-registerGlobals();
 export const unstable_settings = {
   initialRouteName: 'index',
 };
+
+
+function useNotificationObserver() {
+  useEffect(() => {
+    let isMounted = true;
+
+    function redirect(notification: Notifications.Notification) {
+      const url = notification.request.content.data?.url;
+      if (url) {
+        router.push(url);
+      }
+    }
+
+    Notifications.getLastNotificationResponseAsync()
+      .then(response => {
+        if (!isMounted || !response?.notification) {
+          return;
+        }
+        redirect(response?.notification);
+      });
+
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      redirect(response.notification);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, []);
+}
 
 SplashScreen.preventAutoHideAsync();
 
@@ -78,12 +107,19 @@ const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 function RootLayoutNav() {
   const mode = selector((state) => state.theme.mode);
   const defaultMode = useColorScheme()
-
+  useNotificationObserver()
   const lightmode = () => {
     if (mode ==="default") return defaultMode;
      return mode; 
   }
 
+  const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+    console.log('Received a notification in the background! ',data, error, executionInfo);
+  });
+  
+  Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
   return (
     <ThemeProvider value={lightmode() === 'dark' ? DarkTheme : DefaultTheme}>
     <Stack>

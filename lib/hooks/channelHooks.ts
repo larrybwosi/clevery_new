@@ -8,15 +8,16 @@ export const channelHooks =({channelid}:{channelid:string})=> {
     refetch
   } = useGetChannelById(channelid)
     
-  const {
-    data:channelMessages,
-    isPending:loadingMessages,
-    isError:messagesError,
-  } = useGetChannelMessages(channelid)
+  // const {
+  //   data:channelMessages,
+  //   isPending:loadingMessages,
+  //   isError:messagesError,
+  // } = useGetChannelMessages(channelid)
     
   
 return {
-    channel,loading,error,channelMessages,loadingMessages,messagesError
+    channel,loading,error,
+    // channelMessages,loadingMessages,messagesError
 }
   
 }

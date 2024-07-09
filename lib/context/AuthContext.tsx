@@ -1,69 +1,59 @@
-import { createContext, useContext, useEffect } from 'react';
+import { StreamVideo, StreamVideoClient, User } from '@stream-io/video-react-native-sdk';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
-import {AppDispatch, selector } from '../redux/store';
-import { setProfile } from '../redux/features/profileSlice';
 import { router } from 'expo-router';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { getCurrentUser } from '../api/users';
 
-export const INITIAL_USER = {
-  id: '',
-  name: '',
-  username: '',
-  email: '',
-  image: '',
-  bio: '',
-};
+import { setProfile } from '@/lib/redux/features/profileSlice';
+import { getCurrentUser } from '@/lib/api/users';
+import { selector } from '@/lib/redux/store';
 
-const AuthContext = createContext<any>({
-  user: INITIAL_USER,
-});
+const AuthContext = createContext<any>({});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const dispatch = useDispatch<AppDispatch>();
+  const [client, setClient] = useState<StreamVideoClient>();
   const profile = selector((state) => state.profile.profile);
-  const {isConnected} = useNetInfo()
-  
-  const checkAuthUser = async () => {
-    try {
-      const currentAccount = await getCurrentUser();
-      if(!currentAccount && !profile._id){
-        router.push('/sign-in')
-        return false 
-      }
-      if(currentAccount && !profile._id ) {
-        dispatch(
-          setProfile({ 
-            _id: currentAccount?._id,
-            _createdAt:currentAccount?._createdAt,
-            name: currentAccount?.name,
-            username: currentAccount?.username,
-            email: currentAccount?.email,
-            image: currentAccount?.image,
-            bio: currentAccount?.bio,
-            friends:currentAccount?.friends||[]
-          })
-        );
-        router.push("/")
-        return true
-      }
+  const dispatch = useDispatch();
 
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  };
+  const user: User = { id: profile._id };
+  const apiKey = process.env.EXPO_PUBLIC_STREAM_API_KEY!
 
   useEffect(() => {
-    checkAuthUser();
-  },[]);
-  
+    const fetchAndSetProfile = async () => {
+      try {
+        const currentAccount = await getCurrentUser();
+        if (!currentAccount && !profile._id) {
+          return router.push('/sign-in');
+        }
+        dispatch(setProfile({ ...currentAccount }));
+
+        const myClient = new StreamVideoClient({ apiKey, user, tokenProvider: async () => currentAccount?.streamToken });
+        setClient(myClient);
+
+        return router.push('/');
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAndSetProfile();
+
+    return () => {
+      client?.disconnectUser();
+      setClient(undefined);
+    };
+  }, []);
+
   const value = {
-    checkAuthUser,
+    checkAuthUser: () => {
+      // No need for this function since the logic is already handled in the useEffect
+    },
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      <StreamVideo client={client!}>{children}</StreamVideo>
+    </AuthContext.Provider>
+  );
 }
 
 export const checkAuthUser = () => useContext(AuthContext);

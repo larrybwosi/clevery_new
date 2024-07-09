@@ -75,6 +75,7 @@ export  interface Profile {
     country?: string;
     bannerImage?:string;
     streamToken?:string;
+    phonenumber?:string
   }
 
  export interface User { 
@@ -125,6 +126,7 @@ export  interface UserProfileProps {
   
 export interface Message {
     _id:string;
+    _createdAt:string;
     text: string;
     image?: string;
     sender: string;

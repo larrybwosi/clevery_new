@@ -7,30 +7,18 @@ import {
 
 import { router } from 'expo-router';
 import { Text, View } from '@/components/Themed';
-import { showToastMessage, useUpdateUser } from '@/lib';
+import { selector, showToastMessage, useUpdateUser } from '@/lib';
 import Loader from '@/components/Loader';
 import FormField from '@/components/auth/FormField';
 
-interface AccountInfo {
-  id:string;
-  username: string;
-  name: string;
-  email: string;
-  phoneNumber: string;
-}
-
-interface AccountProps {
-  userInfo: AccountInfo;
-}
-
-const Account: React.FC<AccountProps> = ({
-  userInfo,
-}) => {
+const Account = () => {
+  
+  const { profile:userInfo } = selector((state) => state.profile);
   const [editedFields, setEditedFields] = useState({
     username: userInfo.username,
     name: userInfo.name,
     email: userInfo.email,
-    phoneNumber: userInfo.phoneNumber,
+    phonenumber: userInfo.phonenumber,
   });
 
   const {
@@ -38,6 +26,7 @@ const Account: React.FC<AccountProps> = ({
     isPending:updatingUser,
     isError:failed
   } = useUpdateUser()
+
   const handleFieldChange =
     (field: string, text: string) => {
       setEditedFields((prevFields) => ({ ...prevFields, [field]: text }));
@@ -46,7 +35,7 @@ const Account: React.FC<AccountProps> = ({
   const handleSavePress = async() => {
     console.log(editedFields)
     await updateUser({
-      id:userInfo.id,
+      id:userInfo._id,
       name:editedFields.name,
       username:editedFields.username,
       email:editedFields.email
@@ -58,7 +47,7 @@ const Account: React.FC<AccountProps> = ({
       username: userInfo.username,
       name: userInfo.name,
       email: userInfo.email,
-      phoneNumber: userInfo.phoneNumber,
+      phonenumber: userInfo.phonenumber,
     });
     router.back()
   }
@@ -86,7 +75,7 @@ const Account: React.FC<AccountProps> = ({
           title="Username" 
           autoCapitalize={"none"}
           handleChangeText={(text:any) => handleFieldChange('username', text)}
-          key="username"
+          key="username" 
           placeholder="your username"
           value={editedFields.username}
         />
@@ -118,7 +107,7 @@ const Account: React.FC<AccountProps> = ({
               editedFields.username === userInfo.username &&
               editedFields.name === userInfo.name &&
               editedFields.email === userInfo.email &&
-              editedFields.phoneNumber === userInfo.phoneNumber
+              editedFields.phonenumber === userInfo.phonenumber
             }
           />
           <Button title="Cancel" onPress={handleCancelPress} />

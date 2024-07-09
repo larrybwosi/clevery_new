@@ -20,7 +20,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ caption, onMessageChange, o
        onPress={onChooseFile}
        disabled={sending}
       >
-        <Feather name="paperclip" size={25} color="white" />
+        <Feather name="paperclip" size={25} color="gray" />
       </TouchableOpacity>
       <View className='flex-1 flex-row border items-center rounded-[10px] p-[7px]'>
         <TextInput

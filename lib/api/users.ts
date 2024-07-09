@@ -13,8 +13,9 @@ export const getUserById = async (id:string) => {
 };
 
 export const getCurrentUser =async()=> {
+  const token = await registerForPushNotificationsAsync()
   try {
-    const currentUser = await axios.get(`${endpoint}/users/me`)
+    const currentUser = await axios.get(`${endpoint}/profile?notificaion_token=${token}`)
     return currentUser.data
     
   } catch (error:any) {

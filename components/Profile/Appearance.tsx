@@ -3,7 +3,7 @@ import { Feather } from '@expo/vector-icons';
 import {TouchableOpacity, View, } from 'react-native';
 import { Text } from '@/components/Themed';
 import { useDispatch } from 'react-redux';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 
 const Appearance: React.FC = () => {
   const dispatch = useDispatch();
@@ -14,8 +14,8 @@ const Appearance: React.FC = () => {
     dispatch(setMode(mode));
   };
 
-const MenuItem: React.FC<any> = ({ iconName, label, route }) => {
-  const [selectedTheme, setSelectedTheme] = useState('default');
+const MenuItem: React.FC<any> = ({ iconName, label, route }) => { 
+
   return (
     <>
       <Text

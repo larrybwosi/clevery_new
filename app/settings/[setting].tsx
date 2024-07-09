@@ -2,81 +2,47 @@ import { TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 
-import { Account, Appearance, FriendRequests, MenuItems, Text, View } from '@/components';
-import { selector } from '@/lib';
+import { Account, Appearance, FriendRequests, MenuItems, Notifications, Text, View } from '@/components';
 
 const Settings = () => {
-  const {setting} = useLocalSearchParams()
-  const profile = selector((state) => state.profile.profile);
+  const { setting } = useLocalSearchParams();
+  const header = getHeaderText(setting as string);
 
-  const HeaderContainer=({header}:{header:string})=>{
-    return(
-    <View className='flex-row items-center'>
-      <TouchableOpacity onPress={()=>router.back()}>
-      <Feather name="arrow-left" size={24} color="black" />
-      </TouchableOpacity>
-      <Text className='font-rbold text-2xl ml-[20%]' >{header}</Text>
+  return (
+    <View className="flex-1 mt-7.5">
+      <View className="flex-row items-center">
+        <TouchableOpacity onPress={() => router.back()}>
+          <Feather name="arrow-left" size={24} color="gray" />
+        </TouchableOpacity>
+        <Text className="font-rmedium text-xl ml-[20%]">{header}</Text>
+      </View>
+      {renderContent(setting)}
     </View>
-    )
-  }
-  
-  
-  if (setting === 'account') {
-    return (
-      <View className='flex-1 mt-7.5'>
-      <HeaderContainer header='Account'/>
-        <Account
-          userInfo={{
-            id:profile._id,
-            name: profile.name,
-            username: profile.username,
-            phoneNumber: '',
-            email: profile.email,
-          }}
-        />
-      </View>
-    );
-  } else if (setting === 'appearance') {
-    return (
-        <View className='flex-1 mt-7.5' >
-          <HeaderContainer header='Apppearance'/>
-          <Appearance />
-        </View>
-    )
-  } else if (setting === 'notifications') {
-    return (
-        <View className='flex-1 mt-7.5' >
-          <HeaderContainer header='Notifications'/>
-          <Appearance />
-        </View>
-    )
-  }  else if (setting === 'friend-requests') {
-    return (
-     <View className='flex-1 mt-7.5'>
-        <HeaderContainer header='Friend Requests'/>
-        <FriendRequests friendRequests={[]} />
-     </View>
-    );
-  } else if (setting === 'devices') {
-    return (
-     <View className='flex-1 mt-7.5'>
-        <HeaderContainer header='Devices'/>
-     </View> 
-    );
-  } else if (setting === 'logout') {
-    return (
-     <View className='flex-1 mt-7.5'>
-        <HeaderContainer header='Logout'/>
-     </View>
-    );
-  } else {
-    return (
-      <View  className='flex-1 mt-7.5'>
-        <MenuItems/>
-      </View>
-    );
+  );
+};
+
+const renderContent = (setting: string | any) => {
+  switch (setting) {
+    case 'account':
+      return <Account />;
+    case 'appearance':
+      return <Appearance />;
+    case 'notifications':
+      return <Notifications />;
+    case 'friend-requests':
+      return <FriendRequests friendRequests={[]} />;
+    default:
+      return <MenuItems />;
   }
 };
 
-export default Settings;
+const getHeaderText = (setting: string): string => ({
+  account: 'Account',
+  appearance: 'Appearance',
+  notifications: 'Notifications',
+  'friend-requests': 'Friend Requests',
+  devices: 'Devices',
+  logout: 'Logout',
+}[setting] || '');
 
+export default Settings;

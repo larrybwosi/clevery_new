@@ -1,8 +1,8 @@
 import { memo, useCallback, useEffect, useState } from 'react'; 
 import { Feather, Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
-import { selectImage,sortMessages,pusher, voiceCallHandler, userMessages, parseIncomingMessage, selector, showToastMessage } from '@/lib';
+import { selectImage,sortMessages,pusher, userMessages, parseIncomingMessage, selector, showToastMessage } from '@/lib';
 import { Loader, MessageInput, Text, View, ErrorMessage, Messages } from '@/components';
 
 import { PusherEvent } from '@pusher/pusher-websocket-react-native';
@@ -12,8 +12,7 @@ import { IMessage, Message } from '@/types';
 interface newMessage {
   caption:string;
   file:any[]
-}
-
+} 
  
 interface UserMessagesProps {
   user: any;
@@ -34,34 +33,21 @@ const UserMessages: React.FC<UserMessagesProps> = () => {
   })
 
   const profile = selector((state) => state.profile.profile);
-  const navigation = useNavigation<any>();
   const { friendid } = useLocalSearchParams()
 const {
-  user,loadingUser,userError,conversation,loadingconversation,loadingMessages,conversationError,messagesdata,messagesError,hasNextPage,
-  refetchMessages,sendMessage,sendingMessage,sendMessageError,refetchUser
+  user,loadingUser,userError,conversation,loadingconversation,conversationError, 
+  sendMessage,sendingMessage,sendMessageError,refetchUser
 }=userMessages(friendid as string)
-
-  useEffect(() => {
-    navigation.setOptions({
-      tabBarStyle: { display: 'none' },
-    });
-    handleLastMessage()
-    return () => {
-      navigation.setOptions({
-        tabBarStyle: { display: 'flex' },
-      });
-    };
-
-  }, []);
 
 
   useEffect(()=>{
     const messageHandler=(message:Message)=>{
       setMessages((prev)=>{
-        if( prev?.find((msg)=>msg._id === message._id)){
+        if( prev?.find((msg)=>msg?._id === message?._id)){
           return prev
         } else {
-          return [message, ...prev!]
+          if (prev) return[message,...prev]
+          return [message]
         }
       }) 
     }
@@ -70,8 +56,8 @@ const {
         channelName: conversation?._id,
         onEvent: (event: PusherEvent) => {
           if (event.eventName === 'new-message') {
-            const cleanedObject = parseIncomingMessage(event);
-            messageHandler(cleanedObject.data);
+            const cleanedObject = parseIncomingMessage(event); 
+            messageHandler(cleanedObject?.data);
           }
         }
       });
@@ -82,9 +68,9 @@ const {
   },[conversation?._id]) 
 
   useEffect(()=>{
-    setMessages(messagesdata?.pages[0])
-  },[messagesdata])
-
+    setMessages(conversation?.messages)
+  },[conversation?.messages])
+  
 const chooseFile = async () => {
   const file = await selectImage();
   if (file) {
@@ -99,7 +85,7 @@ const handleSend = async () => {
 
   const message = {
     caption,
-    friendid,
+    friendid:friendid as string,
     file: newMessage.file[0],
   };
 
@@ -134,8 +120,9 @@ const handleLastMessage = useCallback(() => {
   if(audioCall || videoCall){
     return(
       <AudioVideoComponent
-        channel={`${profile.name}'s call`}
-        video={videoCall}
+        channelid='test-channel'
+        callType='default'
+        video
       />
     )
   }
@@ -158,7 +145,7 @@ const handleLastMessage = useCallback(() => {
       <View className='flex-row items-center gap-5' 
       >
         <Feather name="phone-call" size={18} color={'#007aff'} onPress={()=>setAudioCall(true)}/>
-        <Feather name="video" size={18} color={'#007aff'} onPress={()=>setVideoCall(true)}/>
+        <Feather name="video" size={18} color={'#007aff'} onPress={()=>router.navigate("/room")}/>
       </View>
     </View>
 

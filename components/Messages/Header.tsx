@@ -14,8 +14,7 @@ const Header = ({user,messages,created,channel}:any) => {
     <ChannelHeader
       messages={channel.messages}
       channelName= {channel?.name} 
-      description={channel?.description} 
-      channelIcon={channel?.icon}
+      description={channel?.description}
     />
    )
   }
@@ -48,7 +47,7 @@ const Header = ({user,messages,created,channel}:any) => {
         Friends since: {created && format(parseISO(created), 'dd MMMM yyyy')}
       </Text>
 
-      {!! messages?.length && (
+      {! messages?.length && (
         <View className='h-[80%] mt-[30%] mb-[70%] flex-1 '>
           <Text className='font-rthin text-sm mb-1.5 mt-1.5'>
             No Messages yet, send a message to start a conversation with {user?.username}

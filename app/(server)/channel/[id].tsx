@@ -1,11 +1,10 @@
 import { PusherEvent } from '@pusher/pusher-websocket-react-native';
 import { useEffect, useState } from 'react';
-import { useLocalSearchParams, usePathname } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
-import { channelHooks, parseIncomingMessage, pusher, selectImage,selector,sortMessages, useSendChannelMessage} from '@/lib';
+import { channelHooks, parseIncomingMessage, pusher, selectImage, sortMessages, useSendChannelMessage} from '@/lib';
 import { ChannelTop, ErrorMessage, Loader, MessageInput, Messages, View } from '@/components'
 import { Message } from '@/types';
-import AudioVideoComponent from '@/components/audio-video-call';
 
 interface newMessage {
     caption:string;
@@ -19,12 +18,11 @@ const Channel = () => {
     caption:'',
     file:[]
   })
-  
+  console.log(messages)
   const {id} = useLocalSearchParams()
 
   const {
-    channel,loading,error,channelMessages,loadingMessages,
-    messagesError
+    channel,loading,error
   } =channelHooks({channelid:id as string})
   
   const {
@@ -34,7 +32,7 @@ const Channel = () => {
   }= useSendChannelMessage()
  
   useEffect(()=>{
-    setMessages(channelMessages!)
+    setMessages(channel?.messages!)
 
   const messageHandler = (message:Message) => {
     setMessages((prev) => {
@@ -42,7 +40,8 @@ const Channel = () => {
       if (existingMessageIds.has(message._id)) {
         return prev;
       } else {
-        return [message, ...prev!];
+        if (prev) return[message,...prev]
+        return [message];
       }
     });
   };
@@ -52,6 +51,7 @@ const Channel = () => {
       onEvent: (event: PusherEvent) => {
         if (event.eventName === 'new-channel-message') {
           const cleanedObject = parseIncomingMessage(event);
+          console.log(cleanedObject)
           messageHandler(cleanedObject.data);
         }
       }
@@ -64,19 +64,19 @@ const Channel = () => {
 
 
   const handleSend = async () => {
-  if (!channel?._id) return;
-  const { caption, file } = newMessage;
-  if (caption || file.length > 0) {
-    
-    await sendMessage({
-      channelId: channel._id,
-      caption,
-      files: file[0],
-    }).then(() => {
-      setNewMessage({ caption: '', file: [] });
-    });
-  }
-};
+    if (!channel?._id) return;
+    const { caption, file } = newMessage;
+    if (caption || file.length > 0) {
+      
+      await sendMessage({
+        channelId: channel._id,
+        caption,
+        files: file[0],
+      }).then(() => {
+        setNewMessage({ caption: '', file: [] });
+      });
+    }
+  };
 
 const chooseFile = async () => {
   const file = await selectImage();
@@ -90,14 +90,16 @@ const closeFile = () => {
 };
   
   
-  if (loading||loadingMessages) return <Loader loadingText='Loading Channel'/>
-  if (error||messagesError) return <ErrorMessage message='Failed'/>
+  if (loading) return <Loader loadingText='Loading Channel'/>
+  if (error) return <ErrorMessage message='Failed'/>
     
   const sortedMessages=messages ?sortMessages({messages:messages!}):[]
 
   return (
-    <View className='flex-1 mt-7.5 p-0.5' >
-        <ChannelTop channelName= {channel?.name!}/>
+    <View className='flex-1 mt-6 p-0.5' >
+
+      <ChannelTop channelName= {channel?.name!}/>
+
       <Messages
         messages={sortedMessages}
         setNewMessage={(text)=>setNewMessage({caption:text,file:newMessage.file})}
@@ -107,11 +109,11 @@ const closeFile = () => {
         channel={channel}
       />
       <MessageInput
-      caption={newMessage.caption}
-      onMessageChange={(e)=>setNewMessage({...newMessage,caption:e})}
-      onSend={handleSend}
-      sending={sendingMessage}
-      onChooseFile={chooseFile}
+        caption={newMessage.caption}
+        onMessageChange={(e)=>setNewMessage({...newMessage,caption:e})}
+        onSend={handleSend}
+        sending={sendingMessage}
+        onChooseFile={chooseFile}
       />
     </View>
   )

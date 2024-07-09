@@ -16,6 +16,7 @@ interface User{
 }
 export const showToastMessage = (message:string) => {
   Toast.show({
+    id:message,
     title:message,
     placement:"top"
   });
@@ -161,9 +162,9 @@ export async function fetchUpdate() {
 
 export const sortMessages=({messages}:{messages:Message[]})=>{
   if(!messages) return []
-  const sortedMessages = messages?.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())!;
+  const sortedMessages = messages?.sort((a, b) => new Date(a._createdAt).getTime() - new Date(b._createdAt).getTime())!;
   const messagesByMonth: { [month: string]: any } = sortedMessages?.reduce((acc: any, message: any) => {
-    const month = format(parseISO(message?.timestamp), 'ddd MMMM yyyy');
+    const month = format(parseISO(message?._createdAt), 'ddd MMMM yyyy');
     if (!acc[month]) {
       acc[month] = [];
     }
@@ -175,7 +176,7 @@ export const sortMessages=({messages}:{messages:Message[]})=>{
     return Object?.entries(messagesByMonth)?.flatMap(([month, messages]) => {
       const monthSeparator = {
         _id: `month-${month}`,
-        timestamp: messages[0]?.timestamp,
+        timestamp: messages[0]?._createdAt,
         isSeparator: true,
       };
       return [monthSeparator, ...messages];

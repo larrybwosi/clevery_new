@@ -101,6 +101,7 @@ const Create = ({
       </View>
       }
 
+    {type === "server" &&
       <Select
         placeholder='Channel Type'
         accessibilityLabel='Channel Type'
@@ -117,7 +118,7 @@ const Create = ({
         <Select.Item label='Voice' value='AUDIO' endIcon={<Feather name='mic'/>}/>
         <Select.Item label='Video' value='VIDEO' endIcon={<Feather name='video'/>}/>
       </Select>
-
+    }
       <TouchableOpacity className='w-25 h-9 bg-blue-500 justify-center px-2 rounded-lg mb-3'  onPress={handleSubmit} disabled={loading} >
         <Text className='text-white text-xs pb-1 font-rregular w-auto' >Create {type==='server'? 'Server':'Channel'}</Text>
       </TouchableOpacity>

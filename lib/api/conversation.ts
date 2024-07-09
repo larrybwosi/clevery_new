@@ -12,7 +12,6 @@ interface conversation{
 export const getConversation=async(friendid:string): Promise<conversation>=> {
   try {
     const response = await axios.post(`${endpoint}conversations`,{friendid})
-    console.log(response.data)
     return response.data
   } catch (error:any) {
     console.log(error.message)

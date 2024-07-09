@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Message } from '../../../types';
+import { Message } from '@/types';
 interface Conversation {
     conversationId: string;
     messages: Message[];
@@ -28,7 +28,7 @@ interface Conversation {
       addMessage: (state, action: PayloadAction<{ conversationId: string, message: Message }>) => {
         const { conversationId, message } = action.payload;
         if (state.conversations[conversationId]) {
-          state.conversations[conversationId].messages.push(message);
+          state.conversations[conversationId].push(message);
         } else {
           state.conversations[conversationId] = {
             conversationId,

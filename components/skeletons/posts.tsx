@@ -8,12 +8,19 @@ const PostsSkeleton = () => {
         data={Array.from({ length: 5 }, (_, index) => index)}
         keyExtractor={(_, index) => index.toString()}
         renderItem={() => (
-            <HStack space={4} color={"gray.300"} marginBottom={"10"}>
-            <Skeleton size="16" rounded="md" h="24" borderRadius={"lg"} />
-            <VStack flex={1} space={2}>
-              <Skeleton h="4" rounded="full" w="1/2" />
-              <Skeleton h="4" rounded="full" w="3/4" />
-              <Skeleton h="4" rounded="full" w="1/2" />
+          <HStack space={4} color={"gray.300"} marginBottom={"10"}>
+
+            <Skeleton size="16" rounded="full"  startColor='gray.500' endColor={'gray.800'} borderRadius="full" />
+
+            <VStack flex={1} space={2} >
+              <Skeleton h="4" rounded="full" w="1/2" startColor='gray.500' endColor={'gray.800'} />
+              <Skeleton h="4" rounded="full" w="3/4" startColor='gray.500' endColor={'gray.800'} />
+              <HStack marginRight="12" marginLeft="-7" marginTop="5" >
+                <Skeleton rounded="md" h="150" marginRight={"1"} marginLeft="1.5" borderRadius="lg" w="40%" startColor='gray.500' endColor={'gray.800'} />
+                <Skeleton rounded="md" h="150" borderRadius="lg" w="40%" marginX="1.5" startColor='gray.500' endColor={'gray.800'}/>
+                <Skeleton rounded="md" h="150" borderRadius="lg" w="40%" startColor='gray.500' endColor={'gray.800'} />
+              </HStack>
+              <Skeleton h="1" rounded="full" w="1/2" marginLeft="-7" startColor='gray.500' endColor={'gray.800'} />
             </VStack>
           </HStack>
         )}

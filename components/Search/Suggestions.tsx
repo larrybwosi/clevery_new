@@ -1,21 +1,16 @@
 import { TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Search, TopServer, image } from '@/types';
 import { selector, urlForImage } from '@/lib';
 import { Link, router } from 'expo-router';
+import { Search, Server, User, image } from '@/types';
 import { Text, View } from '../Themed';
 import { Image } from 'expo-image';
+import SearchSuggestions from '../skeletons/search-suggestions';
 
 type RecentItem = {
   _id: string;
   name: string;
   image?:image;
-};
-type User = {
-  _id: string;
-  name: string;
-  username: string;
-  image:image;
 };
 
 type SuggestionsProps = {
@@ -23,17 +18,13 @@ type SuggestionsProps = {
   onClearSearchHistory: (item: string) => void;
   onClearAllSearches: () => void;
   suggestedUsers:User[];
-  suggestedServers:TopServer[]
+  suggestedServers:Server[]
   addSearch:(search:Search)=>any
 };
 
 interface Users {
     suggestedUsers:User[]
     addSearch:(search:Search)=>any
-}
-
-interface Servers {
-    suggestedServers:TopServer[]
 }
 
 
@@ -50,50 +41,57 @@ const TopUsers =({suggestedUsers,addSearch}:Users)=>{
     return(
     <View
     >
-        <Text className='text-[10px] pb-2 font-rregular' >Top Users</Text>
-        <FlatList
-        data={suggestedUsers}
+      <Text className='text-[10px] pb-2 font-rregular' >Top Users</Text>
+      <FlatList
+        data={suggestedUsers?.slice(0,3)}
+        ListEmptyComponent={<SearchSuggestions/>}
         renderItem={({ item }) =>  (
-            <TouchableOpacity className='flex-row items-center p-1.5' onPress={()=>handleUserClick(item)}>
-            <Image
-            source={{ uri: urlForImage(item.image).width(100).url() }}
-            className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
-            />
-              <View>
+          <TouchableOpacity className='flex-row items-center p-1.5' onPress={()=>handleUserClick(item)}>
+          <Image
+          source={{ uri: urlForImage(item.image).width(100).url() }}
+          className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
+          />
+            <View>
               <Text className='text-sm font-rmedium'>{item.name}</Text>
               <Text className='text-[10px] font-rregular'>{item.username}</Text>
-              </View>
-            </TouchableOpacity>
-            )
+            </View>
+          </TouchableOpacity>
+          )
         }
         keyExtractor={(item) => item._id.toString()}
       />
     </View>
     )
 }
-const TopServers =({suggestedServers}:Servers)=>{
-    return(
-     <>
-        <Text className='text-[10px] pb-2 font-rregular' >Top Servers</Text>
-       <FlatList
-        data={suggestedServers}
-        renderItem={({ item }) =>  (
-            <View className='flex-row items-center p-1.5'>
-            <Image
-            source={{ uri: urlForImage(item.icon).width(100).url() }}
-            className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
-            />
-              <View>
-              <Text className='text-sm font-rmedium'>{item.name}</Text>
-              <Text className='text-[10px] font-rregular' >{item.description}</Text>
-              </View>
-            </View>
-            )
-        }
-        keyExtractor={(item) => item._id.toString()}
-      />
-     </>
-    )
+const TopServers =({suggestedServers}:{suggestedServers:Server[]})=>{
+  return(
+    <>
+      <Text className='text-[10px] pb-2 font-rregular' >Top Servers</Text>
+      <FlatList
+      data={suggestedServers}
+      ListEmptyComponent={<SearchSuggestions/>}
+      renderItem={({ item }) =>  (
+        <View className='flex-row items-center p-1.5'>
+          <Image
+          source={{ uri: urlForImage(item.icon).width(100).url() }}
+          className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
+          />
+          <View>
+            <Text className='text-sm font-rmedium'>
+              {item.name}
+            </Text>
+
+            <Text className='text-[10px] font-rregular' >
+              {item.description}
+            </Text>
+          </View>
+        </View>
+        )
+      }
+      keyExtractor={(item) => item._id.toString()}
+    />
+    </>
+  )
 }
 
 const Suggestions: React.FC<SuggestionsProps> = ({
@@ -112,15 +110,19 @@ const Suggestions: React.FC<SuggestionsProps> = ({
 
   const renderRecentItem = ({ item }: { item: RecentItem }) => (
     <View className='flex-row  justify-between items-center '>
-      <TouchableOpacity className='flex-row items-center p-1.5'   >
+      <TouchableOpacity className='flex-row items-center p-1.5' >
         <Image
-        source={{ uri: urlForImage(item.image).width(100).url() }}
-        className='h-[10px] w-[10px] rounded-[25px] border mr-4 '
+          source={{ uri: urlForImage(item.image).width(100).url() }}
+          className='h-[10px] w-[10px] rounded-[25px] border mr-4 '
         />
-          <View>
-          <Text className='font-rmedium text-sm'>{item.name}</Text>
-          </View>
-        </TouchableOpacity>
+
+        <View>
+          <Text className='font-rmedium text-sm'>
+            {item.name}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => handleClearPress(item?._id)}>
         <Ionicons name="close-circle-outline" size={24} color="#666" />
       </TouchableOpacity>
@@ -134,7 +136,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
   );
 
   const renderRecentSearches = () => {
-    if (!searches || searches?.length === 0) {
+    if (!searches?.length) {
       return null;
     }
     
@@ -157,7 +159,9 @@ const Suggestions: React.FC<SuggestionsProps> = ({
   return (
     <View className='px-1 py-2'>
       {renderRecentSearches()}
-      <Text className='text-[10px] pb-2 font-rregular'>Suggestions</Text>
+      <Text className='text-[10px] pb-2 font-rregular'>
+        Suggestions
+      </Text>
       <TopUsers suggestedUsers={suggestedUsers} addSearch={addSearch}/>
       <TopServers suggestedServers={suggestedServers}/>
     </View>
