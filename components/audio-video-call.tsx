@@ -1,92 +1,188 @@
-import { useEffect, useState } from 'react';
-import { CallContent, CallType, MemberRequest, StreamCall, StreamVideo, StreamVideoClient, User, VideoRendererProps, useStreamVideoClient } from '@stream-io/video-react-native-sdk';
-import { requestAndUpdatePermissions } from '@/lib/utils';
+import React, { useEffect, useState, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { 
+  CallContent, 
+  MemberRequest, 
+  StreamCall, 
+  StreamVideo, 
+  StreamVideoClient, 
+  User, 
+  VideoRendererProps, 
+  useAutoEnterPiPEffect 
+} from '@stream-io/video-react-native-sdk';
 import { RTCView } from '@stream-io/react-native-webrtc';
-import { View } from './Themed';
+import { Text, View } from './Themed';
 import { useProfileStore } from '@/lib';
-import { useAutoEnterPiPEffect } from '@stream-io/video-react-native-sdk';
-
-import  uuid from 'react-native-uuid';
+import { requestAndUpdatePermissions } from '@/lib/utils';
+import uuid from 'react-native-uuid';
 import { LocalVideoRenderer } from './calls/local-video';
+import { Avatar, Icon } from 'native-base';
+import { MaterialIcons } from '@expo/vector-icons';
 
-
-interface AudioVideo {
-  channelid:string;
-  callType:string;
-  video?:boolean;
-  members?:MemberRequest[]
+interface AudioVideoProps {
+  channelName: string;
+  callType: string;
+  video?: boolean;
+  members?: MemberRequest[];
 }
 
 export default function AudioVideoComponent({
-  channelid,
+  channelName,
   callType,
   members,
   video
-}:AudioVideo) {
-  const [client, setClient] = useState<StreamVideoClient>();
-  
-useAutoEnterPiPEffect();
+}: AudioVideoProps) {
+  const [client, setClient] = useState<StreamVideoClient | null>(null);
+  const [call, setCall] = useState<StreamCall | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const { profile } = useProfileStore();
+  useAutoEnterPiPEffect();
 
-const user: User = { id: profile._id };
-const apiKey = process.env.EXPO_PUBLIC_STREAM_API_KEY!
+  const { profile } = useProfileStore();
+  const user: User = { id: profile._id };
+  const apiKey = process.env.EXPO_PUBLIC_STREAM_API_KEY!;
 
-const fetchAndSetProfile = async () => {
-  try {
-    const myClient = new StreamVideoClient({ apiKey, user, token: profile.streamToken! });
-    setClient(myClient);
-
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const call = client?.call(callType, uuid.v4() as string);
+  const initializeClient = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      await requestAndUpdatePermissions();
+      const myClient = new StreamVideoClient({ apiKey, user, token: profile.streamToken! });
+      setClient(myClient);
+      const newCall = myClient.call(callType, uuid.v4() as string);
+      await newCall.getOrCreate();
+      setCall(newCall);
+    } catch (err) {
+      console.error('Error initializing client:', err);
+      setError('Failed to initialize video call. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [profile, callType]);
 
   useEffect(() => {
-    requestAndUpdatePermissions()
-    fetchAndSetProfile();
-    
+    initializeClient();
+
     return () => {
-      client?.disconnectUser();
-      call?.endCall()
-      setClient(undefined);
-    };
-  }, []);
-
-  
-  useEffect(() => {
-    const getOrCreateCall = async () => {
-      try {
-        await call?.getOrCreate();
-      } catch (error) {
-        console.error('Failed to get or create call', error);
+      if (client) {
+        client.disconnectUser();
+        if (call) call.endCall();
+        setClient(null);
+        setCall(null);
       }
     };
+  }, [initializeClient]);
 
-    getOrCreateCall();
-  }, [call]);
-
-  if(!client || !call) return
-
-
-const CustomVideoRenderer = ({ participant }: VideoRendererProps) => {
-  const { videoStream } = participant;
-  console.log("Video stream ")
-  return (
-    <View className="absolute inset-0 flex items-center justify-center bg-gray-800">
-      <LocalVideoRenderer/>
-    </View>
+  const CustomCallTopView = () => (
+    <SafeAreaView style={styles.topView}>
+      <View style={styles.topBar}>
+        <Icon as={MaterialIcons} name="arrow-back" size="md" color="white" />
+        <Text style={styles.channelName}>{channelName}</Text>
+        <Avatar.Group max={3} size="sm">
+          {members?.map((member, index) => (
+            <Avatar 
+              key={index} 
+              source={{ uri: member.avatar }}
+              borderColor="white"
+              borderWidth={2}
+            >
+              {member.name[0]}
+            </Avatar>
+          ))}
+        </Avatar.Group>
+      </View>
+    </SafeAreaView>
   );
-};
+
+  const CustomVideoRenderer = ({ participant }: VideoRendererProps) => {
+    const { videoStream } = participant;
+    return (
+      <View style={styles.videoContainer}>
+        {videoStream ? (
+          <RTCView style={styles.rtcView} streamURL={videoStream.id} />
+        ) : (
+          <View style={styles.noVideoFallback}>
+            <Avatar size="xl" source={{ uri: participant.image }}>
+              {participant.name?.[0]}
+            </Avatar>
+            <Text style={styles.participantName}>{participant.name}</Text>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text>Initializing call...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!client || !call) return null;
+
   return (
-    <StreamVideo client={client!}>
+    <StreamVideo client={client}>
       <StreamCall call={call}>
-        <View className='flex-1'>
-          <CallContent VideoRenderer={CustomVideoRenderer} />
-        </View>
+        <CallContent 
+          VideoRenderer={(v) => <CustomVideoRenderer participant={v.participant} />}
+          CallTopView={CustomCallTopView}
+        />
       </StreamCall>
     </StreamVideo>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  topView: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: '100%',
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
+  channelName: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  videoContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+  },
+  rtcView: {
+    flex: 1,
+  },
+  noVideoFallback: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2c2c2c',
+  },
+  participantName: {
+    color: 'white',
+    marginTop: 10,
+    fontSize: 16,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+  },
+});

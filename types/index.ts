@@ -102,40 +102,52 @@ export  interface Profile {
   }
   
 export  interface UserProfileProps {
-    user: {
-      _id:string;
-    _createdAt:string;
-    name: string;
-    username: string;
-    image: string;
-    status: string;
-    bannerImage:string;
-    memberSince: string;
-    mutualServers: string[];
-    mutualFriends:string[]
-    mutualGroups: string[];
-    note: string;
-    bio:{
-      text:string
-    }
-    };
-    friendIds: string[];
-    profileId:string; 
-    closeProfile: () => void;
-  }
-  
-export interface Message {
+  user: {
     _id:string;
-    _createdAt:string;
-    text: string;
-    image?: string;
-    sender: string;
-    reaction?: string;
-    timestamp: string;
-    seen: boolean;
-    caption?: string;
-    seenBy: string[];
+  _createdAt:string;
+  name: string;
+  username: string;
+  image: string;
+  status: string;
+  bannerImage:string;
+  memberSince: string;
+  mutualServers: string[];
+  mutualFriends:string[]
+  mutualGroups: string[];
+  note: string;
+  bio:{
+    text:string
   }
+  };
+  friendIds: string[];
+  profileId:string; 
+  closeProfile: () => void;
+}
+  
+export interface conversation {
+  _createdAt:string,
+  _id:string,
+  name:string,
+  username:string,
+  image:image,
+  lastMessage: Message,
+  unreadMessages: number;
+  isOnline: boolean;
+  isTyping: boolean;
+  messages:Message[]
+}
+export interface Message {
+  _id:string;
+  _createdAt:string;
+  text: string;
+  image?: string;
+  sender: string;
+  reaction?: string;
+  timestamp: string;
+  seen: boolean;
+  caption?: string;
+  seenBy: string[];
+}
   
 export interface Group {
   _id:string,
@@ -217,7 +229,6 @@ export interface IMessage {
 }
 export interface NewMessage {
   caption: string;
-  friendid: string;
   file?:string;
 }
 export interface NewChannelMessage {

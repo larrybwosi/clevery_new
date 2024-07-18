@@ -1,4 +1,4 @@
-import { NewPost} from "../../types";
+import { NewPost} from "@/types";
 import axios from "axios";
 import { endpoint } from "../env";
 import { uploadImages } from "./general";
@@ -20,7 +20,7 @@ import { uploadImages } from "./general";
       post.files = imageAssets;
     } 
     try {
-      const response = await axios.post(`${endpoint}/posts/create`, post)
+      const response = await axios.post(`${endpoint}/posts`, post)
       return response.data
     } catch (error:any) {
       console.log(error.message)

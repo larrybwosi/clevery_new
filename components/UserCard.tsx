@@ -1,45 +1,31 @@
 import { TouchableOpacity } from 'react-native';
-import { urlForImage } from '@/lib';
-import { User } from '../types';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Icon } from 'react-native-elements';
-import { Text, View } from './Themed';
 import { Image } from 'expo-image';
 
+import { conversation } from '@/types';
+import { Text, View } from './Themed';
+import { urlForImage } from '@/lib';
 interface UserCardProps {
- user: User;
+  conversation: conversation
  onSelectUser: (id: string) => void;
- handleAddFriend: (id: string) => void;
- showlastMessage: boolean;
- isFriend?: boolean;
+ lastMessage?: string;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, onSelectUser, showlastMessage, handleAddFriend, isFriend }) => {
- const { image, name, username, isVerified, _id } = user;
+const UserCard: React.FC<UserCardProps> = ({ conversation, onSelectUser }) => {
+ const { image, name, username, _id, lastMessage, isOnline, isTyping,unreadMessages } = conversation;
 
- const getLastMessage = (userId: string) => {
-  
- };
-
- const lastMessage = getLastMessage(_id);
 
  return (
     <TouchableOpacity className='flex-row items-center px-4xs py-1' activeOpacity={1} onPress={() => onSelectUser(_id)}>
       <View className='mr-2.5'>
-        <Image source={{ uri: urlForImage(image).width(100).url() }} className='w-12.5 h-12.5 rounded-[25px]' />
+        <Image source={{ uri: image?urlForImage(image).url():"https://via.placeholder.com/150" }} className='w-12.5 h-12.5 rounded-[25px]' />
+        {isOnline && <View style={{
+          position: 'absolute', right: 0, bottom: 0, width: 14, height: 14, borderRadius: 7, backgroundColor: '#4CAF50', borderWidth: 2, borderColor: '#FFFFFF'
+        }} />}
       </View>
       <View className='flex-1'>
         <Text className='font-rmedium mt-1.5 text-sm'>{name}</Text>
-        {isVerified&& 
-        <View> 
-          <FontAwesome name="certificate" color="#007aff" size={20} className='absolute right-[70%] top-[-20px] ' />
-           <Icon name="check" type="font-awesome" color="white" size={10}
-            className='absolute right-[70%] top-[-20px] z-10 mr-[3px]'
-           /> 
-           </View> 
-          } 
          <Text className='text-gray-400 text-xs font-rthin' >@{username}</Text>
-         <Text className='mt-1.5 font-pthin text-[10px] '>{lastMessage}</Text>
+         <Text className='mt-1.5 font-pthin text-[10px] '>{lastMessage?.text}</Text>
       </View>
     </TouchableOpacity>
  );

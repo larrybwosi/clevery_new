@@ -1,5 +1,5 @@
-import { TouchableOpacity } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 
 import { Text, View } from '../Themed';

@@ -1,13 +1,7 @@
-import { useGetConversation, useGetInfiniteMessages, useGetUserById, useSendUserMessage } from "../react-query/queries";
+import { useGetConversation, useGetInfiniteMessages, useSendUserMessage } from "../react-query/queries";
 
 export const userMessages =(userid:string)=> {
       
-  const {
-    data: user,
-    isPending:loadingUser,
-    isError:userError,
-    refetch:refetchUser
-  } =useGetUserById(userid);
   const {
     data: conversation,
     isPending:loadingconversation,
@@ -27,9 +21,9 @@ export const userMessages =(userid:string)=> {
   }= useSendUserMessage(userid)
 
 return {
-    user,loadingUser,userError,conversation,loadingconversation,conversationError,
+    conversation,loadingconversation,conversationError,
     // messagesdata,messagesError,hasNextPage, refetchMessages,loadingMessages
-    sendMessage,sendingMessage,sendMessageError,refetchUser
+    sendMessage,sendingMessage,sendMessageError
 }
   
 }

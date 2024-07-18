@@ -1,9 +1,10 @@
 import { TouchableOpacity } from 'react-native';
-import  CertificateIcon from '../CheckIcon';
-import { Text, View } from '../Themed';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
+
 import { multiFormatDateString, urlForImage } from '@/lib';
+import  CertificateIcon from '../CheckIcon';
+import { Text, View } from '../Themed';
 import { image } from '@/types';
 
 type AuthorInfoProps = {
@@ -37,7 +38,7 @@ const AuthorInfo = ({ author, timestamp,iscomment }:AuthorInfoProps) => {
           <Text className={`text-[#aaa] font-pregular text-${iscomment? "[8px]":"[12px]"}`} >@{author?.username} </Text>
         </View>
         <Text 
-          className='text-[#aaa] font-pthin text-[10px]'>
+          className='font-pregular text-[10px] text-light'>
           {multiFormatDateString(timestamp)}
         </Text>
       </View>

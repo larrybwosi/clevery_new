@@ -61,7 +61,7 @@ const ImageWithCaption: React.FC<ImageWithCaptionProps> = ({
               placeholder="Add a caption"
               onChangeText={handleCaptionChange}
             />
-          </View>
+          </View> 
         )}
       </View>
     </View>

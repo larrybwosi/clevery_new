@@ -9,6 +9,7 @@ import FormField from "./auth/FormField";
 import { Text, View } from "./Themed";
 import { Post } from "@/types";
 import Loader from "./Loader";
+import { Badge } from "./badges/user";
 
 type PostFormProps = {
   post?: Post;
@@ -107,6 +108,7 @@ if(creatingPost || updatingPost) return <Loader loadingText="Uploading your post
         className="flex-row bg-[#007faa] w-[25%] rounded-[10px] p-2.5 gap-1.5"
       >
         <Text className="text-white font-psemibold" >Send</Text>
+        
         <Ionicons name="send" color={'white'} style={{marginTop:3}} />
       </TouchableOpacity>
     </View>

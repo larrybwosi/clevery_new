@@ -1,7 +1,8 @@
 import { TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { Text, View } from '../Themed';
 import { router } from 'expo-router';
+
+import { Text, View } from '../Themed';
 import { memo } from 'react';
 
 interface MenuItemProps {
@@ -17,7 +18,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ iconName, label, route }) => {
       <View
        className='items-center flex-row gap-2'>
         <Feather name={iconName} size={20} color="gray" />
-        <Text className='font-rregular text-[16px] ml-2.5'
+        <Text className='font-rregular text-base ml-2.5'
         >{label}</Text>
       </View>
     </TouchableOpacity>
@@ -30,7 +31,7 @@ const onButtonPress = (route: string) => {
 
 const MenuItems: React.FC = () => {
   return (
-    <View className='rounded-[10px] p-[1px] m-1 gap-[5px] '>
+    <View className='rounded-[10px] p-[1px] m-1 gap-3  '>
       <MenuItem iconName="user" label="Account" route="account" />
       <MenuItem iconName="moon" label="Appearance" route="appearance" />
       <MenuItem iconName="bell" label="Notification preferences" route="notifications" />

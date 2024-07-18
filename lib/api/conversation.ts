@@ -1,12 +1,17 @@
-import { Message, NewMessage, User} from "@/types";
-import { uploadImage } from "./general";
+import { conversation, Message, NewMessage, User} from "@/types";
 import axios from 'axios'
 import { endpoint } from "../env";
+import { uploadImageToSanity } from "../sanity/image";
 
-interface conversation{
-  _createdAt:string,
-  _id:string,
-  messages:Message[]
+
+export const getConversations=async(): Promise<conversation[]>=> {
+  try {
+    const response = await axios.get(`${endpoint}conversations`)
+    return response.data
+  } catch (error:any) {
+    console.log(error.message)
+    throw error
+  }
 }
 
 export const getConversation=async(friendid:string): Promise<conversation>=> {
@@ -18,23 +23,14 @@ export const getConversation=async(friendid:string): Promise<conversation>=> {
     throw error
   }
 }
-export const getConversations=async(): Promise<User[]>=> {
-  try {
-    const response = await axios.get(`${endpoint}conversations`)
-    return response.data
-  } catch (error:any) {
-    console.log(error.message)
-    throw error
-  }
-}
 
 export async function sendMessage(conversationId: string, message: NewMessage): Promise<any> {
-  if (!conversationId) {
+  if (!conversationId) { 
     throw new Error('ConversationId is required');
   }
   
   if (message.file) {
-    const image = await uploadImage(message.file);
+    const image = await uploadImageToSanity(message.file);
     message.file= image
   }
   try {

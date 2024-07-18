@@ -21,27 +21,24 @@ const handleComment=async()=>{
     comment:comment
   })
   setComment('')
-refetch()
-}
-
+  refetch()
+} 
 
 if(loading) return <Loader loadingText="loading selected post" />
 if (error) return <ErrorMessage message='Something went wrong' />
 
 return (
   <View  className='flex-1 pt-8'>
-    <Post
-      props={post}
-    />
-    <Text>Comment on post</Text>
+    <Post props={post} />
+    <Text className='font-rmedium text-base'>Comment on post</Text>
     <KeyboardAvoidingView behavior="position">
       <MessageInput
-      caption={comment}
-      onChooseFile={()=>{}}
-      onMessageChange={(cmt)=>setComment(cmt)}
-      onSend={()=>handleComment()}
-      sending={commenting}
-    />
+        caption={comment}
+        onChooseFile={()=>{}}
+        onMessageChange={(cmt)=>setComment(cmt)}
+        onSend={()=>handleComment()}
+        sending={commenting}
+      />
     </KeyboardAvoidingView>
     <FlatList
       data={post?.comments}

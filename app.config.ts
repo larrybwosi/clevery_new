@@ -68,7 +68,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           minSdkVersion: 24,
           compileSdkVersion: 34,
           targetSdkVersion: 33,
-          // extraMavenRepos: ['../../node_modules/@notifee/react-native/android/libs']
         },
       },
     ],

@@ -1,11 +1,11 @@
 import { memo, useCallback, useEffect, useState } from 'react'; 
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { PusherEvent } from '@pusher/pusher-websocket-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
+import { Feather, Ionicons } from '@expo/vector-icons';
 
-import { selectImage,sortMessages,pusher, userMessages, parseIncomingMessage, showToastMessage, useProfileStore } from '@/lib';
+import { selectImage,sortMessages,pusher, userMessages, parseIncomingMessage, showToastMessage } from '@/lib';
 import { Loader, MessageInput, Text, View, ErrorMessage, Messages } from '@/components';
 
-import { PusherEvent } from '@pusher/pusher-websocket-react-native';
 import AudioVideoComponent from '@/components/audio-video-call';
 import { IMessage, Message } from '@/types';
 
@@ -17,7 +17,7 @@ interface newMessage {
 interface UserMessagesProps {
   user: any;
   messages: IMessage[];
-  friendIds: string[];
+  ids: string[];
   created:string;
   convId:string; 
   handleRefresh: ()  => void;
@@ -32,12 +32,11 @@ const UserMessages: React.FC<UserMessagesProps> = () => {
     file:[]
   })
 
-  const { profile } = useProfileStore();
-  const { friendid } = useLocalSearchParams()
+  const { id } = useLocalSearchParams()
 const {
-  user,loadingUser,userError,conversation,loadingconversation,conversationError, 
-  sendMessage,sendingMessage,sendMessageError,refetchUser
-}=userMessages(friendid as string)
+  conversation,loadingconversation,conversationError, 
+  sendMessage,sendingMessage,sendMessageError
+}=userMessages(id as string)
 
 
   useEffect(()=>{
@@ -80,12 +79,11 @@ const chooseFile = async () => {
 
 const handleSend = async () => {
   const { caption, file } = newMessage
-  if (!user || !conversation || !friendid) return;
+  if (!conversation || !id) return;
   if (!caption && !file ) return showToastMessage("Please input a message")
 
   const message = {
     caption,
-    friendid:friendid as string,
     file: newMessage.file[0],
   };
 
@@ -96,31 +94,20 @@ const handleSend = async () => {
 
   setNewMessage({ caption: '', file: [] });
 }
-
-const latestMessage = messages?.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]; 
-
-const handleLastMessage = useCallback(() => {
-  
- }, [latestMessage, user]); 
-
   
   const closeFile = () => {
     setNewMessage({...newMessage,file:[]});
   };
   
-  const refetch =()=>{
-    refetchUser()
-  }
-  if (loadingUser)return <Loader loadingText='Loading user'/>
   if ( loadingconversation)return <Loader loadingText='Loading your conversation'/>
   // if ( loadingMessages)return <Loader loadingText='Loading messages'/>
-  if (userError||!user||conversationError)return <ErrorMessage message='Network error' onRetry={()=>refetch()} />
+  if (conversationError)return <ErrorMessage message='Network error' onRetry={()=> {}} />
   const sortedMessages=sortMessages({messages:messages!})
   
   if(audioCall || videoCall){
     return(
       <AudioVideoComponent
-        channelid='test-channel'
+        channelName='test-channel'
         callType='default'
         video
       />
@@ -140,7 +127,7 @@ const handleLastMessage = useCallback(() => {
      >
       <Text className='text-sm font-pbold ml-[20%] mt-1.5  '
        >
-        @{user?.username}
+        @{conversation?.username}
       </Text> 
       <View className='flex-row items-center gap-5' 
       >
@@ -150,13 +137,12 @@ const handleLastMessage = useCallback(() => {
     </View>
 
       <Messages
+        conversation={conversation!}
         messages={sortedMessages}
         setNewMessage={(text)=>setNewMessage({caption:text,file:newMessage.file})}
         newMessage={newMessage}
         closeFile={closeFile}
         createdAt={conversation?._createdAt!}
-        //@ts-ignore
-        user={user}
       />
     <MessageInput
       caption={newMessage.caption}
