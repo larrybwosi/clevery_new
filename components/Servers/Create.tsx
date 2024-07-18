@@ -40,12 +40,12 @@ const Create = ({
   loading
 }:CreateProps) => {
 
-    const chooseImage=async()=>{
-      const image = await selectImage()
-      if(image){
-        setFields({ ...fields, icon:image[0]})
-      }
+  const chooseImage=async()=>{
+    const image = await selectImage()
+    if(image){
+      setFields({ ...fields, icon:image[0]})
     }
+  }
     
   return (
     <KeyboardAvoidingView behavior='position' className='pb-3 pt-3' >
@@ -101,7 +101,7 @@ const Create = ({
       </View>
       }
 
-    {type === "server" &&
+    {type === "channel" &&
       <Select
         placeholder='Channel Type'
         accessibilityLabel='Channel Type'
@@ -127,4 +127,4 @@ const Create = ({
   )
 }
 
-export default memo(Create)
+export default Create

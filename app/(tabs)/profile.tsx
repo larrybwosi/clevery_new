@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { TouchableOpacity ,FlatList } from 'react-native';
 import { router } from 'expo-router';
 
-import { urlForImage, useGetUserPosts, useProfileStore } from '@/lib';
 import { ErrorMessage, Gallery, Loader, MenuItems, Text, UserCard, UserInfo, View } from '@/components';
+import { urlForImage, useGetUserPosts, useProfileStore } from '@/lib';
 import { User } from '@/types';
 import { format, parseISO } from 'date-fns';
 import { Image } from 'expo-image';
+import { Feather } from '@expo/vector-icons';
 
 type StatProps = {
   number: number; 
@@ -132,8 +133,11 @@ const ProfilePage = () => {
           keyExtractor={item => item.type}
         />
       :
-      // <Gallery images={gallery} loading={loadingGallery} />
-      <Text>Gallery</Text>
+      <>
+        {/* <Gallery images={images}  /> */}
+        <Text>Gallery</Text>
+        <Feather name='edit' onPress={()=>router.navigate("/editprofile")}/>
+      </>
       }
     </View>
   );

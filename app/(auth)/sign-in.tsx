@@ -48,7 +48,7 @@ const SignIn = () => {
     try {
 
       const result = await axios.post(`${endpoint}/sign-in`,{email,password})
-      console.log(result.data)
+      console.log("res data ",result.data)
       return<ToastAlert title="Something went wrong" description="Please try again"id="sign-up" />
       // await signIn(form.email, form.password);
       // const result = await getCurrentUser();

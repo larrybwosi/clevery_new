@@ -1,25 +1,24 @@
-import { memo } from 'react'
 import { MasonryFlashList } from '@shopify/flash-list'
+import { Button } from 'react-native-elements';
+import { router } from 'expo-router';
+import { Image } from 'expo-image';
 
 import {Text, View } from '@/components/Themed'
-import { Button } from 'react-native-elements';
 import Loader from '@/components/Loader';
-import { router } from 'expo-router';
 import { urlForImage } from '@/lib';
-import { Image } from 'expo-image';
 import { image } from '@/types';
 
 interface GalleryProps {
-  images: image[];
-  loading:boolean
+  images: string[];
+  loading?:boolean
 }
 
 const Gallery: React.FC<GalleryProps> = ({ images,loading }) => {
-  const renderItem = ({ item }: { item: image }) => {
+  const renderItem = ({ item }: { item: string }) => {
     return (
-      <View className='flex-1 m-[5px]'>
+      <View className='flex-1 m-[3px]'>
         <Image 
-        source={{ uri: urlForImage(item).width(200).url() }} 
+        source={{ uri:item}} 
         className='h-40 w-40 bg-cover'
       />
       </View>
@@ -31,7 +30,7 @@ const Gallery: React.FC<GalleryProps> = ({ images,loading }) => {
   if(images?.length <1){
     return(
       <View  className='justify-center p-5 gap-[5px]' >
-        <Text className='text-sm font-rmedium' >You have no friends yet ,click to add a friend to start a conversation</Text>
+        <Text className='text-sm font-rmedium' >You have no images on your grid yet ,click to add and image. </Text>
         <Button title={'Add friend'} className='w-[50px] m-2.5' onPress={()=>router.push("/users")} />
       </View>
     )
@@ -48,5 +47,5 @@ const Gallery: React.FC<GalleryProps> = ({ images,loading }) => {
   );
 };
 
-export default memo(Gallery);
+export default Gallery;
 

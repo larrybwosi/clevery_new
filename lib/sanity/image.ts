@@ -27,25 +27,22 @@ async function uploadImage(file:string) {
   return data.document.asset._ref;
 }
 
-async function uploadImageToSanity(imageString: string, projectId: string, token: string): Promise<string> {
+export async function uploadImageToSanity(imageString: string): Promise<string> {
   // Create a blob from the image string
   const blob = await fetch(imageString)
    .then(response => response.blob())
    .then(blob => new File([blob], 'image.jpg', { type: 'image/jpeg' }));
 
-  // Create a URL for the blob
-  const url = URL.createObjectURL(blob);
-
   // Upload the blob to Sanity using fetch
-  const response = await fetch(`https://${projectId}.api.sanity.io/v1/assets/images/upload`, {
+  const response = await fetch(`https://mqczcmfz.api.sanity.io/producion/assets/images/upload`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${process.env.EXPO_SANITY_TOKEN}`,
       'Content-Type': 'application/octet-stream'
-    },
+    }, 
     body: blob
   });
-
+console.log(response.json())
   // Get the document _id from the response
   const { _id } = await response.json();
 

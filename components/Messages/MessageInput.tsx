@@ -1,6 +1,8 @@
-import { ActivityIndicator,TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator,TextInput, TouchableOpacity } from 'react-native';
 import { FontAwesome, Feather } from '@expo/vector-icons';
 import { memo } from 'react';
+
+import { View } from '../Themed';
 
 interface MessageInputProps {
   caption: string;

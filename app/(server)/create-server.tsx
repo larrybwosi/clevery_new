@@ -59,7 +59,7 @@ const CreateServer = () => {
   };
 if(creatingServer)return <Loader loadingText='Creating your server'/>
    return (
-    <ScrollView className='mt-7 p-3 flex-1 bg-primary pb-2' >
+    <ScrollView className='mt-7 p-3 flex-1 pb-2' >
       
       <Create
         fields={serverDetails}

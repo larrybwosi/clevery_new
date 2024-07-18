@@ -2,6 +2,7 @@ import { Message, NewMessage, User} from "@/types";
 import { uploadImage } from "./general";
 import axios from 'axios'
 import { endpoint } from "../env";
+import { uploadImageToSanity } from "../sanity/image";
 
 interface conversation{
   _createdAt:string,
@@ -34,7 +35,7 @@ export async function sendMessage(conversationId: string, message: NewMessage): 
   }
   
   if (message.file) {
-    const image = await uploadImage(message.file);
+    const image = await uploadImageToSanity(message.file);
     message.file= image
   }
   try {

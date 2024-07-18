@@ -7,9 +7,9 @@ import { Chat, Groups, ServerList, Text, View } from '@/components';
 import { voiceCallHandler } from '@/lib';
 
 const FILTER_ITEMS = [
-  { name: 'chats', icon: 'chatbox-ellipses-outline' },
-  { name: 'servers', icon: 'newspaper-outline' },
-  { name: 'status', icon: 'people-outline' },
+  { name: 'chats', icon: 'message-square' },
+  { name: 'status', icon: 'users' },
+  { name: 'servers', icon: 'server' },
 ];
 
 const Messages: React.FC = () => {
@@ -72,13 +72,13 @@ const Messages: React.FC = () => {
         <View 
         className='flex-row justify-around my-3 items-center'
          >
-        {FILTER_ITEMS.map((item: any) => (
+        {FILTER_ITEMS.map(({icon,name}) => (
           <TouchableOpacity
-            key={item.name}
-            className={`flex-1 items-center justify-center py-1 ${activeFilter === item.name && 'border-light border-b-2'}`}
-            onPress={() => handleFilterChange(item.name)}
+            key={name}
+            className={`flex-1 items-center justify-center py-1 ${activeFilter === name && 'border-light border-b-2'}`}
+            onPress={() => handleFilterChange(name)}
           >
-            <Ionicons name={item.icon} size={20} color="gray" />
+            <Feather name={icon} size={20} color="gray" />
           </TouchableOpacity>
         ))}
         </View>

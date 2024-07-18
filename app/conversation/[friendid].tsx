@@ -120,7 +120,7 @@ const handleLastMessage = useCallback(() => {
   if(audioCall || videoCall){
     return(
       <AudioVideoComponent
-        channelid='test-channel'
+        channelName='test-channel'
         callType='default'
         video
       />

@@ -25,9 +25,15 @@ StreamVideoRN.updateConfig({
 });
 export const Providers = ({ children }:{children:ReactNode}) => {
 
+
+  const config = {
+    dependencies: {
+      "linear-gradient": require("expo-linear-gradient").LinearGradient,
+    },
+  };
   return(
     <QueryProvider>
-      <NativeBaseProvider>
+      <NativeBaseProvider config={config} >
         <AuthProvider>
           {children}
         </AuthProvider>

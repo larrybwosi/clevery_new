@@ -28,7 +28,7 @@ export const LocalVideoRenderer = () => {
       <View style={styles.topView} />
       {cameraStatus === 'enabled' ? (
         <RTCView
-          streamURL={localVideoStream?.toURL()}
+          streamURL={localVideoStream?.id}
           objectFit="cover"
           style={StyleSheet.absoluteFillObject}
         />

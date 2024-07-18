@@ -4,16 +4,17 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from 'react-native';
-
 import { router } from 'expo-router';
-import { Text, View } from '@/components/Themed';
+
 import { showToastMessage, useProfileStore, useUpdateUser } from '@/lib';
-import Loader from '@/components/Loader';
 import FormField from '@/components/auth/FormField';
+import { Text, View } from '@/components/Themed';
+import Loader from '@/components/Loader';
 
 const Account = () => {
   
-  const { profile:userInfo } = useProfileStore();
+  const { profile:userInfo,setProfile } = useProfileStore();
+  console.log(userInfo.email)
   const [editedFields, setEditedFields] = useState({
     username: userInfo.username,
     name: userInfo.name,
@@ -26,20 +27,20 @@ const Account = () => {
     isPending:updatingUser,
     isError:failed
   } = useUpdateUser()
-
   const handleFieldChange =
     (field: string, text: string) => {
       setEditedFields((prevFields) => ({ ...prevFields, [field]: text }));
     }
 
   const handleSavePress = async() => {
-    console.log(editedFields)
-    await updateUser({
+    const updated = await updateUser({
       id:userInfo._id,
       name:editedFields.name,
       username:editedFields.username,
       email:editedFields.email
     })
+    setProfile(updated);
+    return router.replace("/profile")
   }
 
   const handleCancelPress = () => {
@@ -57,6 +58,7 @@ const Account = () => {
   }
 
   if(updatingUser) return <Loader loadingText='Updaing Your Account'/>
+
   return (
     <KeyboardAvoidingView
       className='flex-1'

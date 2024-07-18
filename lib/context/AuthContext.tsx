@@ -1,4 +1,4 @@
-import { StreamVideoClient  } from '@stream-io/video-react-native-sdk';
+import { StreamVideoClient } from '@stream-io/video-react-native-sdk';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
 
@@ -11,20 +11,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [client, setClient] = useState<StreamVideoClient>();
   const { profile,setProfile } = useProfileStore();
 
-  useEffect(() => {
-    const fetchAndSetProfile = async () => {
-      try {
-        const currentAccount = await getCurrentUser();
-        if (!currentAccount && !profile._id) {
-          return router.push('/sign-in');
-        }
-        setProfile(currentAccount);
-        return router.push('/');
-      } catch (error) {
-        console.error(error);
+  const fetchAndSetProfile = async () => {
+    try {
+      const currentAccount = await getCurrentUser();
+      if (!currentAccount && !profile._id) {
+        return router.push('/sign-in');
       }
-    };
-
+      setProfile(currentAccount);
+      return router.push('/');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
     fetchAndSetProfile();
 
     return () => {

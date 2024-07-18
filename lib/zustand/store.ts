@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { create } from 'zustand';
 
 import { Profile, Search } from '@/types';
@@ -55,7 +55,7 @@ const useProfileStore = create<ProfileState>()(
     }),
     {
       name: 'profile-storage',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );
@@ -68,7 +68,7 @@ const useThemeStore = create<ThemeState>()(
     }),
     {
       name: 'theme-storage',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );
@@ -83,7 +83,7 @@ const useSearchStore = create<SearchState>()(
     }),
     {
       name: 'search-storage',
-      getStorage: () => AsyncStorage,
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );

@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import {SplashScreen, Stack, router} from 'expo-router';
 import * as TaskManager from 'expo-task-manager';
 import { useFonts } from 'expo-font';
-import { DarkTheme, DefaultTheme, ThemeProvider, useIsFocused} from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 
 import { Providers,pusherConnector, useThemeStore } from '@/lib';
-import { Linking, useColorScheme } from 'react-native';
+import {  useColorScheme } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import * as Linking from "expo-linking"
 
 export { 
   ErrorBoundary,
@@ -74,18 +75,18 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
-const ready= useIsFocused()
-useEffect(() => { 
-  if (error) throw error;
-  if (ready&&loaded) SplashScreen.hideAsync(); 
-  pusherConnector()
-  const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+
+  useEffect(() => { 
+    if (error) throw error;
+    if (loaded) SplashScreen.hideAsync(); 
+    pusherConnector()
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
     const url = response.notification.request.content.data.url;
     Linking.openURL(url);
-    });
+  });
     
     
-const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+  const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 
   TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
     console.log('Received a notification in the background!  ',data);
@@ -136,6 +137,7 @@ function RootLayoutNav() {
       <Stack.Screen name="edit-post/[postid]" options={{ presentation: 'card', headerShown: false  }} />
       <Stack.Screen name="users" options={{ presentation: 'modal' , headerShown: false }} />
       <Stack.Screen name="room" options={{ presentation: 'modal' , headerShown: false }} />
+      <Stack.Screen name="editprofile" options={{ presentation: 'modal' , headerShown: false }} />
     </Stack>
   </ThemeProvider>
   );

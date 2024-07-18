@@ -1,24 +1,23 @@
 import { useEffect, useState } from 'react';
-import { CallContent, CallType, MemberRequest, StreamCall, StreamVideo, StreamVideoClient, User, VideoRendererProps, useStreamVideoClient } from '@stream-io/video-react-native-sdk';
+import { CallContent, CallType, MemberRequest, StreamCall, StreamVideo, StreamVideoClient, User, VideoRendererProps, useAutoEnterPiPEffect } from '@stream-io/video-react-native-sdk';
 import { requestAndUpdatePermissions } from '@/lib/utils';
 import { RTCView } from '@stream-io/react-native-webrtc';
-import { View } from './Themed';
+import { Text, View } from './Themed';
 import { useProfileStore } from '@/lib';
-import { useAutoEnterPiPEffect } from '@stream-io/video-react-native-sdk';
 
 import  uuid from 'react-native-uuid';
 import { LocalVideoRenderer } from './calls/local-video';
 
 
 interface AudioVideo {
-  channelid:string;
+  channelName:string;
   callType:string;
   video?:boolean;
   members?:MemberRequest[]
 }
 
 export default function AudioVideoComponent({
-  channelid,
+  channelName,
   callType,
   members,
   video
@@ -70,22 +69,28 @@ const call = client?.call(callType, uuid.v4() as string);
 
   if(!client || !call) return
 
+  const CustomCallTopView = () => { 
+    return (
+      <View className='w-full'>
+        <Text className='py-5 text-center font-rbold'>{channelName}</Text>
+      </View>
+    );
+  };
 
 const CustomVideoRenderer = ({ participant }: VideoRendererProps) => {
   const { videoStream } = participant;
-  console.log("Video stream ")
+  console.log(videoStream)
   return (
     <View className="absolute inset-0 flex items-center justify-center bg-gray-800">
-      <LocalVideoRenderer/>
+      <RTCView
+        streamURL={videoStream?.id}/>
     </View>
   );
 };
   return (
     <StreamVideo client={client!}>
       <StreamCall call={call}>
-        <View className='flex-1'>
-          <CallContent VideoRenderer={CustomVideoRenderer} />
-        </View>
+          <CallContent VideoRenderer={(v)=><CustomVideoRenderer participant={v.participant}/>} CallTopView={CustomCallTopView}/>
       </StreamCall>
     </StreamVideo>
   );

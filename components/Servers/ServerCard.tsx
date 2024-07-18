@@ -1,7 +1,7 @@
 import { Image, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { urlForImage } from '../../lib';
-import { image } from '../../types';
+import { urlForImage } from '@/lib';
+import { image } from '@/types';
 import { Text, View } from '../Themed';
 
 interface ServerCardProps {

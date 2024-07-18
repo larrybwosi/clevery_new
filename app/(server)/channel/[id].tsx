@@ -5,6 +5,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { channelHooks, parseIncomingMessage, pusher, selectImage, sortMessages, useSendChannelMessage} from '@/lib';
 import { ChannelTop, ErrorMessage, Loader, MessageInput, Messages, View } from '@/components'
 import { Message } from '@/types';
+import AudioVideoComponent from '@/components/audio-video-call';
 
 interface newMessage {
     caption:string;
@@ -18,12 +19,12 @@ const Channel = () => {
     caption:'',
     file:[]
   })
-  console.log(messages)
   const {id} = useLocalSearchParams()
 
   const {
     channel,loading,error
   } =channelHooks({channelid:id as string})
+  
   
   const {
     mutateAsync:sendMessage,
@@ -89,12 +90,20 @@ const closeFile = () => {
   setNewMessage({ ...newMessage, file: [] });
 };
   
-  
   if (loading) return <Loader loadingText='Loading Channel'/>
   if (error) return <ErrorMessage message='Failed'/>
     
   const sortedMessages=messages ?sortMessages({messages:messages!}):[]
 
+  if (channel?.type === "VIDEO"){
+    return ( 
+      <AudioVideoComponent
+        channelName={channel.name}
+        callType='default'
+        video
+      />
+    )
+  }
   return (
     <View className='flex-1 mt-6 p-0.5' >
 
