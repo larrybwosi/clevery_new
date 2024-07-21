@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Link } from "expo-router";
 import { View, Text, ScrollView, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Link, router } from "expo-router";
+import { Toast } from "native-base";
+import axios from "axios";
 
 import { CustomButton, FormField,Butttons } from "@/components";
 import { authHooks, endpoint, showToastMessage } from "@/lib";
-import axios from "axios";
-import { useToast } from "native-base";
-import ToastAlert from "@/components/toast-alert";
-import { Badge } from "@/components/badges/user";
+import ToastAlert from "@/components/toast-alert"; 
+
 
 type AuthProviders = "google" | "facebook" | "github";
 const SignIn = () => {
@@ -22,44 +22,47 @@ const SignIn = () => {
     password: "",
   });
 
-  const toast = useToast();
-// const {
-//   mutateAsync:createUser,
-//   isPending:creating,
-//   isError:error
-// } = useCreateUser()
-
   const submit = async () => {
     const password=form.password
     const email=form.email
     if (form.email === "" || form.password === "") {
-      return  toast.show({
-        title: "Error , Please fill in all fields",
-        placement: "top"
-      })
+      const id = 'sign-up';
+  
+      Toast.show({
+        render: () => (
+          <ToastAlert
+            id={id}
+            title="Error!"
+            description="Please fill in all fields"
+            status="success"
+          />
+        ),
+      });
     }
     
     if (!password.length ){
-      return  toast.show({
-        title: "Password must be atleast 8 characters",
-        placement: "top"
-      })
+      return  showToastMessage("Password must be atleast 8 characters")
     }
     try {
 
       const result = await axios.post(`${endpoint}/sign-in`,{email,password})
       console.log("res data ",result.data)
-      return<ToastAlert title="Something went wrong" description="Please try again"id="sign-up" />
-      // await signIn(form.email, form.password);
-      // const result = await getCurrentUser();
-      // setUser(result);
-      // setIsLogged(true);
-
-      // Alert.alert("Success", "User signed in successfully");
-      // router.replace("/home");
+      if (result.data.token) {
+        console.log(result.data.token)
+      }
+      router.replace("/home");
     } catch (error) {
       console.log("Sign-in",error)
-      return<ToastAlert title="Something went wrong" description="Please try again"id="sign-up" />
+      Toast.show({
+        render: () => (
+          <ToastAlert
+            id="sign-up"
+            title="Something went wrong"
+            description="Please try again"
+            status="success"
+          />
+        ),
+      });
     } 
   };
 

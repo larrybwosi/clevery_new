@@ -1,6 +1,5 @@
-import { SocialIcon } from 'react-native-elements';
 import { TouchableOpacity} from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome6 } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import Share from 'react-native-share';
 
@@ -51,39 +50,24 @@ const shareToWhatsApp = async () => {
     showToastMessage('WhatsApp is not installed.');
   }
 };
+const icons = [
+  { name: 'upload', component: <Feather name="upload" size={24} color="gray" />, label: 'Share' },
+  { name: 'link', component: <Feather name="link" size={24} color="gray"/>, label: 'Copy Link', onPress: copyToClipboard },
+  { name: 'message-circle', component: <Feather name="message-circle" size={24} color="gray" />, label: 'Messages' },
+  { name: 'user-plus', component: <Feather name="user-plus" size={24} color="gray" />, label: 'Email' },
+  { name: 'whatsapp', component: <FontAwesome6 name="whatsapp" size={24} color="gray" />, label: 'Whatsapp' },
+];
 
   return (
-    <View className='flex-row items-center justify-between p-4 border-gray-300'>
-      <View className='flex-1 flex-row items-center justify-around w-1/2 gap-12 '>
-        <TouchableOpacity  onPress={() => handlePress('upload')} >
-          <View className='ml-4 border border-gray-400  rounded-xl p-1'>
-            <Feather name="upload" size={24} color="gray" />
+    <View className=' bg-[rgba(255,255,255,0.2)] flex-row items-center justify-between p-1 border-gray-300'>
+      {icons.map((icon, index) => (
+        <TouchableOpacity key={index} onPress={() => handlePress(icon.name)}>
+          <View className='ml-4 border border-gray-400 rounded-xl p-1'>
+            {icon.component}
           </View>
-          <Text className='mt-1 text-sm font-pregular text-gray-400 ml-4'>Share Invite</Text>
+          <Text className='mt-1 text-xs font-pregular text-gray-400 ml-4'>{icon.label}</Text>
         </TouchableOpacity>
-        <TouchableOpacity  onPress={() => copyToClipboard()}>
-          <View className='ml-4 border border-gray-400  rounded-xl p-1'>
-            <Feather name="link" size={24} color="gray"/>
-          </View>
-          <Text className='mt-1 text-sm font-pregular text-gray-400 ml-4'>Copy Link</Text>
-        </TouchableOpacity>
-        <TouchableOpacity  onPress={() => handlePress('message-circle')}>
-          <View className='ml-4 border border-gray-400  rounded-xl p-1'>
-          <Feather name="message-circle" size={24} color="gray" />
-          </View>
-          <Text className='mt-1 text-sm font-pregular text-gray-400 ml-4'>Messages</Text>
-        </TouchableOpacity>
-        <TouchableOpacity  onPress={() => handlePress('none')}>
-          <View className='ml-4 border border-gray-400  rounded-xl p-1'>
-          <Feather name="user-plus" size={24} color="gray" />
-          </View>
-          <Text className='mt-1 text-sm font-pregular text-gray-400 ml-4'>Email</Text>
-        </TouchableOpacity>
-        <TouchableOpacity  onPress={() => shareToWhatsApp()}>
-          <SocialIcon type='whatsapp' iconSize={25} small='10' style={{width:40 ,height:40,marginBottom:30}} />
-          {/* <Text className='mt-1 text-sm font-pregular text-gray-400 '>whatsapp</Text> */}
-        </TouchableOpacity>
-      </View>
+      ))}
     </View>
   );
 };

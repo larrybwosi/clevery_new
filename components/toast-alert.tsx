@@ -1,46 +1,71 @@
-import { Alert,Center, CloseIcon, HStack, IconButton, Text, VStack, useToast } from "native-base";
-import {  } from "react-native";
+import { Alert, CloseIcon, HStack, IconButton, Text, VStack, useToast } from "native-base";
 
-interface Toast {
-  id:string
-  title:string,
-  description:string,
-  variant?:string,
-  isClosable?:boolean
+interface ToastProps {
+  id: string;
+  title: string;
+  description: string;
+  status?: 'info' | 'warning' | 'success' | 'error';
+  variant?: 'solid' | 'subtle' | 'left-accent' | 'top-accent' | 'outline';
+  isClosable?: boolean;
 }
-const ToastAlert = ({
+
+const ToastAlert: React.FC<ToastProps> = ({
   id,
   title,
   description,
-  variant,
-  isClosable,
+  status = 'info',
+  variant = 'solid',
+  isClosable = true,
   ...rest
-}:Toast) => {
+}) => {
   const toast = useToast();
-  // const ToastDetails = [ {
-  //   title: "Invalid email address",
-  //   variant: "outline",
-  //   description: "Please enter a valid email address"
-  // }];
 
-  return <Alert maxWidth="100%" alignSelf="center" flexDirection="row" status={status ? status : "info"} variant={variant} {...rest}>
-  <VStack space={1} flexShrink={1} w="100%">
-    <HStack flexShrink={1} alignItems="center" justifyContent="space-between">
-      <HStack space={2} flexShrink={1} alignItems="center">
-        <Alert.Icon />
-        <Text fontSize="md" fontWeight="medium" flexShrink={1} color={variant === "solid" ? "lightText" : variant !== "outline" ? "darkText" : null}>
-          {title}
+  const handleClose = () => {
+    toast.close(id);
+  };
+
+  return (
+    <Alert 
+      maxWidth="100%" 
+      alignSelf="center" 
+      flexDirection="row" 
+      status={status}
+      variant={variant}
+      {...rest}
+    >
+      <VStack space={1} flexShrink={1} w="100%">
+        <HStack flexShrink={1} alignItems="center" justifyContent="space-between">
+          <HStack space={2} flexShrink={1} alignItems="center">
+            <Alert.Icon />
+            <Text 
+              fontSize="md" 
+              fontWeight="medium" 
+              flexShrink={1} 
+              color={variant === "solid" ? "lightText" : "darkText"}
+            >
+              {title}
+            </Text>
+          </HStack>
+          {isClosable && (
+            <IconButton 
+              variant="unstyled" 
+              icon={<CloseIcon size="3" />} 
+              _icon={{
+                color: variant === "solid" ? "lightText" : "darkText"
+              }} 
+              onPress={handleClose} 
+            />
+          )}
+        </HStack>
+        <Text 
+          px="6" 
+          color={variant === "solid" ? "lightText" : "darkText"}
+        >
+          {description}
         </Text>
-      </HStack>
-      {isClosable ? <IconButton variant="unstyled" icon={<CloseIcon size="3" />} _icon={{
-      color: variant === "solid" ? "lightText" : "darkText"
-    }} onPress={() => toast.close(id)} /> : null}
-    </HStack>
-    <Text px="6" color={variant === "solid" ? "lightText" : variant !== "outline" ? "darkText" : null}>
-      {description}
-    </Text>
-  </VStack>
-</Alert>;
+      </VStack>
+    </Alert>
+  );
 };
 
 export default ToastAlert;

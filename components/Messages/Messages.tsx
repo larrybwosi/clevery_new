@@ -1,94 +1,127 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback, memo } from 'react';
+import { Animated, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 
-import MessagesContainer from './MessageContainer'
-import { Animated, FlatList } from 'react-native'
-import { Channel, Message, User } from '@/types'
-import { View } from '@/components/Themed'
-import ImageWithCaption from './ImageCont'
-import PopupComponent from './Popup'
-import Header from './Header'
-import LoadingMessages from '../skeletons/messages'
+import { Channel, conversation, Message } from '@/types';
+import MessagesContainer from './MessageContainer';
+import { Text, View } from '@/components/Themed';
+import { Ionicons } from '@expo/vector-icons';
+import PopupComponent from './Popup';
+import Header from './Header';
 
-  interface newMessage {
-    caption:string;
-    file:any[]
-  }
-  
-interface Props{
-  messages:Message[];
-  setNewMessage:(text:string)=>void;
-  closeFile:()=>void;
-  newMessage:newMessage;
-  createdAt:string;
-  user?:User;
-  channel?:Channel
-}
+type NewMessage = {
+  caption: string;
+  file: string[];
+};
 
-const Messages = ({
+type Props = {
+  conversation?:conversation,
+  messages:Message[]
+  setNewMessage: (text: string) => void;
+  closeFile: () => void;
+  newMessage: NewMessage;
+  createdAt: string;
+  channel?: Channel;
+};
+
+type ImageWithCaptionProps = {
+  source: string;
+  onCaptionChange: (caption: string) => void;
+  closeFile: () => void;
+  showInputs: boolean;
+};
+
+const Messages: React.FC<Props> = ({
+  conversation,
   messages,
   setNewMessage,
   closeFile,
   newMessage,
   createdAt,
-  user,
-  channel
-}:Props) => {
-
+  channel,
+}) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [popupVisible, setPopupVisible] = useState(false);
 
- 
-  const longPressHandler = () => {
-    setPopupVisible(true);
+  const togglePopup = useCallback((show: boolean) => {
+    setPopupVisible(show);
     Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const hidePopup = () => {
-    setPopupVisible(false);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
+      toValue: show ? 1 : 0,
       duration: 250,
       useNativeDriver: true,
     }).start();
-  };
-  return (
-    <View className='flex-1'>
-      <FlatList
-      data={messages}
-      renderItem={({ item}:any) => (
-         <MessagesContainer
-          item={item}
-          onDelete={()=>{}}
-          onLongPress={longPressHandler}
-          onPress={hidePopup}
-       />
-      )}
-      keyExtractor={(item) => item?._id}
-      // ListEmptyComponent={<LoadingMessages/>}
-      showsVerticalScrollIndicator={false}
-      ListHeaderComponent={() => <Header user={user} messages={messages} created={createdAt} channel={channel}/>}
-      ListFooterComponent={ 
-        <View className='h-[90%]'>
-          <View className='mb-[70%] ml-[50%] mt-[-50px] '>
-            {newMessage.file.length>0 &&
-             <ImageWithCaption
-              source={newMessage.file[0]} 
-              showInputs={true} 
-              onCaptionChange={(text:string)=>setNewMessage(text)} 
-              closeFile={closeFile} />
-            }
-          </View>
-        </View>
-      }
-    />
-    
-    {popupVisible && <PopupComponent/>}
-    </View>
-  )
-}
+  }, [fadeAnim]);
 
-export default Messages
+  const ImageWithCaption: React.FC<ImageWithCaptionProps> = useCallback(({
+    source,
+    onCaptionChange,
+    closeFile,
+    showInputs,
+  }) => {
+    const isImage = /\.(jpg|jpeg|png|gif)$/i.test(source);
+    
+    return (
+      <View className="flex-1 items-center justify-center -mt-6 mb-5 mr-4">
+        <View className="border-b border-gray-300 rounded-lg overflow-hidden">
+          <TouchableOpacity onPress={closeFile} className="absolute top-2 right-2 z-10">
+            <Ionicons name="close" size={24} color="#007aff" />
+          </TouchableOpacity>
+          {isImage ? (
+            <Image source={{ uri: source }} className="w-56 h-52" />
+          ) : (
+            <View className="w-56 h-12 mb-2 flex-row items-center">
+              <Ionicons name="document" size={24} color="black" />
+              <Text className="ml-2 truncate">{source}</Text>
+            </View>
+          )}
+          {showInputs && (
+            <TextInput
+              className="bg-white p-2 text-base"
+              placeholder="Add a caption"
+              onChangeText={onCaptionChange}
+            />
+          )}
+        </View>
+      </View>
+    );
+  }, []);
+
+  return (
+    <View className="flex-1">
+      <FlatList
+        data={messages}
+        renderItem={({ item }) => (
+          <MessagesContainer
+            item={item}
+            onDelete={() => {}}
+            onLongPress={() => togglePopup(true)}
+            onPress={() => togglePopup(false)}
+          />
+        )}
+        keyExtractor={(item) => item._id}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={() => <Header user={conversation} messages={messages} created={createdAt} channel={channel} />}
+        ListFooterComponent={() => (
+          <View className="h-3/4">
+            <View className="ml-1/2 -mt-12">
+              {newMessage.file.length > 0 && (
+                <ImageWithCaption
+                  source={newMessage.file[0]}
+                  showInputs={true}
+                  onCaptionChange={setNewMessage}
+                  closeFile={closeFile}
+                />
+              )}
+            </View>
+          </View>
+        )}
+      />
+      
+      <Animated.View style={{ opacity: fadeAnim }}>
+        {popupVisible && <PopupComponent />}
+      </Animated.View>
+    </View>
+  );
+};
+
+export default memo(Messages);

@@ -1,69 +1,94 @@
 import { useState } from 'react';
-import { TouchableOpacity ,FlatList } from 'react-native';
+import { TouchableOpacity, FlatList } from 'react-native';
 import { router } from 'expo-router';
-
-import { ErrorMessage, Gallery, Loader, MenuItems, Text, UserCard, UserInfo, View } from '@/components';
+import { Loader, MenuItems, Text, UserCard, UserInfo, View } from '@/components';
 import { urlForImage, useGetUserPosts, useProfileStore } from '@/lib';
-import { User } from '@/types';
 import { format, parseISO } from 'date-fns';
 import { Image } from 'expo-image';
 import { Feather } from '@expo/vector-icons';
 
-type StatProps = {
-  number: number; 
-  label: string;
-};
+const ProfilePage = () => {
+  const [activeButton, setActiveButton] = useState('profile');
+  const { profile } = useProfileStore();
+  const { data: posts } = useGetUserPosts(profile?._id);
 
-const UserNavigate = (userId: string) => {
-  router.navigate(`/conversation/${userId}`);
-};
+  if (!profile) return <Loader loadingText='Loading Profile'/>;
 
-const ProfileButtons = ({ activeButton, setActiveButton }: { activeButton: string; setActiveButton: React.Dispatch<React.SetStateAction<string>> }) => {
+  const stats = {
+    Posts: posts?.length || 0,
+    Friends: profile.friends?.length || 0,
+  };
+
+  const renderItem = ({ item }:any) => {
+    if (item.type === 'menu') return <MenuItems />;
+    // if (item.type === 'friends') return <FriendsComponent friends={profile.friends} />;
+    return null;
+  };
+
   return (
-    <View className='flex-row justify-between items-center p-5 me-12 ms-12 ' >
-      <TouchableOpacity onPress={() => setActiveButton('profile')} 
-      className={`flex flex-row gap-2.5 ${activeButton === 'profile' && 'bg-light  px-[2px]  rounded-[5px] h-7'} `} >
-        <Text className={`font-rmedium tex-sm  ${activeButton === 'profile' && 'text-white mr-2 '} `} >Profile</Text>
-      </TouchableOpacity>
-      <TouchableOpacity className={`flex flex-row gap-2.5 ${activeButton === 'gallery' && 'bg-light  px-[2px]  rounded-[5px] h-7'} `}
-       onPress={()=>setActiveButton('gallery')}
+    <View className='flex-1'>
+      <Image 
+        source={{ uri: profile.bannerImage ? urlForImage(profile.bannerImage).width(350).url() : '' }} 
+        className='w-full justify-end items-center h-52' 
+      />
+      <TouchableOpacity 
+        style={{
+          position: 'absolute',
+          top: 40,
+          right: 20,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          borderRadius: 20,
+          padding: 8,
+        }} 
+        onPress={() => router.navigate("/editprofile")}
       >
-        <Text className={`font-rmedium tex-sm  ${activeButton === 'gallery' && 'text-white'} `}>Gallery</Text>
+        <Feather name='edit' size={24} color="white" />
       </TouchableOpacity>
-    </View>
-  );
-};
 
-const UserBanner = ({ bannerImage, profile,stats }: { bannerImage: string; profile: any ,stats:any}) => {
-  return (
-    <>
-      <Image source={{ uri: bannerImage }} className='w-full justify-end items-center h-52' />
       <View className='flex-row justify-between'>
         <UserInfo profile={profile} />
-        <View  className='flex-row justify-between items-center gap-1 mr-4 mt-3'>
-          <Stat number={stats.Posts} label="Posts" />
-          <Stat number={stats.Friends} label="Friends" />
+        <View className='flex-row justify-between items-center gap-1 mr-4 mt-3'>
+          {Object.entries(stats).map(([label, number]) => (
+            <View key={label} className='flex-col items-center mt-3'>
+              <Text className='font-pregular font-[15px]'>{number}</Text>
+              <Text className='font-rregular font-[10px] p-1 rounded-[9px]'>{label}</Text>
+            </View>
+          ))}
         </View>
       </View>
-    </>
-  );
-};
 
-const Stat = ({ number, label }: StatProps) => {
-  return (
-    <View className='flex-col items-center mt-3'>
-      <Text className='font-pregular font-[15px]'>{number}</Text>
-      <Text className='font-rregular font-[10px] p-1 rounded-[9px]' >{label}</Text>
+      <View className='mx-2.5'>
+        <Text className='font-rmedium mt-3.5'>About Me: <Text className='font-pregular mt-2.5 text-sm'>{profile.bio}</Text></Text>
+        <Text className='font-rmedium mt-3.5'>Member Since: <Text className='font-pregular mt-2.5 text-sm'>{profile._createdAt && format(parseISO(profile._createdAt), 'dd MMM yyyy')}</Text></Text>
+      </View>
+
+      <View className='flex-row justify-between items-center p-5 me-12 ms-12'>
+        {['profile', 'gallery'].map((button) => (
+          <TouchableOpacity 
+            key={button}
+            onPress={() => setActiveButton(button)}
+            className={`flex flex-row gap-2.5 ${activeButton === button ? 'bg-light px-[2px] rounded-[5px] h-7' : ''}`}
+          >
+            <Text className={`font-rmedium tex-sm ${activeButton === button ? 'text-white mr-2' : ''}`}>{button.charAt(0).toUpperCase() + button.slice(1)}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {activeButton === 'profile' ? (
+        <FlatList
+          data={[{ type: 'menu' }, { type: 'friends' }]}
+          renderItem={renderItem}
+          keyExtractor={item => item.type}
+        />
+      ) : (
+        <Text>Gallery</Text>
+      )}
     </View>
   );
 };
 
-interface FriendsProps {
-  friends:User[]
-}
-const FriendsComponent = ({friends}:FriendsProps) => {
-
-  if(!friends) return <Text>You have no friends yet</Text>
+const FriendsComponent = ({friends}:any) => {
+  if(!friends || friends.length === 0) return <Text>You have no friends yet</Text>;
 
   return (
     <View>
@@ -72,74 +97,20 @@ const FriendsComponent = ({friends}:FriendsProps) => {
         data={friends}
         keyExtractor={(item) => item?._id}
         renderItem={({ item }) => (
-          <UserCard
-            key={item?._id}
-            user={item}
-            handleAddFriend={()=>{}}
-            showlastMessage={false}
-            onSelectUser={() => UserNavigate(item?._id)}
-            isFriend
-          />
+          <TouchableOpacity className='flex-row items-center px-4xs py-1' activeOpacity={1} onPress={() =>{}}>
+            <View className='mr-2.5'>
+              <Image source={{ uri: item.image?urlForImage(item.image).url():"https://via.placeholder.com/150" }} className='w-12.5 h-12.5 rounded-[25px]' />
+              
+            </View>
+            <View className='flex-1'>
+              <Text className='font-rmedium mt-1.5 text-sm'>{item.name}</Text>
+              <Text className='text-gray-400 text-xs font-rthin' >@{item.username}</Text>
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>
   );
 };
 
-const ProfilePage = () => {
-  const [activeButton, setActiveButton] = useState('profile');
-  const { profile } = useProfileStore();
-   
-  const { data: posts } = useGetUserPosts(profile?._id); 
-
-  const stats = {
-    Posts: posts?.length || 0,
-    Friends:  0,
-  };
-
-  
-  const renderItem = ({ item }:{item:any}) => {
-    if (item.type === 'menu') {
-      return <MenuItems />;
-    } else if (item.type === 'friends') {
-      return <FriendsComponent friends={profile?.friends!}  />;
-    }
-    return <Text>Error</Text>
-  };
-
-  const data = [
-    { type: 'menu' },
-    { type: 'friends' },
-  ]
-
-  if (!profile) return <Loader loadingText='Loading Profile'/>
-  
-  return (
-    <View className='flex-1'>
-      <UserBanner
-        bannerImage={profile.bannerImage ? urlForImage(profile.bannerImage).width(350).url() : 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=400'}
-        profile={profile}
-        stats={stats}
-      />
-      <View className='mx-2.5'>
-        <Text className='font-rmedium mt-3.5'>About Me:  <Text className='font-pregular mt-2.5 text-sm'>{profile?.bio}</Text></Text>
-        <Text className='font-rmedium mt-3.5' >Member Since:  <Text className='font-pregular mt-2.5 text-sm'>{profile?._createdAt&&format(parseISO(profile?._createdAt as string), 'dd MMM yyyy')}</Text></Text>
-      </View>
-      <ProfileButtons activeButton={activeButton} setActiveButton={setActiveButton} />
-      {activeButton == 'profile'?
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={item => item.type}
-        />
-      :
-      <>
-        {/* <Gallery images={images}  /> */}
-        <Text>Gallery</Text>
-        <Feather name='edit' onPress={()=>router.navigate("/editprofile")}/>
-      </>
-      }
-    </View>
-  );
-};
-export default ProfilePage
+export default ProfilePage;

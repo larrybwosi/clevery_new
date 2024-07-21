@@ -5,8 +5,11 @@ export  const uploadImage = async (imageUrl:string) => {
   try {
     const response = await fetch(imageUrl);
     const blob = await response.blob();
+
+    const formData = new FormData();
+    formData.append('file', blob);
     
-    const result = (await axios.post(`${endpoint}/uploadthing`,blob)).data
+    const result = (await axios.post(`${endpoint}/upload`,{file:formData})).data
     console.log(result)
     return result?.imageId;
   } catch (error:any) {

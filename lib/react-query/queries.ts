@@ -317,10 +317,10 @@ export const useGetInfiniteMessages=({convId}:{convId:string})=>{
   );
 }
 
-export const useGetConversation = (friendId:string) => {
+export const useGetConversation = (id:string) => {
   return useQuery({
-    queryKey: [QUERY_KEYS.GET_USER_MESSAGES,friendId],
-    queryFn: () => getConversation(friendId),
+    queryKey: [QUERY_KEYS.GET_USER_MESSAGES,id],
+    queryFn: () => getConversation(id),
     retryDelay:3
   });
 };

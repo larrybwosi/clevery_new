@@ -3,17 +3,25 @@ import { router } from 'expo-router';
 
 import { Text, View } from '@/components/Themed';
 import UserCard from '@/components/UserCard';
+import { useGetConversations } from '@/lib';
 import CustomButton from '../CustomButton';
-import { useProfileStore } from '@/lib';
+import Loader from '../Loader';
 
 interface ChatProps {
   navigate: (userId: string) => void; 
 }
 
 const Chat: React.FC<ChatProps> = ({ navigate }) => {
-  const { profile:{friends} } = useProfileStore();
+
+  const {
+    data:conversations,
+    isLoading:loading,
+    error
+  } =  useGetConversations()
+  console.log(conversations)
+  if(error || loading) return <Loader loadingText='Loading your conversations'/>
   
-  if(!friends?.length ){
+  if(!conversations?.length ){
     return (
       <View className='flex-1 justify-center p-5 gap-2.5' >
         <Text className='text-sm font-rmedium' >You have no friends yet ,click to add a friend to start a conversation</Text>
@@ -27,13 +35,13 @@ const Chat: React.FC<ChatProps> = ({ navigate }) => {
   }
   return (
     <FlatList
-      data={friends}
+      data={conversations}
       keyExtractor={(item: any) => item?._id}  
       renderItem={({ item }: any) => (
-        <UserCard user={item}
-          onSelectUser={navigate} 
-          handleAddFriend={()=>{}} 
-          showlastMessage
+        <UserCard 
+          conversation={
+            {...item,isOnline:true,isTyping:false,unreadMessages:3}}
+          onSelectUser={navigate}
         />
       )}
     />

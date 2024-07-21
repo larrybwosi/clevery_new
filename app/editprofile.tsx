@@ -1,70 +1,161 @@
-import React, { useState } from 'react';
-import { Avatar, Box, Button, Flex, FormControl, Heading, Icon, Input, Link, ScrollView, Text, TextArea } from 'native-base';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { useState } from 'react';
+import { 
+  Avatar, Box, Button, Flex, FormControl, Heading, Icon, Input, 
+  ScrollView, Text, VStack, useToast, Pressable, HStack
+} from 'native-base';
+import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
+import * as Animatable from 'react-native-animatable';
+import * as ImagePicker from 'expo-image-picker';
+import { showToastMessage, urlForImage, useProfileStore, useUpdateUser } from '@/lib';
+import { dataset, projectId } from '@/lib/sanity/env';
+import { uploadImage } from '@/lib/sanity/image';
+import { router } from 'expo-router';
 
 const UserProfileEdit = () => {
+  const { profile:userinfo,setProfile:updateProfileLocaly } = useProfileStore();
   const [profile, setProfile] = useState({
-    username: 'johndoe',
-    name: 'John Doe',
-    bio: 'Software Engineer',
+    username: userinfo.username,
+    name: userinfo.name,
+    bio: userinfo.bio,
+    email: userinfo.email,
+    location: userinfo.country,
   });
 
   const [connections, setConnections] = useState({
-    github: 'johndoe',
-    instagram: 'johndoe',
-    twitter: 'johndoe',
-    discord: 'johndoe#1234',
+    github: userinfo.connections?.github,
+    instagram: userinfo.connections?.instagram,
+    twitter: userinfo.connections?.twitter,
+    discord: userinfo.connections?.discord,
+    linkedin: userinfo.connections?.linkedin,
   });
 
-  const handleSubmit = () => {
-    console.log({ ...profile, ...connections });
+  const {
+    mutateAsync:updateProfile,
+    isPending,
+    error
+  } = useUpdateUser()
+  const [avatarUri, setAvatarUri] = useState(userinfo.image?urlForImage(userinfo.image).url():'https://via.placeholder.com/150');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async() => {
+    setIsLoading(true);
+    
+    try {
+      setIsLoading(true);
+      
+      const res = await uploadImage(avatarUri)
+      setAvatarUri(res?.url)
+      const updated = {id:userinfo._id, ...profile, ...connections,image:res?._id }
+
+      const response = await updateProfile(updated)
+      updateProfileLocaly(response)
+      showToastMessage("Profile Updated");
+      router.replace("/profile")
+      setIsLoading(false)
+    } catch (error:any) {
+      console.log(error)
+      setIsLoading(false)
+    }
+  };
+
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) { 
+      setAvatarUri(result.assets[0].uri);
+    }
   };
 
   return (
-    <ScrollView p={1} pt={10}>
-      <Flex direction="row" alignItems="center" mb={6}>
-        <Avatar size="xl" source={{ uri: 'https://via.placeholder.com/150' }} />
-        <Heading ml={4} size="xl">
-          Edit Profile
-        </Heading>
-      </Flex>
+    <ScrollView bg="gray.100"  pt={"20"} pb="16">
 
-      {Object.entries(profile).map(([key, value]) => (
-        <FormControl mb={4} key={key}>
-          <FormControl.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</FormControl.Label>
-          <Input value={value} onChangeText={(text) => setProfile({ ...profile, [key]: text })} />
-        </FormControl>
-      ))}
+      <VStack space={4} mt="-50px" px={4} pb={6} pt="16">
+        <Animatable.View animation="bounceIn" duration={1500}>
+          <Pressable onPress={pickImage}>
+            <Avatar 
+              size="2xl" 
+              source={{ uri: avatarUri }}
+              borderWidth={4}
+              borderColor="white"
+            >
+              <Avatar.Badge bg="green.500">
+                <Icon as={MaterialIcons} name="edit" color="white" size="sm" />
+              </Avatar.Badge>
+            </Avatar>
+          </Pressable>
+        </Animatable.View>
 
-      <Heading size="md" mb={2}>
-        Social Links
-      </Heading>
+        <Box bg="white" rounded="xl" shadow={3} p={5}>
+          <VStack space={4}>
+            {Object.entries(profile).map(([key, value]) => (
+              <FormControl key={key}>
+                <FormControl.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</FormControl.Label>
+                <Input 
+                  value={value} 
+                  onChangeText={(text) => setProfile({ ...profile, [key]: text })}
+                  variant="filled"
+                  bg="gray.100"
+                  autoCapitalize='none'
+                  InputLeftElement={
+                    <Icon 
+                      as={<MaterialIcons name={key === 'bio' ? 'description' : key === 'email' ? 'email' : key === 'location' ? 'location-on' : 'person'} />}
+                      size={5}
+                      ml={2}
+                      color="gray.400"
+                    />
+                  }
+                />
+              </FormControl>
+            ))}
+          </VStack>
+        </Box>
 
-      {['github', 'instagram', 'twitter', 'discord'].map((platform) => (
-        <Flex direction="row" alignItems="center" mb={2} key={platform}>
-          <Icon
-            as={{
-              github: FontAwesome6,
-              instagram: FontAwesome6,
-              twitter: FontAwesome6,
-              discord: FontAwesome6,
-            }[platform]}
-            name={platform}
-            size={6}
-            color="gray.500"
-          />
-          <Input
-            ml={2}
-            value={connections[platform]}
-            onChangeText={(text) => setConnections({ ...connections, [platform]: text })}
-            placeholder={`${platform.charAt(0).toUpperCase() + platform.slice(1)} username`}
-          />
-        </Flex>
-      ))}
-      
-      <Button colorScheme="blue" onPress={handleSubmit}>
-        Save Changes
-      </Button>
+        <Box bg="white" rounded="xl" shadow={3} p={5}>
+          <Heading size="md" mb={4}>
+            Social Links
+          </Heading>
+          <VStack space={4}>
+            {Object.entries(connections).map(([platform, value]) => (
+              <HStack key={platform} space={3} alignItems="center">
+                <Box bg="gray.100" p={2} rounded="full">
+                  <Icon
+                    as={FontAwesome5}
+                    name={platform}
+                    size={5}
+                    color="gray.500"
+                  />
+                </Box>
+                <Input
+                  flex={1}
+                  value={value}
+                  onChangeText={(text) => setConnections({ ...connections, [platform]: text })}
+                  placeholder={`${platform.charAt(0).toUpperCase() + platform.slice(1)} username`}
+                  variant="underlined"
+                />
+              </HStack>
+            ))}
+          </VStack>
+        </Box>
+
+        <Button 
+          colorScheme="blue" 
+          onPress={handleSubmit}
+          isLoading={isLoading}
+          isLoadingText="Saving..."
+          endIcon={<Icon as={Ionicons} name="save-outline" size="sm" />}
+          rounded="full"
+          shadow={2}
+          mb={"16"}
+        >
+          Save Changes
+        </Button>
+      </VStack>
     </ScrollView>
   );
 };
