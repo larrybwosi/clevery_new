@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { TouchableOpacity, ImageBackground } from 'react-native';
 import { 
   Avatar, Box, Button, Flex, FormControl, Heading, Icon, Input, 
   ScrollView, Text, VStack, useToast, Pressable, HStack
@@ -7,36 +6,58 @@ import {
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
-import { showToastMessage } from '@/lib';
+import { showToastMessage, urlForImage, useProfileStore, useUpdateUser } from '@/lib';
+import { dataset, projectId } from '@/lib/sanity/env';
+import { uploadImage } from '@/lib/sanity/image';
+import { router } from 'expo-router';
 
 const UserProfileEdit = () => {
+  const { profile:userinfo,setProfile:updateProfileLocaly } = useProfileStore();
   const [profile, setProfile] = useState({
-    username: 'johndoe',
-    name: 'John Doe',
-    bio: 'Software Engineer',
-    email: 'johndoe@example.com',
-    location: 'New York, USA',
+    username: userinfo.username,
+    name: userinfo.name,
+    bio: userinfo.bio,
+    email: userinfo.email,
+    location: userinfo.country,
   });
 
   const [connections, setConnections] = useState({
-    github: 'johndoe',
-    instagram: 'johndoe',
-    twitter: 'johndoe',
-    discord: 'johndoe#1234',
-    linkedin: 'johndoe',
+    github: userinfo.connections?.github,
+    instagram: userinfo.connections?.instagram,
+    twitter: userinfo.connections?.twitter,
+    discord: userinfo.connections?.discord,
+    linkedin: userinfo.connections?.linkedin,
   });
 
-  const [avatarUri, setAvatarUri] = useState('https://via.placeholder.com/150');
+  const {
+    mutateAsync:updateProfile,
+    isPending,
+    error
+  } = useUpdateUser()
+  const [avatarUri, setAvatarUri] = useState(userinfo.image?urlForImage(userinfo.image).url():'https://via.placeholder.com/150');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     setIsLoading(true);
-    // Simulating an API call
-    setTimeout(() => {
-      setIsLoading(false);
+    
+    try {
+      setIsLoading(true);
+      
+      const res = await uploadImage(avatarUri)
+      setAvatarUri(res?.url)
+      const updated = {id:userinfo._id, ...profile, ...connections,image:res?._id }
+
+      const response = await updateProfile(updated)
+      updateProfileLocaly(response)
       showToastMessage("Profile Updated");
-    }, 2000);
+      router.replace("/profile")
+      setIsLoading(false)
+    } catch (error:any) {
+      console.log(error)
+      setIsLoading(false)
+    }
   };
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -46,25 +67,15 @@ const UserProfileEdit = () => {
       quality: 1,
     });
 
-    if (!result.canceled) {
+    if (!result.canceled) { 
       setAvatarUri(result.assets[0].uri);
     }
   };
 
   return (
-    <ScrollView bg="gray.100">
-      <ImageBackground
-        source={{ uri: 'https://images.unsplash.com/photo-1557683316-973673baf926' }}
-        style={{ height: 200, justifyContent: 'flex-end', alignItems: 'center' }}
-      >
-        <Box bg="rgba(0,0,0,0.5)" w="100%" p={4}>
-          <Heading color="white" size="xl" textAlign="center">
-            Edit Profile
-          </Heading>
-        </Box>
-      </ImageBackground>
+    <ScrollView bg="gray.100"  pt={"20"} pb="16">
 
-      <VStack space={4} mt="-50px" px={4} pb={6}>
+      <VStack space={4} mt="-50px" px={4} pb={6} pt="16">
         <Animatable.View animation="bounceIn" duration={1500}>
           <Pressable onPress={pickImage}>
             <Avatar 
@@ -90,6 +101,7 @@ const UserProfileEdit = () => {
                   onChangeText={(text) => setProfile({ ...profile, [key]: text })}
                   variant="filled"
                   bg="gray.100"
+                  autoCapitalize='none'
                   InputLeftElement={
                     <Icon 
                       as={<MaterialIcons name={key === 'bio' ? 'description' : key === 'email' ? 'email' : key === 'location' ? 'location-on' : 'person'} />}
@@ -139,6 +151,7 @@ const UserProfileEdit = () => {
           endIcon={<Icon as={Ionicons} name="save-outline" size="sm" />}
           rounded="full"
           shadow={2}
+          mb={"16"}
         >
           Save Changes
         </Button>

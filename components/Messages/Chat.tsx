@@ -18,7 +18,7 @@ const Chat: React.FC<ChatProps> = ({ navigate }) => {
     isLoading:loading,
     error
   } =  useGetConversations()
-  
+  console.log(conversations)
   if(error || loading) return <Loader loadingText='Loading your conversations'/>
   
   if(!conversations?.length ){

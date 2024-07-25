@@ -42,14 +42,14 @@ export default function AudioVideoComponent({
   const { profile } = useProfileStore();
   const user: User = { id: profile._id };
   const apiKey = process.env.EXPO_PUBLIC_STREAM_API_KEY!;
-
+  
   const initializeClient = useCallback(async () => {
     try {
       setIsLoading(true);
       await requestAndUpdatePermissions();
       const myClient = new StreamVideoClient({ apiKey, user, token: profile.streamToken! });
       setClient(myClient);
-      const newCall = myClient.call(callType, uuid.v4() as string);
+      const newCall = myClient.call(callType, "default_421f166e1dee-4357-9762-14de54260b09");
       await newCall.getOrCreate();
       setCall(newCall);
     } catch (err) {

@@ -4,7 +4,7 @@ import { AndroidImportance } from '@notifee/react-native';
 import { NativeBaseProvider } from 'native-base'
 
 import { QueryProvider } from './react-query/QueryProvider' 
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from '@/lib/auth.context'
 
 StreamVideoRN.updateConfig({
   foregroundService: {

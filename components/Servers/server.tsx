@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { Image } from 'expo-image';
 import { memo } from 'react';
 import MembersComponent from './members';
+import { ChannelType } from '@/validations';
 
 interface ServerComponentProps {
   serverId: string;
@@ -22,16 +23,15 @@ const ServerComponent: React.FC<ServerComponentProps> = ({
 
   const {data:serverInfo,isLoading:loadingServer,error} =useGetServerById(serverId)
 
-  const textChannels = serverInfo?.channels.filter((channel)=>channel.type ==="TEXT")
-  const audioChannels = serverInfo?.channels.filter((channel)=>channel.type ==="AUDIO")
-  const videoChannels = serverInfo?.channels.filter((channel)=>channel.type ==="VIDEO")
+  const textChannels = serverInfo?.channels.filter((channel)=>channel.type[ChannelType.TEXT])
+  const audioChannels = serverInfo?.channels.filter((channel)=>channel.type[ChannelType.AUDIO])
+  const videoChannels = serverInfo?.channels.filter((channel)=>channel.type[ChannelType.VIDEO])
   const members = serverInfo?.members
   
-  const bannerImageUrl = serverInfo?.bannerImage?urlForImage(serverInfo?.bannerImage).width(400).height(200).url():'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=400'
+  const bannerImageUrl = 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=400'
   if(loadingServer) return <Loader loadingText='Loading Server'/>
   if(error) return <Loader loadingText='Something went wrong'/>
   
-  const serverIcon = serverInfo?.icon? urlForImage(serverInfo.icon).width(100).url():'' 
   return (
     <ScrollView className='flex-1'>
       <Image
@@ -42,7 +42,7 @@ const ServerComponent: React.FC<ServerComponentProps> = ({
         <View className='flex-row  justify-between items-center mb-4'>
         <View className='flex-col' >
         <Image 
-          source={{ uri: serverIcon}}  
+          source={{ uri: serverInfo?.image}}  
           className='h-[70px] w-[70px] rounded-[35px] border  ' 
         />
           <Text className='font-rbold  mt-5 mr-auto text-lg'>{serverInfo?.name}</Text>
@@ -52,7 +52,7 @@ const ServerComponent: React.FC<ServerComponentProps> = ({
           </TouchableOpacity> 
         </View>
         <Text className='text-xs font-rbold mb-2'>
-          Created on: <Text className='font-rregular  mb-4 text-sm '>{ formatDateString(serverInfo?._createdAt!)}</Text> 
+          Created on: <Text className='font-rregular  mb-4 text-sm '>{ formatDateString(serverInfo?.createdAt!)}</Text> 
         </Text>
 
         <Text className='text-xs font-rbold mb-2'>
@@ -71,7 +71,7 @@ const ServerComponent: React.FC<ServerComponentProps> = ({
               <TouchableOpacity
                 key={i}
                 className='flex-wrap flex-row'
-                onPress={()=>router.replace(`/channel/${channel?._id}`)}
+                onPress={()=>router.replace(`/channel/${channel?.id}`)}
               >
                 <View className='flex-row items-center mr-2 mb-2 p-2 rounded-sm'>
                   <Feather name="hash" size={20} color="gray" />
@@ -112,7 +112,7 @@ const ServerComponent: React.FC<ServerComponentProps> = ({
               <TouchableOpacity
                 key={i}
                 className='flex-wrap flex-row'
-                onPress={()=>router.replace(`/channel/${channel?._id}`)}
+                onPress={()=>router.replace(`/channel/${channel?.id}`)}
               >
                 <View className='flex-row items-center mr-2 mb-2 p-2 rounded-sm'>
                   <Feather name="video" size={20} color="gray" />
@@ -125,7 +125,7 @@ const ServerComponent: React.FC<ServerComponentProps> = ({
         )}
 
         <MembersComponent
-          userImages={members?.map((usr)=>urlForImage(usr?.member?.image).width(100).url())!}
+          userImages={members?.map((usr)=>urlForImage(usr?.image).width(100).url())!}
         />
       </View>
     </ScrollView>

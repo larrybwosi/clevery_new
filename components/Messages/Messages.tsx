@@ -59,7 +59,7 @@ const Messages: React.FC<Props> = ({
     showInputs,
   }) => {
     const isImage = /\.(jpg|jpeg|png|gif)$/i.test(source);
-
+    
     return (
       <View className="flex-1 items-center justify-center -mt-6 mb-5 mr-4">
         <View className="border-b border-gray-300 rounded-lg overflow-hidden">
@@ -87,7 +87,7 @@ const Messages: React.FC<Props> = ({
   }, []);
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <View className="flex-1">
       <FlatList
         data={messages}
         renderItem={({ item }) => (

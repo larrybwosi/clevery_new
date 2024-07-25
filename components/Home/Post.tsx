@@ -3,23 +3,23 @@ import { router } from 'expo-router';
 import { Image } from 'expo-image';
 
 import { useLikePost, useSavePost , useDeletePost, urlForImage, useProfileStore} from '@/lib';
-import { User, author, image } from '@/types';
 import { checkIsLiked } from '@/lib/utils';
 import ActionStats from './ActionStats';
 import { Text, View } from '../Themed';
 import AuthorInfo from './AuthorInfo';
 import ImageCont from './ImagesCont';
+import { User } from '@/validations';
 
 type PostCardProps = {
   props: {
     _id:string;
-    author:author;
+    author:User;
     content:string;
-    images:image[];
+    images:string[];
     _createdAt:string;
-    likes:User[];
+    likes:string[];
     tags:any[];
-    bookmarks:User[]
+    bookmarks:string[]
     comments:any
   };
 };

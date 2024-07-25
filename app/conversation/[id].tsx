@@ -38,7 +38,6 @@ const {
   sendMessage,sendingMessage,sendMessageError
 }=userMessages(id as string)
 
-
   useEffect(()=>{
     const messageHandler=(message:Message)=>{
       setMessages((prev)=>{

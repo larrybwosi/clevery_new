@@ -21,7 +21,7 @@ const ProfilePage = () => {
 
   const renderItem = ({ item }:any) => {
     if (item.type === 'menu') return <MenuItems />;
-    if (item.type === 'friends') return <FriendsComponent friends={profile.friends} />;
+    // if (item.type === 'friends') return <FriendsComponent friends={profile.friends} />;
     return null;
   };
 
@@ -97,14 +97,16 @@ const FriendsComponent = ({friends}:any) => {
         data={friends}
         keyExtractor={(item) => item?._id}
         renderItem={({ item }) => (
-          <UserCard
-            key={item?._id}
-            user={item}
-            handleAddFriend={() => {}}
-            showlastMessage={false}
-            onSelectUser={() => router.navigate(`/conversation/${item?._id}`)}
-            isFriend
-          />
+          <TouchableOpacity className='flex-row items-center px-4xs py-1' activeOpacity={1} onPress={() =>{}}>
+            <View className='mr-2.5'>
+              <Image source={{ uri: item.image?urlForImage(item.image).url():"https://via.placeholder.com/150" }} className='w-12.5 h-12.5 rounded-[25px]' />
+              
+            </View>
+            <View className='flex-1'>
+              <Text className='font-rmedium mt-1.5 text-sm'>{item.name}</Text>
+              <Text className='text-gray-400 text-xs font-rthin' >@{item.username}</Text>
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>

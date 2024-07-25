@@ -1,6 +1,7 @@
 import createImageUrlBuilder from '@sanity/image-url'
 
 import { dataset, projectId, token} from './env'
+import { dataTagSymbol } from '@tanstack/react-query'
 
 const imageBuilder = createImageUrlBuilder({
   projectId: projectId||'',
@@ -11,20 +12,30 @@ export const urlForImage = (source:any) => {
   return imageBuilder?.image(source).auto('format').fit('max')
 }
 
-async function uploadImage(file:string) {
-  const formData = new FormData();
-  formData.append('file', file);
+export async function uploadImage(file:string) {
+  try {
+    const res = await fetch(file);
+    const blob = await res.blob();
 
-  const response = await fetch(`https://${projectId}.api.sanity.io/v2021-06-07/assets/images`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  });
+    const formData = new FormData();
+    formData.append('file', blob);
 
-  const data = await response.json();
-  return data.document.asset._ref;
+    const response = await fetch(`https://${projectId}.api.sanity.io/v2021-06-07/assets/images/${dataset}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/octet-stream'
+      }, 
+      body: blob
+    });
+    const data = await response.json();
+    return {
+      _id:data.document._id,
+      url:data.document.url
+    } 
+  } catch (error:any) {
+    console.log(error)
+}
 }
 
 export async function uploadImageToSanity(imageString: string): Promise<string> {
