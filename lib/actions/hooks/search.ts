@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import useDebounce from './useDebounce';
+import { useSearchUsers, useUsers } from './users';
 
 export const useCombinedSearchResults = (peopleTerm: string, allTerm: string, postsTerm: string) => {
   const { data: topCreators, isPending: loadingCreators } = useGetTopCreators();
   const { data: topServers, isPending: loadingServer } = useGetTopServers();
-  const { data: people } = useGetUsers();
+  const { data: people } = useUsers();
 
-  const { data: userRes, isPending: loadingUserRes } = useSearchUser(useDebounce(peopleTerm, 1000));
-  const { data: allRes, isPending: loadingAllRes } = useSearchAll(useDebounce(allTerm, 1000));
+  const { data: userRes, isPending: loadingUserRes } = useSearchUsers(useDebounce(peopleTerm, 1000));
+  const { data: allRes, isPending: loadingAllRes } = useSearch(useDebounce(allTerm, 1000));
   const { data: postsRes, isPending: loadingPostsRes } = useSearchPosts(useDebounce(postsTerm, 1000));
 
   const [searchResult, setSearchResult] = useState<any[]>([]);

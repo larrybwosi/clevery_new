@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import { Image } from 'expo-image';
 
 import { SearchResults, Suggestions, SearchTabBar as TabBar, Text, View} from '@/components';
-import { urlForImage,useCombinedSearchResults} from '@/lib';
 import ImageSkeletons from '@/components/skeletons/images';
 import LoadingUsers from '@/components/skeletons/loading-users';
 

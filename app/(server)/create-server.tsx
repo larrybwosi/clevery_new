@@ -2,12 +2,12 @@ import { memo, useState } from 'react';
 import { Modal, ScrollView } from 'react-native';
 import { showToastMessage,useCreateServer, useUsers, useProfileStore } from '@/lib';
 import { Create, InviteFriends, Loader, } from '@/components';
-import { CreateServer, User } from '@/validations';
+import { CreateServer as CreateServerType, User } from '@/validations';
 
 
 const CreateServer = () => {
   const { profile } = useProfileStore();
-  const [serverDetails, setServerDetails] = useState<CreateServer>({
+  const [serverDetails, setServerDetails] = useState<CreateServerType>({
     name: `${profile.name}'s server`,
     description: 'Lets connect',
     image: '',
