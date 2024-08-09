@@ -8,18 +8,21 @@ import { User } from '@/types';
 
 const AddFriends: React.FC = () => {
   const  [filteredUsers, setFilteredUsers] = useState([])
-  const { profile:{ id, friends } } = useProfileStore();
+  const { profile, setProfile} = useProfileStore();
   const { data: allUsers, isPending: loadingUsers, isError: errorUsers } = useUsers();
   const { mutateAsync: addFriend } = useAddFriend();
+  const { id, friends } =profile
   
   const handleAddFriend = async (user:User) => {
-    await addFriend( user.id);
+   const res= await addFriend( user.id);
+   console.log(res)
+   setProfile({...profile,friends:res?.friends})
   };
-
+  
   useEffect(() => {
    filterNonFriends()
    .then((users:any)=>setFilteredUsers(users))
-  }, [])
+  }, [friends,allUsers])
   
   
   if (loadingUsers ) return <LoadingUsers />;
@@ -27,10 +30,11 @@ const AddFriends: React.FC = () => {
 
   async function filterNonFriends() {
     const friendIds = new Set(friends?.map((friend: any) => friend.id));
-    return allUsers?.filter(
+    return allUsers?.users?.filter(
       (user: any) => user.id !== id && !friendIds.has(user.id)
     );
   }
+
   return (
     <InviteFriends
       selectedUsers={[]}

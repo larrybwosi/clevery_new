@@ -1,12 +1,11 @@
 import React from 'react';
 import { View, ImageBackground, Text } from 'react-native';
-import { VideoRenderer, VideoRendererProps } from '@stream-io/video-react-native-sdk';
+import { useCall, VideoRenderer, VideoRendererProps } from '@stream-io/video-react-native-sdk';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const CustomVideoRenderer: React.FC<VideoRendererProps> = ({ participant }) => {
-  
   const isMuted = !participant.isSpeaking;
   const isVideoEnabled = participant.videoStream !== null;
 
@@ -22,7 +21,7 @@ const CustomVideoRenderer: React.FC<VideoRendererProps> = ({ participant }) => {
         {isVideoEnabled ? (
           <VideoRenderer
             participant={participant}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 ,flex:1}}
           />
         ) : (
           <View className="flex-1 items-center justify-center">

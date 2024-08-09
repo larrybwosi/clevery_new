@@ -101,9 +101,7 @@ Notifications.setNotificationHandler({
 
   return (
     <Providers>
-      <AuthProvider>
-        <RootLayoutNav />
-      </AuthProvider>
+      <RootLayoutNav />
     </Providers>
   )
 }

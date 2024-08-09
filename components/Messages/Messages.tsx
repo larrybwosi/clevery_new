@@ -100,7 +100,7 @@ const Messages: React.FC<Props> = ({
         )}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={() => <Header user={conversation} messages={messages} created={createdAt} channel={channel} />}
+        ListHeaderComponent={() => <Header user={conversation?.user} messages={messages} created={createdAt} channel={channel} />}
         ListFooterComponent={() => (
           <View className="h-3/4">
             <View className="ml-1/2 -mt-12">

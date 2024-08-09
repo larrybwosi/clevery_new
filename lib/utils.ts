@@ -81,7 +81,7 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
 };
 
 export const checkIsLiked = (likeList: string[], userId: string) => {
-  return likeList.includes(userId);
+  return likeList?.includes(userId);
 };
 
 export const chooseImage = async () => {
@@ -178,8 +178,8 @@ export const sortMessages=({messages}:{messages:Message[]})=>{
   const messagesWithSeparators = () => {
     return Object?.entries(messagesByMonth)?.flatMap(([month, messages]) => {
       const monthSeparator = {
-        _id: `month-${month}`,
-        timestamp: messages[0]?._createdAt,
+        id: `month-${month}`,
+        timestamp: messages[0]?.createdAt,
         isSeparator: true,
       };
       return [monthSeparator, ...messages];

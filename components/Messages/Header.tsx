@@ -1,10 +1,10 @@
 import { TouchableOpacity } from 'react-native'
 import { format, parseISO } from 'date-fns'
 import { Text, View } from '@/components/Themed'
-import { urlForImage } from '@/lib'
+import { formatDateString, multiFormatDateString, urlForImage } from '@/lib'
 import ChannelHeader from '@/components/Servers/ChannelHeader'
-import { Image } from 'expo-image'
 import { memo } from 'react'
+import Image from '../image'
 
 
 const Header = ({user,messages,created,channel}:any) => {
@@ -25,26 +25,28 @@ const Header = ({user,messages,created,channel}:any) => {
       >
         {user?.image && 
           <Image
-            source={{ uri:urlForImage(user?.image)}} 
-            className='w-[60px] h-[60px] rounded-[20px]'
+            source={user?.image} 
+            width={100}
+            height={100}
+            style='w-[60px] h-[60px] rounded-[20px]'
           />
         }
       </TouchableOpacity>
 
       <Text className='font-rbold text-xl' >
-        {user?.name}
+        {user?.name || user?.username}
       </Text>
 
       <Text className='font-plight text-xs text-gray-700'>
-        {user?.username}
+        { user?.username|| user?.name}
       </Text>
 
       <Text className='font-pregular text-sm mt-1.5' >
-        This is the beginning of your conversation with {user?.username}
+        This is the beginning of your conversation with {user?.username || user?.name}
       </Text>
 
       <Text className='font-rmedium mt-1.5 font-[13px]'>
-        Friends since: {created && format(parseISO(created), 'dd MMMM yyyy')}
+        Friends since: {created && formatDateString(created)}
       </Text>
 
       {! messages?.length && (

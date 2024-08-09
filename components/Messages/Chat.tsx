@@ -18,8 +18,8 @@ const Chat: React.FC<ChatProps> = ({ navigate }) => {
     isLoading:loading,
     error
   } =  useGetConversations()
-  console.log(conversations)
-  if(error || loading) return <Loader loadingText='Loading your conversations'/>
+  
+  if(loading) return <Loader loadingText='Loading your conversations'/>
   
   if(!conversations?.length ){
     return (
@@ -36,7 +36,7 @@ const Chat: React.FC<ChatProps> = ({ navigate }) => {
   return (
     <FlatList
       data={conversations}
-      keyExtractor={(item: any) => item?._id}  
+      keyExtractor={(item) => item?.id}  
       renderItem={({ item }: any) => (
         <UserCard 
           conversation={

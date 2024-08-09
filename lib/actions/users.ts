@@ -103,9 +103,9 @@ export const userApi = {
    * @returns A promise that resolves to the API response when the friend is added successfully.
    * @throws Error with a descriptive message if the request fails
    */
-  addFriend: async (friendId: string): Promise<void> => {
+  addFriend: async (friendId: string): Promise<User[]> => {
     try {
-      const response = await axios.post<void>(`${endpoint}${apiPaths.friends}`, { friendId });
+      const response = await axios.post<User[]>(`${endpoint}${apiPaths.friends}`, { friendId });
       return response.data;
     } catch (error) {
       throw handleApiError(error, "Failed to add friend");

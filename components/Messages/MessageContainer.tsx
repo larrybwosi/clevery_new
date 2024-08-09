@@ -10,6 +10,7 @@ interface Message {
   id: string;
   createdAt: string;
   text: string;
+  timestamp:string;
   sender: {
     image: string;
     name: string;
@@ -92,9 +93,8 @@ const MessageText = ({ text }: { text: string }) => {
 
 const MessagesContainer: React.FC<MessagesProps> = ({ item, onDelete, onLongPress, onPress }) => {
   const { id, text, sender, createdAt, isSeparator, file, reactions } = item;
-
   if (isSeparator) {
-    return <MessageSeparator timestamp={createdAt} />;
+    return <MessageSeparator timestamp={item?.timestamp} />;
   }
 
   const formattedTimestamp = multiFormatDateString(createdAt);

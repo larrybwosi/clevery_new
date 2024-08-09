@@ -1,6 +1,7 @@
 import {
   Pusher,
 } from '@pusher/pusher-websocket-react-native';
+import { endpoint } from '../env';
 
   export const pusher = Pusher.getInstance();
 
@@ -10,7 +11,8 @@ import {
 
       await pusher.init({
         apiKey: '824b4f0c4520e22ea7e3',
-        cluster: 'ap1'
+        cluster: 'ap1',
+        authEndpoint:`${endpoint}/pusher/auth`
       });
 
       await pusher.connect();

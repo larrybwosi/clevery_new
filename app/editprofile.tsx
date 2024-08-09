@@ -44,6 +44,7 @@ const UserProfileEdit = () => {
       
       const res = await uploadImage(avatarUri)
       setAvatarUri(res?.url)
+      return
       const updated = {id:userinfo.id, ...profile, ...connections,image:res?._id }
 
       const response = await updateProfile(updated)

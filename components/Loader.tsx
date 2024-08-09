@@ -4,7 +4,7 @@ import LottieView from 'lottie-react-native';
 import { Text, View } from './Themed';
 
 const Loader = ({ loadingText = 'Loading...' }) => (
-  <View className="flex-1 justify-center items-center bg-gray-100">
+  <View className="flex-1 justify-center items-center">
     <LinearGradient
       colors={['#4c669f', '#3b5998', '#192f6a']}
       className="w-64 h-64 rounded-3xl justify-center items-center shadow-lg"

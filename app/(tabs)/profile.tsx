@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { TouchableOpacity, FlatList } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Image } from 'expo-image';
 import { Loader, MenuItems, Text, UserCard, UserInfo, View } from '@/components';
 import { formatDateString, useAuthorPosts, useProfileStore } from '@/lib';
+import Image from '@/components/image';
 
 const ProfilePage = () => {
   const [activeButton, setActiveButton] = useState('profile');
@@ -27,8 +27,10 @@ const ProfilePage = () => {
   return (
     <View className='flex-1'>
       <Image 
-        source={{ uri: profile.bannerImage ? profile.bannerImage : '' }} 
-        className='w-full justify-end items-center h-52' 
+        source={ profile.bannerImage ? profile.bannerImage : '' } 
+        height={250}
+        width={350}
+        style='w-full justify-end items-center h-52' 
       />
       <TouchableOpacity 
         style={{
@@ -98,7 +100,12 @@ const FriendsComponent = ({friends}:any) => {
         renderItem={({ item }) => (
           <TouchableOpacity className='flex-row items-center px-4xs py-1' activeOpacity={1} onPress={() =>{}}>
             <View className='mr-2.5'>
-              <Image source={{ uri: item.image?item.image:"https://via.placeholder.com/150" }} className='w-12.5 h-12.5 rounded-[25px]' />
+              <Image 
+                source={ item.image?item.image:"https://via.placeholder.com/150" } 
+                style='w-12.5 h-12.5 rounded-[25px]' 
+                height={50}
+                width={50}
+              />
               
             </View>
             <View className='flex-1'>

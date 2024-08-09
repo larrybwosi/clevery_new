@@ -3,14 +3,9 @@ import { FlatList } from 'react-native';
 import { ErrorMessage, Loader, Post, View } from '@/components';
 import { usePosts } from '@/lib';
 import PostsSkeleton from '@/components/skeletons/posts';
-// import { useAuth } from '@/lib/contexts/auth.config';
-import { Button } from 'native-base';
-import { useAuth } from '@/lib/contexts/custom';
-// import { useAuth } from '@/lib/contexts/kinde';
 
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
-  const {signIn} = useAuth()
   const {
     data: posts,
     isPending: feedLoading,
@@ -21,9 +16,7 @@ export default function Home() {
     sortBy: 'createdAt',
     sortOrder: 'desc',
   });
-
-  console.log(posts)
- 
+  
   const handleRefresh = () => {
     setRefreshing(true);
     setRefreshing(false);
@@ -37,11 +30,8 @@ export default function Home() {
   
   return (
     <View className='pt-7.5 flex-1'>
-      <Button onPress={()=>signIn("github")} >
-        Login
-      </Button>
       <FlatList
-        data={posts?.pages[0]}
+        data={posts?.pages[0].posts}
         renderItem={({ item }) => <Post key={item?.id} {...item} />}
         keyExtractor={keyExtractor}
         ListEmptyComponent={<PostsSkeleton/>}

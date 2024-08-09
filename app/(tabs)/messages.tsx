@@ -75,13 +75,13 @@ const Messages: React.FC = () => {
   const Filter: React.FC = memo(() => {
     const handleFilterChange = useCallback((filter: string, index: number): void => {
       setActiveFilter(filter);
-      scrollViewRef.current?.scrollTo({ x: index * width, animated: true });
+      // scrollViewRef.current?.scrollTo({ x: index * width, animated: true });
     }, []);
   
     return (
       <View className='bg-gray-900 px-4 pt-4 pb-2 rounded-b-3xl shadow-lg'>
         <View className='flex-row justify-between mb-4 items-center'>
-          <Text className='font-rmedium text-2xl text-white'>
+          <Text className='font-rmedium text-2xl text-light'>
             {getFilterName(activeFilter)}
           </Text>
           <AddButton/>
@@ -120,36 +120,31 @@ const Messages: React.FC = () => {
   };
 
   return (
-      <LinearGradient
-        colors={['#1a1a2e', '#16213e', '#0f3460']}
-        style={{ flex: 1 }}
+    <View className='flex-1 mt-7.5'>
+      <Filter />
+      <Animated.ScrollView
+        // ref={scrollViewRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }
+        )}
+        onMomentumScrollEnd={handleScroll}
+        scrollEventThrottle={16}
       >
-        <View className='flex-1 mt-7.5'>
-          <Filter />
-          <Animated.ScrollView
-            ref={scrollViewRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-              { useNativeDriver: false }
-            )}
-            onMomentumScrollEnd={handleScroll}
-            scrollEventThrottle={16}
-          >
-            <View style={{ width }}>
-              <Chat navigate={userNavigate} />
-            </View>
-            <View style={{ width }}>
-              <Groups />
-            </View>
-            <View style={{ width }}>
-              <ServerList />
-            </View>
-          </Animated.ScrollView>
+        <View style={{ width }}>
+          <Chat navigate={userNavigate} />
         </View>
-      </LinearGradient>
+        <View style={{ width }}>
+          <Groups />
+        </View>
+        <View style={{ width }}>
+          <ServerList />
+        </View>
+      </Animated.ScrollView>
+    </View>
   );
 };
 

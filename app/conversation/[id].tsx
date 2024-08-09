@@ -87,11 +87,6 @@ const handleSend = async () => {
   if (!conversation || !id) return;
   if (!caption && !file ) return showToastMessage("Please input a message")
 
-  const message = {
-    caption,
-    file: newMessage.file[0],
-  };
-
   await sendMessage({ 
     conversationId: conversation.id, 
     message:{
@@ -122,7 +117,8 @@ const handleSend = async () => {
   }
   return (
     <View
-    className='flex-1 p-1 pt-7' > 
+      className='flex-1 p-1 pt-7' 
+    > 
       <Ionicons 
         name="arrow-back" 
         size={24} color="#007aff"  
@@ -142,7 +138,7 @@ const handleSend = async () => {
         <Feather name="video" size={18} color={'#007aff'} onPress={()=>router.navigate("/room")}/>
       </View>
     </View>
-    default421f166e-1dee-4357-9762-14de54260b09
+    
       <Messages
         conversation={conversation!}
         messages={sortedMessages}

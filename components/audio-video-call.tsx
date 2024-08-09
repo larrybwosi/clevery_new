@@ -1,22 +1,25 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { SafeAreaView, StatusBar, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useEffect, useState, useCallback } from 'react';
+import { SafeAreaView, StatusBar, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { 
   Call,
   CallContent, 
+  Lobby, 
   MemberRequest, 
   StreamCall, 
   StreamVideo, 
   StreamVideoClient, 
   User, 
   VideoRendererProps, 
-  useAutoEnterPiPEffect 
+  useAutoEnterPiPEffect
 } from '@stream-io/video-react-native-sdk';
-import { Text, View } from './Themed';
-import { useProfileStore } from '@/lib';
-import { requestAndUpdatePermissions } from '@/lib/utils';
-import uuid from 'react-native-uuid';
+import { RTCView } from '@stream-io/react-native-webrtc';
 import { AntDesign } from '@expo/vector-icons';
-import CustomVideoRenderer from './calls/video-render';
+import uuid from 'react-native-uuid';
+import { BlurView } from 'expo-blur';
+
+import { requestAndUpdatePermissions } from '@/lib/utils';
+import { endpoint, useProfileStore } from '@/lib';
+import { Text, View } from './Themed';
 
 interface AudioVideoProps {
   channelName: string;
@@ -36,8 +39,6 @@ export default function AudioVideoComponent({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useAutoEnterPiPEffect();
-
   const { profile } = useProfileStore();
   const user: User = { id: profile.id };
   const apiKey = process.env.EXPO_PUBLIC_STREAM_API_KEY!;
@@ -46,10 +47,19 @@ export default function AudioVideoComponent({
     try {
       setIsLoading(true);
       await requestAndUpdatePermissions();
-      const myClient = new StreamVideoClient({ apiKey, user, token: profile.streamToken! });
+      const tokenProvider =async()=>{ 
+        const token = await fetch(`${endpoint}/stream/token`)
+        const data = await token.json()
+        return data
+      }
+      const myClient = new StreamVideoClient({ apiKey, user, tokenProvider });
       setClient(myClient);
       const newCall = myClient.call(callType, uuid.v4() as string);
-      await newCall.getOrCreate();
+      const call = await newCall.getOrCreate({ 
+        data:{ members:[
+          { user_id:profile.id},
+        ]}
+       });
       setCall(newCall);
     } catch (err) {
       console.error('Error initializing client:', err);
@@ -70,28 +80,28 @@ export default function AudioVideoComponent({
         setCall(null);
       }
     };
-  }, [initializeClient]);
+  }, []);
 
   const CustomCallTopView = () => (
     <View className="absolute top-0 left-0 right-0 flex-row justify-between items-center p-4 bg-black bg-opacity-50">
-      <Text className="text-white font-bold text-lg">{channelName}</Text>
-      <TouchableOpacity
-        onPress={() => call?.endCall()}
-        className="bg-red-500 rounded-full p-2"
-      >
-        <AntDesign name="phone" size={24} color="white" />
-      </TouchableOpacity>
+      <Text className="text-white font-rmedium text-lg">{channelName}</Text>
     </View>
   );
-
-  // const CustomVideoRenderer = ({ participant }: VideoRendererProps) => (
-  //   <View className="flex-1 rounded-lg overflow-hidden">
-  //     {/* Implement your custom video renderer here */}
-  //     <Text className="text-white text-center absolute bottom-2 left-0 right-0">
-  //       {participant.name || participant.userId}
-  //     </Text>
-  //   </View>
-  // );
+  const CustomVideoRenderer = ({ participant }:VideoRendererProps) => {
+    const {videoStream} = participant
+    
+    return (
+      <View style={styles.background}>
+        <BlurView intensity={80} tint="dark" className="absolute inset-0" />
+          <RTCView
+            mirror={true}
+            streamURL={videoStream?.toURL()}
+            objectFit="cover"
+            style={styles.wrapper}
+          />
+      </View>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -120,14 +130,16 @@ export default function AudioVideoComponent({
   }
 
   if (!client || !call) return null;
+  
 
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
       <StatusBar barStyle="light-content" />
       <StreamVideo client={client}>
         <StreamCall call={call}>
+          {/* <Lobby/> */}
         <CallContent 
-          VideoRenderer={(props) => <CustomVideoRenderer participant={props.participant} />}
+          VideoRenderer={CustomVideoRenderer}
           CallTopView={CustomCallTopView}
         />
         </StreamCall>
@@ -135,3 +147,15 @@ export default function AudioVideoComponent({
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  background:{
+    ...StyleSheet.absoluteFillObject,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  wrapper: {
+    height:250,
+    width:250
+  },
+  });

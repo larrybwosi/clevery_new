@@ -1,9 +1,9 @@
-import React from 'react';
 import { Box, Icon } from "native-base";
 import { Text } from "../Themed";
 import { StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
+import { useEffect } from "react";
 
 interface BadgeProps {
   text: string;
@@ -16,7 +16,7 @@ interface BadgeProps {
 const BadgeBase: React.FC<BadgeProps> = ({ text, colors, icon, animation, elite }) => {
   const animatedValue = new Animated.Value(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(animatedValue, {
@@ -68,6 +68,8 @@ const BadgeBase: React.FC<BadgeProps> = ({ text, colors, icon, animation, elite 
               autoPlay
               loop
               style={styles.animation}
+              hardwareAccelerationAndroid
+              duration={500}
             />
           </Box>
         )}
@@ -133,7 +135,7 @@ export const ContributorBadge = () => (
     text="Contributor" 
     colors={['#e67e22', '#d35400']} 
     icon="trophy-outline"
-    animation={require('../../assets/animations/circle.json')}
+    animation={require('@/assets/animations/circle.json')}
   />
 );
 
@@ -153,7 +155,7 @@ export const MasterBadge = () => (
     colors={['#c0392b', '#e74c3c']} 
     icon="flame-outline" 
     elite={true}
-    animation={require('../../assets/animations/fire.json')}
+    animation={require('@/assets/animations/fire.json')}
   />
 );
 
@@ -163,6 +165,6 @@ export const LegendBadge = () => (
     colors={['#1abc9c', '#16a085']} 
     icon="star-outline" 
     elite={true}
-    animation={require('../../assets/animations/star.json')}
+    animation={require('@/assets/animations/star.json')}
   />
 );

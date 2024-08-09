@@ -22,7 +22,7 @@ export const postsApi = {
    */
   getPosts: async (params?: PostQuery): Promise<FullModel<Post>[]> => {
     try {
-      const queryString = new URLSearchParams(params as Record<number, string>).toString();
+      // const queryString = new URLSearchParams(params as Record<number, string>).toString();
       // ?${queryString}
       const response = await axios.get<FullModel<Post>[]>(`${endpoint}${apiPaths.getPosts}`);
       return response.data;
@@ -114,6 +114,7 @@ export const postsApi = {
   likePost: async (postId: string): Promise<FullModel<Post>> => {
     try {
       const response = await axios.post<FullModel<Post>>(`${endpoint}${apiPaths.interactPost(postId)}`, { action: 'like' });
+      console.log(response.data)
       return response.data;
     } catch (error) {
       throw handleApiError(error, `Failed to like post with ID ${postId}`);

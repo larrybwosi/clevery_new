@@ -18,7 +18,7 @@ const queryKeys = {
 export const useServers = () => {
   return useQuery({
     queryKey: queryKeys.servers, 
-    queryFn: () => serverApi.getAllServers
+    queryFn: () => serverApi.getAllServers()
   });
 };
 

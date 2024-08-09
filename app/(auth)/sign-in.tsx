@@ -51,8 +51,20 @@ const SignIn = () => {
         email,
         password
       })
-      console.log("res data ",result)
-      router.replace("/home");
+
+      return (
+        Toast.show({
+          render: () => (
+            <ToastAlert
+              id="sign-up"
+              title="Success!"
+              description={`Welcome ${result?.user.name}!`}
+              status="success"
+            />
+          ),
+        })
+      )
+      
     } catch (error) {
       console.log("Sign-in",error)
       Toast.show({

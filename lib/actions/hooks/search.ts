@@ -26,17 +26,17 @@ export const useCombinedSearch = (initialQuery: string = '', initialType: Search
       {
         queryKey: ['searchPosts', query],
         queryFn: () => searchApi.searchPosts(query),
-        enabled: query.length > 0 && (searchType === 'all' || searchType === 'posts'),
+        enabled: query?.length > 0 && (searchType === 'all' || searchType === 'posts'),
       },
       {
         queryKey: ['searchUsers', query],
         queryFn: () => searchApi.searchUsers(query),
-        enabled: query.length > 0 && (searchType === 'all' || searchType === 'users'),
+        enabled: query?.length > 0 && (searchType === 'all' || searchType === 'users'),
       },
       {
         queryKey: ['searchServers', query],
         queryFn: () => searchApi.searchServers(query),
-        enabled: query.length > 0 && (searchType === 'all' || searchType === 'servers'),
+        enabled: query?.length > 0 && (searchType === 'all' || searchType === 'servers'),
       },
     ],
   });

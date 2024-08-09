@@ -4,7 +4,7 @@ const userPaths = {
   users: '/users',
   topCreators: '/users/creators',
   user: (id: string) => `/users/${id}`,
-  friends: '/users/friends',
+  friends: '/profile/friends',
   friend: (id: string) => `/users/friends/${id}`,
   profilePicture: '/users/me/profile-picture',
   userServers: '/users/me/servers',
@@ -12,7 +12,7 @@ const userPaths = {
 };
 
 const conversationPaths = {
-  getCreateConversations: '/api/conversations',
+  getCreateConversations: '/conversations',
   getConversations: '/conversations',
   getConversation: (id: string) => `/conversations/${id}`,
   sendMessage: (id: string) => `/conversations/${id}/messages`,

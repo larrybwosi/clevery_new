@@ -10,7 +10,7 @@ const UserInfo = ({ profile }:any) => {
     className='flex flex-row items-center gap-2.5 px-5 mt-1 '
     >
     <Image 
-    source={{ uri: profile.image? urlForImage(image).width(100).url():"https://via.placeholder.com/150" }}
+    source={{ uri: profile.image? image :"https://via.placeholder.com/150" }}
      className='h-[70px] w-[70px] rounded-[35px] gap-1.5 border-gray-600 ' />
       <View className='flex-col flex'>
         <Text className='font-rbold text-xl' >

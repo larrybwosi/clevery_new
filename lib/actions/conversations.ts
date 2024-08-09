@@ -40,7 +40,7 @@ export const conversationApi = {
    */
   getConversations: async (): Promise<Conversation[]> => {
     try {
-      const response = await axios.get<Conversation[]>(`${endpoint}${apiPaths.getConversations}`);
+      const response = await axios.post<Conversation[]>(`${endpoint}${apiPaths.getConversations}`);
       return response.data;
     } catch (error) {
       throw handleApiError(error, "Failed to fetch conversations");

@@ -1,23 +1,27 @@
 import { endpoint } from '@/lib';
 import { Image as ExpoImage } from 'expo-image';
+import { Skeleton } from 'native-base';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, ViewStyle } from 'react-native';
 
 interface ImageProps {
   source: string;
   width: number;
   height: number;
-  style?: ViewStyle;
+  style?: string;
 }
 
 export default function Image({ source, width, height, style }: ImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [url, setUrl] = useState('');
 
   const imageUrl = useMemo(async () => {
+    setIsLoaded(false)
     const response = await fetch(
       `${endpoint}/optimizations?url=${source}&width=${width}&height=${height}`
     )
     const res= await response.json().then((res) => res.optimizedImage);
+    setUrl(res)
+    setIsLoaded(true)
     return res;
   }, [source, width, height]);
 
@@ -25,26 +29,15 @@ export default function Image({ source, width, height, style }: ImageProps) {
     <>
       {isLoaded ? (
         <ExpoImage
-          source={{ uri: imageUrl }}
+          source={{ uri: url }}
           contentFit="cover"
-          style={[styles.image, style]}
+          className={style }
           onLoad={() => setIsLoaded(true)}
         />
       ) : (
-        <ActivityIndicator size="large" style={styles.loader} />
+        <Skeleton size="16" rounded="full" h={'12'} w={'12'} startColor='gray.500' endColor={'gray.800'} borderRadius="full" className={style} />
+
       )}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import { Alert } from 'react-native';
 import axios from 'axios';
 import { endpoint } from '../env';
 import { userApi } from '../actions/users';
@@ -9,7 +8,7 @@ import { router } from 'expo-router';
 import ToastAlert from '@/components/toast-alert';
 import { Toast } from 'native-base';
 import { showToastMessage } from '../utils';
-import { useAuthStore } from '../zustand/store';
+import { useAuthStore, useProfileStore } from '../zustand/store';
 
 // Configuration variables
 const API_BASE_URL = endpoint;
@@ -86,16 +85,18 @@ interface AuthProviderProps {
  */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, token, loading, setUser, setToken, setLoading } = useAuthStore();
+  const { setProfile} = useProfileStore();
   useEffect(() => {
     const checkCurrentUser = async () => {
       try {
         const currentAccount = await userApi.getCurrentUser();
         if (!currentAccount) {
-          router.navigate('sign-in' as never);
+          router.navigate('sign-in');
         }
+        setProfile(currentAccount)
       } catch (error) {
         console.error('Error checking current user:', error);
-        router.navigate('sign-in' as never);
+        router.navigate('sign-in');
       }
     };
 
@@ -161,9 +162,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @param credentials - The user's email and password
    */
   const handleCredentialsSignIn = async (credentials: { email: string; password: string }) => {
-    const response = await axios.post(`${API_BASE_URL}/sign-in`, credentials);
-    const data =await response.data
+    console.log(credentials)
+    const response = await axios.post(`${API_BASE_URL}sign-in`, credentials);
+    const data = response.data
     await handleAuthSuccess(data);
+    return data
   };
 
   /**
@@ -173,6 +176,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleAuthSuccess = async ({ user,token }: { user: User; token: string }) => {
     //@ts-ignore
     setUser(user);
+    setProfile(user)
     setToken(token);
     return (
       Toast.show({
@@ -223,7 +227,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       setUser(null);
       setToken(null);
-      router.navigate('sign-in' as never);
+      router.navigate('sign-in');
     } catch (error) {
       console.error('Error during sign out:', error);
       return handleAuthError(error);
