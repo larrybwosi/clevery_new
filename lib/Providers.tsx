@@ -3,8 +3,8 @@ import { StreamVideoRN } from '@stream-io/video-react-native-sdk';
 import { NativeBaseProvider } from 'native-base'
 
 import { MessagingProvider } from './contexts/messaging';
-import { AuthProvider } from './contexts/custom';
-// import { AuthProvider } from '@/lib/contexts/auth.config';
+import { AuthProvider } from './contexts/auth';
+import { OnlineFriendsProvider } from './contexts/online_friends';
 
 
 StreamVideoRN.updateConfig({
@@ -31,7 +31,9 @@ export const Providers = ({ children }:{children:React.ReactNode}) => {
       <QueryClientProvider client={queryClient}>
         <NativeBaseProvider config={config} >
           <MessagingProvider>
-            {children}
+            <OnlineFriendsProvider>
+              {children}
+            </OnlineFriendsProvider>
           </MessagingProvider>
         </NativeBaseProvider>
       </QueryClientProvider>

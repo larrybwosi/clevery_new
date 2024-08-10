@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { 
   Avatar, Box, Button, Flex, FormControl, Heading, Icon, Input, 
-  ScrollView, Text, VStack, useToast, Pressable, HStack
+  ScrollView, Text, VStack, Pressable, HStack
 } from 'native-base';
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
-import { showToastMessage, urlForImage, useProfileStore, useUpdateCurrentUser } from '@/lib';
+import { showToastMessage, useProfileStore, useUpdateCurrentUser } from '@/lib';
 import { uploadImage } from '@/lib/sanity/image';
 import { router } from 'expo-router';
 
@@ -43,9 +43,9 @@ const UserProfileEdit = () => {
       setIsLoading(true);
       
       const res = await uploadImage(avatarUri)
-      setAvatarUri(res?.url)
       return
-      const updated = {id:userinfo.id, ...profile, ...connections,image:res?._id }
+      setAvatarUri(res?.url)
+      const updated = {id:userinfo.id, ...profile, ...connections,image:res }
 
       const response = await updateProfile(updated)
       updateProfileLocaly(response)

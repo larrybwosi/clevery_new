@@ -1,8 +1,10 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, Animated } from 'react-native';
-import { Text, View } from '../Themed';
+import { Box, Text, VStack, HStack, Heading, Icon, Spinner } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import LottieView from 'lottie-react-native';
 
 interface FriendRequest {
   id: string;
@@ -12,6 +14,7 @@ interface FriendRequest {
 
 interface FriendRequestsProps {
   friendRequests: FriendRequest[];
+  isLoading: boolean;
 }
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
@@ -19,7 +22,7 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 const FriendRequestItem: React.FC<{ item: FriendRequest; onAccept: () => void; onReject: () => void }> = ({ item, onAccept, onReject }) => {
   const [animationValue] = useState(new Animated.Value(0));
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.spring(animationValue, {
       toValue: 1,
       friction: 5,
@@ -41,25 +44,44 @@ const FriendRequestItem: React.FC<{ item: FriendRequest; onAccept: () => void; o
   };
 
   return (
-    <AnimatedTouchableOpacity className="flex-row items-center bg-white rounded-xl p-4 mb-3 shadow-md" style={animatedStyle}>
-      <Image source={{ uri: item.avatar }} className="w-12 h-12 rounded-full mr-4" />
-      <View className="flex-1">
-        <Text className="text-lg font-bold mb-1">{item.username}</Text>
-        <Text className="text-sm text-gray-600">Wants to be your friend</Text>
-      </View>
-      <View className="flex-row">
-        <TouchableOpacity onPress={onAccept} className="w-10 h-10 rounded-full bg-green-500 justify-center items-center ml-2">
-          <Ionicons name="checkmark-outline" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onReject} className="w-10 h-10 rounded-full bg-red-500 justify-center items-center ml-2">
-          <Ionicons name="close-outline" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
+    <AnimatedTouchableOpacity style={animatedStyle}>
+      <Box bg="white" rounded="xl" shadow={3} p={4} mb={3}>
+        <HStack space={4} alignItems="center">
+          <Image 
+            source={{ uri: item.avatar }} 
+            style={{ width: 60, height: 60, borderRadius: 30 }}
+            transition={1000}
+          />
+          <VStack flex={1}>
+            <Text fontSize="lg" fontWeight="bold" mb={1}>{item.username}</Text>
+            <Text fontSize="sm" color="gray.600">Wants to be your friend</Text>
+          </VStack>
+          <HStack space={2}>
+            <TouchableOpacity onPress={onAccept}>
+              <LinearGradient
+                colors={['#4CAF50', '#45B649']}
+                style={{ width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' }}
+              >
+                <Icon as={Ionicons} name="checkmark-outline" size={6} color="white" />
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onReject}>
+              <LinearGradient
+                colors={['#FF5252', '#FF1744']}
+                style={{ width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' }}
+              >
+                <Icon as={Ionicons} name="close-outline" size={6} color="white" />
+              </LinearGradient>
+            </TouchableOpacity>
+          </HStack>
+        </HStack>
+      </Box>
     </AnimatedTouchableOpacity>
   );
 };
 
-const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests }) => {
+const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests, isLoading }) => {
+  const animation = useRef<LottieView>(null);
   const onAcceptPress = (id: string) => {
     // Implement accept logic
   };
@@ -76,22 +98,44 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests }) => {
     />
   );
 
+  if (isLoading) {
+    return (
+      <Box flex={1} justifyContent="center" alignItems="center" bg="gray.100">
+        <Spinner size="lg" color="blue.500" />
+        <Text mt={4} fontSize="md" color="gray.600">Loading friend requests...</Text>
+      </Box>
+    );
+  }
+
   return (
-    <View className="flex-1 p-4 bg-gray-100">
+    <Box flex={1} bg="gray.100" p={4}>
+      <Heading size="xl" mb={6} color="blue.800">Friend Requests</Heading>
       {friendRequests.length === 0 ? (
-        <View className="flex-1 justify-center items-center">
-          <Ionicons name="people-outline" size={64} color="#ccc" />
-          <Text className="text-lg text-gray-600 mt-4 text-center">No friend requests at the moment.</Text>
-        </View>
+        <VStack flex={1} justifyContent="center" alignItems="center" space={4}>
+          <LottieView
+            source={require('@/assets/animations/empty.json')}
+            ref={animation}
+            autoPlay
+            loop
+            style={{ width: 200, height: 200 }}
+          />
+          <Text fontSize="lg" color="gray.600" textAlign="center">
+            No friend requests at the moment.
+          </Text>
+          <Text fontSize="md" color="gray.500" textAlign="center">
+            When someone sends you a friend request, it will appear here.
+          </Text>
+        </VStack>
       ) : (
         <FlatList
           data={friendRequests}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingVertical: 8 }}
+          showsVerticalScrollIndicator={false}
         />
       )}
-    </View>
+    </Box>
   );
 };
 

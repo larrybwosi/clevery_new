@@ -1,53 +1,26 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { PusherEvent } from '@pusher/pusher-websocket-react-native';
-import * as BackgroundFetch from 'expo-background-fetch';
-import * as TaskManager from 'expo-task-manager';
 import { AppState } from 'react-native';
-import { create } from "zustand";
 import axios from 'axios';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidStyle, AndroidCategory, EventType } from '@notifee/react-native';
 
 import { Conversation, Message, User } from '@/types';
 import { pusher } from '@/lib/pusher/config';
 import { endpoint } from '@/lib/env';
+import { useProfileStore } from '../zustand/store';
 
-const BACKGROUND_FETCH_TASK = 'background-fetch';
 const NOTIFICATION_CHANNEL_ID = 'new-messages';
-
-/**
- * @typedef {Object} OnlineFriendsStore
- * @property {User[]} onlineFriends - The list of online friends
- * @property {(friends: User[]) => void} setOnlineFriends - Function to set online friends
- * @property {(friend: User) => void} addOnlineFriend - Function to add an online friend
- * @property {(friendId: string) => void} removeOnlineFriend - Function to remove an online friend
- */
-type OnlineFriendsStore = {
-  onlineFriends: User[];
-  setOnlineFriends: (friends: User[]) => void;
-  addOnlineFriend: (friend: User) => void;
-  removeOnlineFriend: (friendId: string) => void;
-};
-
-/**
- * Zustand store for managing online friends
- */
-const useOnlineFriendsStore = create<OnlineFriendsStore>((set) => ({
-  onlineFriends: [],
-  setOnlineFriends: (friends) => set({ onlineFriends: friends }),
-  addOnlineFriend: (friend) => set((state) => ({ onlineFriends: [...state.onlineFriends, friend] })),
-  removeOnlineFriend: (friendId) => set((state) => ({ 
-    onlineFriends: state.onlineFriends.filter((friend) => friend.id !== friendId) 
-  })),
-}));
 
 /**
  * @typedef {Object} MessagingContextValue
  * @property {Conversation[]} conversations - The list of user conversations
  * @property {() => Promise<void>} refreshConversations - Function to refresh conversations
+ * @property {(conversationId: string, message: string) => Promise<void>} sendMessage - Function to send a message
  */
 type MessagingContextValue = {
   conversations: Conversation[];
   refreshConversations: () => Promise<void>;
+  sendMessage: (conversationId: string, message: string) => Promise<void>;
 };
 
 const MessagingContext = createContext<MessagingContextValue | null>(null);
@@ -59,101 +32,114 @@ const MessagingContext = createContext<MessagingContextValue | null>(null);
  */
 export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const { setOnlineFriends, addOnlineFriend, removeOnlineFriend } = useOnlineFriendsStore();
+  const { profile } = useProfileStore();
 
   /**
-   * Subscribes to Pusher channels for each conversation and friend status
+   * Subscribes to Pusher channels for each conversation
    */
   const subscribeToPusherChannels = async () => {
-    if (!pusher) return;
-    
-    // Subscribe to friends' online status
-    await pusher.subscribe({
-      channelName: 'presence-friends',
-      onEvent: (event: PusherEvent) => {
-        if (event.eventName === 'pusher:member_added') {
-          const member = event.data as { id: string; info: User };
-          addOnlineFriend(member.info);
-          showOnlineNotification(member.info);
-        }
-        if (event.eventName === 'pusher:member_removed') {
-          const member = event.data as { id: string };
-          removeOnlineFriend(member.id);
-        }
-      }
-    });
-    
+    console.log('Subscribing to Pusher channels for conversations');
+    if (!pusher || !profile.id) {
+      console.log('Pusher not initialized or user not logged in');
+      return;
+    }
+
     conversations.forEach(async conversation => {
-      await pusher.subscribe({
-        channelName: conversation.id,
-        onEvent: (event: PusherEvent) => {
-          if (event.eventName === 'new-message') {
-            const data = event.data as { conversationId: string; message: Message; senderName: string; senderImage: string };
-            // Update the specific conversation with the new message
-            const updatedConversations = conversations.map(conv => 
-              conv.id === data.conversationId
-                ? { ...conv, lastMessage: data.message, unreadCount: conv.unreadMessages + 1 }
-                : conv
-            );
-            setConversations(updatedConversations);
-    
-            // Show a notification if the app is in the background
-            if (AppState.currentState !== 'active') {
-              showNotification(data.senderName, data.message.text, data.senderImage);
+      try {
+        await pusher.subscribe({
+          channelName: `private-conversation-${conversation.id}`,
+          onEvent: (event: PusherEvent) => {
+            console.log('Pusher event received:', event.eventName);
+            if (event.eventName === 'new-message') {
+              const data = event.data as { conversationId: string; message: Message; senderName: string; senderImage: string };
+              handleNewMessage(data);
             }
           }
-        }
-      });
+        });
+        console.log(`Subscribed to channel: private-conversation-${conversation.id}`);
+      } catch (error) {
+        console.error(`Error subscribing to channel for conversation ${conversation.id}:`, error);
+      }
     });
   }
 
   /**
+   * Handles a new message event
+   * @param {Object} data - The new message data
+   */
+  const handleNewMessage = (data: { conversationId: string; message: Message; senderName: string; senderImage: string }) => {
+    console.log('New message received:', data);
+    // Update the specific conversation with the new message
+    setConversations(prevConversations => 
+      prevConversations.map(conv => 
+        conv.id === data.conversationId
+          ? { ...conv, lastMessage: data.message, unreadCount: conv.unreadMessages + 1 }
+          : conv
+      )
+    );
+
+    // Show a notification if the app is in the background
+    if (AppState.currentState !== 'active') {
+      showNotification(data.conversationId, data.senderName, data.message.text, data.senderImage);
+    }
+  }
+
+  /**
    * Shows a notification for a new message using @notifee
+   * @param {string} conversationId - ID of the conversation
    * @param {string} senderName - Name of the message sender
    * @param {string} messageContent - Content of the message
    * @param {string} senderImage - URL of the sender's profile image
    */
-  const showNotification = async (senderName: string, messageContent: string, senderImage: string): Promise<void> => {
-    const channel = await notifee.createChannel({
-      id:senderName,
-      name: NOTIFICATION_CHANNEL_ID,
-      sound:"notification",
-    })
-    await notifee.displayNotification({
-      title: `New message from ${senderName}`,
-      body: messageContent,
-      android: {
-        channelId: channel,
-        largeIcon: senderImage,
+  const showNotification = async (conversationId: string, senderName: string, messageContent: string, senderImage: string): Promise<void> => {
+    try {
+      const channelId = await notifee.createChannel({
+        id: NOTIFICATION_CHANNEL_ID,
+        name: 'New Messages',
         importance: AndroidImportance.HIGH,
-        circularLargeIcon:true,
-        actions:[
-          {
-            title:"mark as read",
-            pressAction:{
-              id:"mark as read",
+        sound: 'default',
+      });
+
+      await notifee.displayNotification({
+        title: `New message from ${senderName}`,
+        body: messageContent,
+        android: {
+          channelId,
+          largeIcon: senderImage,
+          importance: AndroidImportance.HIGH,
+          style: {
+            type: AndroidStyle.MESSAGING,
+            person: {
+              name: senderName,
+              icon: senderImage,
             },
-
-          }
-        ]
-      },
-    });
-  };
-
-  /**
-   * Shows a notification when a friend comes online using @notifee
-   * @param {User} friend - The friend who came online
-   */
-  const showOnlineNotification = async (friend: User): Promise<void> => {
-    await notifee.displayNotification({
-      title: 'Friend Online',
-      body: `${friend.name} is now online`,
-      android: {
-        channelId: NOTIFICATION_CHANNEL_ID,
-        largeIcon: friend.image,
-        importance: AndroidImportance.DEFAULT,
-      },
-    });
+            messages: [
+              {
+                text: messageContent,
+                timestamp: Date.now(),
+              },
+            ],
+          },
+          category: AndroidCategory.MESSAGE,
+          actions: [
+            {
+              title: 'Reply',
+              input: {
+                placeholder: 'Type your reply...',
+                allowFreeFormInput: true,
+              },
+              pressAction: {
+                id: 'reply',
+              },
+            },
+          ],
+        },
+        data: { conversationId },
+      });
+      console.log('Notification displayed for new message');
+    } catch (error) {
+      console.error('Error showing notification:', error);
+    }
   };
 
   /**
@@ -161,78 +147,112 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
    * @returns {Promise<void>}
    */
   const fetchConversations = async (): Promise<void> => {
+    console.log('Fetching conversations');
+    if (!profile.id) {
+      console.log('User not logged in, skipping conversation fetch');
+      return;
+    }
+
     try {
       const response = await axios.get<Conversation[]>(`${endpoint}/conversations`);
       setConversations(response.data);
-      if (pusher) {
-        subscribeToPusherChannels();
-      }
+      console.log('Conversations fetched successfully');
     } catch (error) {
-      console.log('Error fetching conversations:', error);
+      console.error('Error fetching conversations:', error);
     }
   };
 
   /**
-   * Configures background fetch task
+   * Sends a message to a conversation
+   * @param {string} conversationId - ID of the conversation
+   * @param {string} message - Message content
+   * @returns {Promise<void>}
    */
-  const configureBackgroundFetch = async (): Promise<void> => {
-    TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-      await fetchConversations();
-      return BackgroundFetch.BackgroundFetchResult.NewData;
-    });
+  const sendMessage = async (conversationId: string, message: string): Promise<void> => {
+    console.log(`Sending message to conversation ${conversationId}`);
+    if (!profile.id) {
+      console.log('User not logged in, cannot send message');
+      return;
+    }
 
-    await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-      minimumInterval: 15 * 60, // 15 minutes
-      stopOnTerminate: false,
-      startOnBoot: true,
-    });
-  };
-
-  /**
-   * Configures notifications using @notifee
-   */
-  const configureNotifications = async (): Promise<void> => {
-    await notifee.createChannel({
-      id: NOTIFICATION_CHANNEL_ID,
-      name: 'New Messages',
-      importance: AndroidImportance.HIGH,
-      vibration: true,
-    });
+    try {
+      const response = await axios.post(`${endpoint}/conversations/${conversationId}/messages`, { content: message });
+      console.log('Message sent successfully');
+      // Optionally update the local state with the new message
+      const newMessage = response.data;
+      setConversations(prevConversations => 
+        prevConversations.map(conv => 
+          conv.id === conversationId
+            ? { ...conv, lastMessage: newMessage }
+            : conv
+        )
+      );
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   useEffect(() => {
-    fetchConversations();
-    configureBackgroundFetch();
-    configureNotifications();
+    if (profile.id) {
+      console.log('User logged in, fetching conversations and setting up Pusher subscriptions');
+      fetchConversations();
+
+      // Set up notifee foreground event handler
+      const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
+        if (type === EventType.ACTION_PRESS && detail.pressAction?.id === 'reply') {
+          const { input, notification } = detail;
+          if (input && notification?.data?.conversationId) {
+            sendMessage(notification.data.conversationId as string, input);
+          }
+        }
+      });
+
+      // Set up notifee background event handler
+      notifee.onBackgroundEvent(async ({ type, detail }) => {
+        if (type === EventType.ACTION_PRESS && detail.pressAction?.id === 'reply') {
+          const { input, notification } = detail;
+          if (input && notification?.data?.conversationId) {
+            await sendMessage(notification.data.conversationId as string, input);
+          }
+        }
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    } else {
+      console.log('User not logged in, skipping setup');
+    }
+  }, [profile.id]);
+
+  useEffect(() => {
+    if (pusher && profile.id) {
+      subscribeToPusherChannels();
+    }
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'active') {
+        console.log('App became active, refreshing conversations');
         fetchConversations();
       }
     });
 
     return () => {
+      console.log('Cleaning up MessagingProvider');
       subscription.remove();
-      TaskManager.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
-      if (pusher) {
+      if (pusher && profile.id) {
         conversations.forEach(conversation => {
-          pusher.unsubscribe({channelName: conversation.id});
+          pusher.unsubscribe({channelName: `private-conversation-${conversation.id}`});
         });
-        pusher.unsubscribe({channelName: 'presence-friends'});
-        pusher.disconnect();
+        console.log('Unsubscribed from all conversation channels');
       }
     };
-  }, []);
-
-  useEffect(() => {
-    if (pusher) {
-      subscribeToPusherChannels();
-    }
-  }, [pusher, conversations]);
+  }, [pusher, conversations, profile.id]);
 
   const contextValue: MessagingContextValue = {
     conversations,
-    refreshConversations: fetchConversations
+    refreshConversations: fetchConversations,
+    sendMessage,
   };
 
   return (
@@ -254,9 +274,3 @@ export const useMessaging = (): MessagingContextValue => {
   }
   return context;
 };
-
-/**
- * Custom hook to use the online friends store
- * @returns {OnlineFriendsStore} The online friends store
- */
-export const useOnlineFriends = (): OnlineFriendsStore => useOnlineFriendsStore();

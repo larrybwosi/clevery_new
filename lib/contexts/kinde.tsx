@@ -64,7 +64,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
  */
 const KINDE_DOMAIN = process.env.EXPO_PUBLIC_KINDE_ISSUER_URL;
 const KINDE_CLIENT_ID = process.env.EXPO_PUBLIC_KINDE_CLIENT_ID!;
-const KINDE_REDIRECT_URI = 'clevery://kinde';
+const KINDE_REDIRECT_URI = 'clevery://redirect';
 
 /**
  * SecureStore keys for storing tokens

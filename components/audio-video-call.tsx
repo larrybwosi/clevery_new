@@ -1,18 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { SafeAreaView, StatusBar, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { 
   Call,
   CallContent, 
-  Lobby, 
-  MemberRequest, 
   StreamCall, 
   StreamVideo, 
   StreamVideoClient, 
-  User, 
-  VideoRendererProps, 
-  useAutoEnterPiPEffect
+  User,
+  ParticipantView,
+  useCallStateHooks,
 } from '@stream-io/video-react-native-sdk';
-import { RTCView } from '@stream-io/react-native-webrtc';
 import { AntDesign } from '@expo/vector-icons';
 import uuid from 'react-native-uuid';
 import { BlurView } from 'expo-blur';
@@ -25,14 +22,12 @@ interface AudioVideoProps {
   channelName: string;
   callType: string;
   video?: boolean;
-  members?: MemberRequest[];
 }
 
 export default function AudioVideoComponent({
   channelName,
   callType,
-  members,
-  video
+  video = true
 }: AudioVideoProps) {
   const [client, setClient] = useState<StreamVideoClient | null>(null);
   const [call, setCall] = useState<Call | null>(null);
@@ -47,19 +42,17 @@ export default function AudioVideoComponent({
     try {
       setIsLoading(true);
       await requestAndUpdatePermissions();
-      const tokenProvider =async()=>{ 
-        const token = await fetch(`${endpoint}/stream/token`)
-        const data = await token.json()
-        return data
-      }
+      const tokenProvider = async () => {
+        const token = await fetch(`${endpoint}/stream/token`);
+        const data = await token.json();
+        return data;
+      };
       const myClient = new StreamVideoClient({ apiKey, user, tokenProvider });
       setClient(myClient);
       const newCall = myClient.call(callType, uuid.v4() as string);
       const call = await newCall.getOrCreate({ 
-        data:{ members:[
-          { user_id:profile.id},
-        ]}
-       });
+        data: { members: [{ user_id: profile.id }] }
+      });
       setCall(newCall);
     } catch (err) {
       console.error('Error initializing client:', err);
@@ -75,7 +68,7 @@ export default function AudioVideoComponent({
     return () => {
       if (client) {
         client.disconnectUser();
-        if (call) call.endCall();
+        if (call) call.leave();
         setClient(null);
         setCall(null);
       }
@@ -83,22 +76,38 @@ export default function AudioVideoComponent({
   }, []);
 
   const CustomCallTopView = () => (
-    <View className="absolute top-0 left-0 right-0 flex-row justify-between items-center p-4 bg-black bg-opacity-50">
-      <Text className="text-white font-rmedium text-lg">{channelName}</Text>
+    <View className="absolute top-0 left-0 right-0 flex-row justify-between items-center p-4 bg-black bg-opacity-50 z-10">
+      <Text className="text-white font-semibold text-lg">{channelName}</Text>
     </View>
   );
-  const CustomVideoRenderer = ({ participant }:VideoRendererProps) => {
-    const {videoStream} = participant
-    
+
+  const CallUI = () => {
+    const { useParticipants, useLocalParticipant } = useCallStateHooks();
+    const participants = useParticipants();
+    const localParticipant = useLocalParticipant();
+
     return (
-      <View style={styles.background}>
-        <BlurView intensity={80} tint="dark" className="absolute inset-0" />
-          <RTCView
-            mirror={true}
-            streamURL={videoStream?.toURL()}
-            objectFit="cover"
-            style={styles.wrapper}
-          />
+      <View className="flex-1">
+        {participants.length > 0 ? (
+          <View className="flex-1">
+            <ParticipantView
+              participant={participants[0]}
+              style={{flex:1}}
+            />
+            <View className="absolute bottom-4 right-4 w-1/3 aspect-[3/4] rounded-lg overflow-hidden">
+              <BlurView intensity={80} tint="dark" className="absolute inset-0" />
+              <ParticipantView
+                participant={localParticipant!}
+                style={{flex:1}}
+              />
+            </View>
+          </View>
+        ) : (
+          <View className="flex-1 justify-center items-center bg-gray-800">
+            <Text className="text-white text-lg">Waiting for participants...</Text>
+          </View>
+        )}
+        <CustomCallTopView />
       </View>
     );
   };
@@ -130,32 +139,15 @@ export default function AudioVideoComponent({
   }
 
   if (!client || !call) return null;
-  
 
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
       <StatusBar barStyle="light-content" />
       <StreamVideo client={client}>
         <StreamCall call={call}>
-          {/* <Lobby/> */}
-        <CallContent 
-          VideoRenderer={CustomVideoRenderer}
-          CallTopView={CustomCallTopView}
-        />
+          <CallContent VideoRenderer={CallUI} />
         </StreamCall>
       </StreamVideo>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  background:{
-    ...StyleSheet.absoluteFillObject,
-    alignItems:'center',
-    justifyContent:'center'
-  },
-  wrapper: {
-    height:250,
-    width:250
-  },
-  });

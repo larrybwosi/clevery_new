@@ -1,7 +1,8 @@
+import React, { useMemo } from 'react';
 import { endpoint } from '@/lib';
 import { Image as ExpoImage } from 'expo-image';
 import { Skeleton } from 'native-base';
-import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 interface ImageProps {
   source: string;
@@ -10,34 +11,45 @@ interface ImageProps {
   style?: string;
 }
 
-export default function Image({ source, width, height, style }: ImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [url, setUrl] = useState('');
+const fetchOptimizedImage = async (source: string, width: number, height: number) => {
+  const response = await fetch(
+    `${endpoint}/optimizations?url=${source}&width=${width}&height=${height}`
+  );
+  const data = await response.json();
+  return data.optimizedImage;
+};
 
-  const imageUrl = useMemo(async () => {
-    setIsLoaded(false)
-    const response = await fetch(
-      `${endpoint}/optimizations?url=${source}&width=${width}&height=${height}`
-    )
-    const res= await response.json().then((res) => res.optimizedImage);
-    setUrl(res)
-    setIsLoaded(true)
-    return res;
-  }, [source, width, height]);
+const Image: React.FC<ImageProps> = React.memo(({ source, width, height, style }) => {
+  const { data: optimizedImageUrl, isLoading } = useQuery({
+    queryKey: ['optimizedImage', source, width, height],
+    queryFn: () => fetchOptimizedImage(source, width, height),
+    staleTime: Infinity, // Cache the result indefinitely
+  });
+
+  const memoizedSkeleton = useMemo(() => (
+    <Skeleton 
+      size="16" 
+      rounded="full" 
+      h={'12'} 
+      w={'12'} 
+      startColor='gray.500' 
+      endColor={'gray.800'} 
+      borderRadius="full" 
+      className={style} 
+    />
+  ), [style]);
+
+  if (isLoading) {
+    return memoizedSkeleton;
+  }
 
   return (
-    <>
-      {isLoaded ? (
-        <ExpoImage
-          source={{ uri: url }}
-          contentFit="cover"
-          className={style }
-          onLoad={() => setIsLoaded(true)}
-        />
-      ) : (
-        <Skeleton size="16" rounded="full" h={'12'} w={'12'} startColor='gray.500' endColor={'gray.800'} borderRadius="full" className={style} />
-
-      )}
-    </>
+    <ExpoImage
+      source={{ uri: optimizedImageUrl }}
+      contentFit="cover"
+      className={style}
+    />
   );
-}
+});
+
+export default Image;

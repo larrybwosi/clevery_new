@@ -157,4 +157,32 @@ const useAuthStore = create(
   )
 );
 
-export { useProfileStore, useThemeStore, useSearchStore, useAuthStore };
+
+/**
+ * @typedef {Object} OnlineFriendsStore
+ * @property {User[]} onlineFriends - The list of online friends
+ * @property {(friends: User[]) => void} setOnlineFriends - Function to set online friends
+ * @property {(friend: User) => void} addOnlineFriend - Function to add an online friend
+ * @property {(friendId: string) => void} removeOnlineFriend - Function to remove an online friend
+ */
+type OnlineFriendsStore = {
+  onlineFriends: User[];
+  setOnlineFriends: (friends: User[]) => void;
+  addOnlineFriend: (friend: User) => void;
+  removeOnlineFriend: (friendId: string) => void;
+};
+
+/**
+ * Zustand store for managing online friends
+ */
+const useOnlineFriendsStore = create<OnlineFriendsStore>((set) => ({
+  onlineFriends: [],
+  setOnlineFriends: (friends) => set({ onlineFriends: friends }),
+  addOnlineFriend: (friend) => set((state) => ({ onlineFriends: [...state.onlineFriends, friend] })),
+  removeOnlineFriend: (friendId) => set((state) => ({ 
+    onlineFriends: state.onlineFriends.filter((friend) => friend.id !== friendId) 
+  })),
+}));
+
+
+export { useProfileStore, useThemeStore, useSearchStore, useAuthStore, useOnlineFriendsStore };

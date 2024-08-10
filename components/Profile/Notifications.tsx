@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FlatList, TouchableOpacity, Animated } from 'react-native';
 import { Text, View } from '../Themed';
 import { Ionicons } from '@expo/vector-icons';

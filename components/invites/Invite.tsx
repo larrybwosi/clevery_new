@@ -7,7 +7,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
 
 import { Text, View } from '../Themed';
-import { showToastMessage, urlForImage } from '@/lib';
+import { showToastMessage } from '@/lib';
 import { User } from '@/types';
 
 

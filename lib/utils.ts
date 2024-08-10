@@ -6,11 +6,14 @@ import * as WebBrowser from "expo-web-browser";
 import { format, parseISO } from "date-fns";
 import * as Updates from 'expo-updates';
 import React from "react";
+import * as FileSystem from 'expo-file-system';
+
  
 import { Message } from "../types";
 
 
 import { Toast } from "native-base";
+import { endpoint } from "./env";
 
 
 interface User{
@@ -216,3 +219,49 @@ export const requestAndUpdatePermissions = async () => {
     ]);
   }
 };
+
+export async function uploadImage(localUri: string): Promise<string | null> {
+  try {
+    // Get the file name from the local URI
+    const fileName = localUri.split('/').pop();
+
+    // Create a form data object
+    const formData = new FormData();
+
+    // If the platform is web, we can directly add the file to formData
+    if (Platform.OS === 'web') {
+      const response = await fetch(localUri);
+      const blob = await response.blob();
+      formData.append('file', blob, fileName);
+    } else {
+      // For native platforms, we need to read the file as base64
+      const base64 = await FileSystem.readAsStringAsync(localUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Create a Blob from the base64 string
+      const blob = await fetch(`data:image/jpeg;base64,${base64}`).then(res => res.blob());
+
+      formData.append('file', blob, fileName);
+    }
+
+    // Send the request to your backend
+    const response = await fetch(`${endpoint}/upload`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const imageUrl = await response.json();
+    return imageUrl;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return null;
+  }
+}

@@ -1,14 +1,14 @@
-import React, { useCallback, useEffect } from 'react';
+import { createContext, useCallback, useContext, useEffect } from 'react';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import axios from 'axios';
-import { endpoint } from '../env';
-import { userApi } from '../actions/users';
 import { router } from 'expo-router';
-import ToastAlert from '@/components/toast-alert';
 import { Toast } from 'native-base';
-import { showToastMessage } from '../utils';
-import { useAuthStore, useProfileStore } from '../zustand/store';
+import axios from 'axios';
+
+import { useAuthStore, useProfileStore } from '@/lib/zustand/store';
+import ToastAlert from '@/components/toast-alert';
+import { userApi } from '@/lib/actions/users';
+import { endpoint } from '@/lib/env';
 
 // Configuration variables
 const API_BASE_URL = endpoint;
@@ -34,12 +34,12 @@ interface User {
 const providerConfig = {
   google: {
     clientId: GOOGLE_CLIENT_ID,
-    redirectUri: AuthSession.makeRedirectUri({path:'/'}),
+    redirectUri: AuthSession.makeRedirectUri({path:'/redirect'}),
     scopes: ['profile', 'email'],
   },
   github: {
     clientId: GITHUB_CLIENT_ID,
-    redirectUri: AuthSession.makeRedirectUri({ path: '/' }),
+    redirectUri: AuthSession.makeRedirectUri({ path: '/redirect' }),
     scopes: ['user'],
   },
 };
@@ -69,8 +69,6 @@ const authenticateWithBackend = async (provider: 'google' | 'github', token: str
 };
 
 
-
-
 /**
  * Props for the AuthProvider component
  */
@@ -86,6 +84,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, token, loading, setUser, setToken, setLoading } = useAuthStore();
   const { setProfile} = useProfileStore();
+
   useEffect(() => {
     const checkCurrentUser = async () => {
       try {
@@ -101,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     checkCurrentUser();
-  }, [router]);
+  }, []);
 
   /**
    * Handles the sign-in process for various providers
@@ -162,8 +161,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @param credentials - The user's email and password
    */
   const handleCredentialsSignIn = async (credentials: { email: string; password: string }) => {
-    console.log(credentials)
     const response = await axios.post(`${API_BASE_URL}sign-in`, credentials);
+    const data = response.data
+    await handleAuthSuccess(data);
+    return data
+  };
+  const signUp = async (credentials: {username:string, email: string; password: string }) => {
+    const response = await axios.post(`${API_BASE_URL}sign-up`, credentials);
     const data = response.data
     await handleAuthSuccess(data);
     return data
@@ -176,6 +180,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleAuthSuccess = async ({ user,token }: { user: User; token: string }) => {
     //@ts-ignore
     setUser(user);
+    //@ts-ignore
     setProfile(user)
     setToken(token);
     return (
@@ -236,24 +241,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [setLoading, setUser, setToken, router]);
 
-  /**
-   * Updates the user's information
-   * @param data - Partial user data to update
-   */
-  const updateUser = useCallback(async (data: Partial<User>) => {
-    try {
-      setLoading(true);
-      const response = await userApi.updateCurrentUser(data);
-      setUser(response);
-    } catch (error) {
-      handleAuthError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, token, setLoading, setUser]);
-
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signOut, signUp }}>
       {children}
     </AuthContext.Provider>
   );
@@ -262,18 +251,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 /**
  * Authentication context
  */
-const AuthContext = React.createContext<{
+const AuthContext = createContext<{
   user: User | null;
   loading: boolean;
+  signUp: (credentials: {username:string, email: string; password: string }) => Promise<void>;
   signIn: (provider: 'google' | 'github' | 'credentials', credentials?: { email: string; password: string }) => Promise<void>;
   signOut: () => Promise<void>;
-  updateUser: (data: Partial<User>) => Promise<void>;
 }>({
   user: null,
   loading: false,
+  signUp: async () => {},
   signIn: async () => {},
   signOut: async () => {},
-  updateUser: async () => {},
 });
 
 /**
@@ -282,7 +271,7 @@ const AuthContext = React.createContext<{
  * @throws Error if used outside of an AuthProvider
  */
 export function useAuth() {
-  const context = React.useContext(AuthContext);
+  const context = useContext(AuthContext);
 
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');

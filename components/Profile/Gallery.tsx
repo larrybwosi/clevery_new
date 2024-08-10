@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MasonryFlashList } from '@shopify/flash-list';
 import { TouchableOpacity, Dimensions } from 'react-native';
 import { Button, Overlay } from 'react-native-elements';

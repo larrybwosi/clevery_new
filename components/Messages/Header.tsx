@@ -1,7 +1,6 @@
 import { TouchableOpacity } from 'react-native'
-import { format, parseISO } from 'date-fns'
 import { Text, View } from '@/components/Themed'
-import { formatDateString, multiFormatDateString, urlForImage } from '@/lib'
+import { formatDateString } from '@/lib'
 import ChannelHeader from '@/components/Servers/ChannelHeader'
 import { memo } from 'react'
 import Image from '../image'

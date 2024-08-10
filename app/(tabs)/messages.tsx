@@ -2,7 +2,6 @@ import { memo, useCallback, useState, useRef, useEffect } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Animated } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import { Chat, Groups, ServerList, Text, View } from '@/components';
 import { voiceCallHandler } from '@/lib';
@@ -35,10 +34,6 @@ const Messages: React.FC = () => {
     return () => scrollX.removeAllListeners();
   }, []);
 
-  const userNavigate = (userId: string): void => {
-    router.navigate(`/conversation/${userId}`);
-  };
-  
   const getFilterName = (filter: string): string => {
     switch (filter) {
       case 'chats':
@@ -135,7 +130,7 @@ const Messages: React.FC = () => {
         scrollEventThrottle={16}
       >
         <View style={{ width }}>
-          <Chat navigate={userNavigate} />
+          <Chat />
         </View>
         <View style={{ width }}>
           <Groups />

@@ -14,7 +14,7 @@ const PopupComponent = () => {
 
   const reactions = ['👍', '❤️', '😂', '😮', '😢', '😡'];
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity style={styles.item}>
       <View style={styles.iconContainer}>
         <Feather name={item.icon} size={20} color="#FFFFFF" />
@@ -23,7 +23,7 @@ const PopupComponent = () => {
     </TouchableOpacity>
   );
 
-  const renderReaction = (emoji) => (
+  const renderReaction = (emoji: string) => (
     <TouchableOpacity key={emoji} style={styles.reactionButton}>
       <Text style={styles.reactionEmoji}>{emoji}</Text>
     </TouchableOpacity>

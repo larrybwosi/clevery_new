@@ -16,7 +16,7 @@ const AddFriends: React.FC = () => {
   const handleAddFriend = async (user:User) => {
    const res= await addFriend( user.id);
    console.log(res)
-   setProfile({...profile,friends:res?.friends})
+   setProfile({...profile,friends:res})
   };
   
   useEffect(() => {
