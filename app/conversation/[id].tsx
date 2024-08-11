@@ -13,7 +13,6 @@ import {
   useSendMessage
 } from '@/lib';
 import { Loader, MessageInput, Text, View, ErrorMessage, Messages } from '@/components';
-import AudioVideoComponent from '@/components/audio-video-call';
 import { Message } from '@/types';
 
 interface NewMessage {
@@ -23,8 +22,6 @@ interface NewMessage {
 
 const UserMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [audioCall, setAudioCall] = useState(false);
-  const [videoCall, setVideoCall] = useState(false);
   const [newMessage, setNewMessage] = useState<NewMessage>({
     caption: '',
     file: []
@@ -125,16 +122,6 @@ const UserMessages: React.FC = () => {
 
   const sortedMessages = sortMessages({ messages });
 
-  if (audioCall || videoCall) {
-    return (
-      <AudioVideoComponent
-        channelName='test-channel'
-        callType='default'
-        video={videoCall}
-      />
-    );
-  }
-
   return (
     <View className='flex-1 p-1 pt-7'>
       <Ionicons
@@ -149,7 +136,7 @@ const UserMessages: React.FC = () => {
           @{conversation?.user?.username}
         </Text>
         <View className='flex-row items-center gap-5'>
-          <Feather name="phone-call" size={18} color={'#007aff'} onPress={() => setAudioCall(true)} />
+          <Feather name="phone-call" size={18} color={'#007aff'} onPress={() => router.navigate("/call")} />
           <Feather name="video" size={18} color={'#007aff'} onPress={() => router.navigate("/room")} />
         </View>
       </View>

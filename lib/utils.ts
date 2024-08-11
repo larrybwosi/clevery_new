@@ -265,3 +265,25 @@ export async function uploadImage(localUri: string): Promise<string | null> {
     return null;
   }
 }
+
+async function uploadFile(fileUri: string) {
+  try {
+    const response = await FileSystem.uploadAsync(`${endpoint}/upload`, fileUri, {
+      fieldName: 'file',
+      httpMethod: 'POST',
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+    });
+
+    if (response.status === 200) {
+      const result = JSON.parse(response.body);
+      console.log('File uploaded successfully:', result.url);
+      return result.url;
+    } else {
+      console.error('Upload failed:', response.body);
+      throw new Error('Upload failed');
+    }
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    throw error;
+  }
+}

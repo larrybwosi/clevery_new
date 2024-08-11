@@ -1,4 +1,3 @@
-export { urlForImage } from "./sanity/image";
 export {env,endpoint} from "./env"
 export {Providers} from './Providers'
 export {pusher,pusherConnector} from './pusher/config'

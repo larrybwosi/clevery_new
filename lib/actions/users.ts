@@ -5,9 +5,7 @@ import { User } from "@/types";
 import { userPaths as apiPaths } from "@/routes";
 import { Profile } from "../zustand/store";
 
-// Users API Types
-type UserResponse = Omit<User, 'password'>;
-type UserDetailsResponse = UserResponse & {
+type UserDetailsResponse = User & {
   commonFriends: Array<{ id: string; name: string; image: string }>;
   commonServers: Array<{ id: string; name: string; image: string | null }>;
   isFriend: boolean;
@@ -88,9 +86,9 @@ export const userApi = {
    * @returns A promise that resolves to the API response containing the updated user details.
    * @throws Error with a descriptive message if the request fails
    */
-  updateCurrentUser: async (userData: UpdateUserInput): Promise<UserResponse> => {
+  updateCurrentUser: async (userData: UpdateUserInput): Promise<User> => {
     try {
-      const response = await axios.patch<UserResponse>(`${endpoint}${apiPaths.currentUser}`, userData);
+      const response = await axios.patch<User>(`${endpoint}${apiPaths.currentUser}`, userData);
       return response.data;
     } catch (error) {
       throw handleApiError(error, "Failed to update user");
@@ -132,9 +130,9 @@ export const userApi = {
    * @returns A promise that resolves to the API response containing an array of the user's friends.
    * @throws Error with a descriptive message if the request fails
    */
-  getFriends: async (): Promise<UserResponse[]> => {
+  getFriends: async (): Promise<User[]> => {
     try {
-      const response = await axios.get<UserResponse[]>(`${endpoint}${apiPaths.friends}`);
+      const response = await axios.get<User[]>(`${endpoint}${apiPaths.friends}`);
       return response.data;
     } catch (error) {
       throw handleApiError(error, "Failed to fetch friends");
@@ -161,11 +159,11 @@ export const userApi = {
    * @returns A promise that resolves to the API response containing the updated user details.
    * @throws Error with a descriptive message if the request fails
    */
-  updateProfilePicture: async (imageFile: File): Promise<UserResponse> => {
+  updateProfilePicture: async (imageFile: File): Promise<User> => {
     try {
       const formData = new FormData();
       formData.append('image', imageFile);
-      const response = await axios.put<UserResponse>(`${endpoint}${apiPaths.profilePicture}`, formData, {
+      const response = await axios.put<User>(`${endpoint}${apiPaths.profilePicture}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -194,9 +192,9 @@ export const userApi = {
    * @returns A promise that resolves to the API response containing an array of matching user details.
    * @throws Error with a descriptive message if the request fails
    */
-  searchUsers: async (query: string): Promise<UserResponse[]> => {
+  searchUsers: async (query: string): Promise<User[]> => {
     try {
-      const response = await axios.get<UserResponse[]>(`${endpoint}${apiPaths.searchUsers}`, {
+      const response = await axios.get<User[]>(`${endpoint}${apiPaths.searchUsers}`, {
         params: { q: query },
       });
       return response.data;

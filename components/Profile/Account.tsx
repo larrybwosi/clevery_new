@@ -19,7 +19,7 @@ const Account = () => {
     username: userInfo.username,
     name: userInfo.name,
     email: userInfo.email,
-    phonenumber: userInfo.phonenumber,
+    phonenumber: userInfo.phone,
   });
 
   const {
@@ -47,7 +47,7 @@ const Account = () => {
       username: userInfo.username,
       name: userInfo.name,
       email: userInfo.email,
-      phonenumber: userInfo.phonenumber,
+      phonenumber: userInfo.phone,
     });
     router.back()
   }
@@ -108,7 +108,7 @@ const Account = () => {
               editedFields.username === userInfo.username &&
               editedFields.name === userInfo.name &&
               editedFields.email === userInfo.email &&
-              editedFields.phonenumber === userInfo.phonenumber
+              editedFields.phonenumber === userInfo.phone
             }
           />
           <Button title="Cancel" onPress={handleCancelPress} />

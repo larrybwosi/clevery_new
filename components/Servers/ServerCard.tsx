@@ -1,6 +1,5 @@
 import { Image, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { urlForImage } from '@/lib';
 import { Text, View } from '../Themed';
 
 interface ServerCardProps {
@@ -17,7 +16,7 @@ const ServerCard: React.FC<ServerCardProps> = ({ id, name, description, image, o
     <TouchableOpacity onPress={onPress} className='flex-1' >
       <View className='flex-row items-center p-4'>
         <Image 
-        source={{ uri: urlForImage(image).width(100).url() }} 
+        source={{ uri: image }} 
         className='h-16 w-16 rounded-[32px]' />
         <View className='ml-4'>
           <Text className='text-base font-rbold'>{name}</Text>

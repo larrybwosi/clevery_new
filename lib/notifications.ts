@@ -42,38 +42,3 @@ export async function registerForPushNotificationsAsync() {
 
   return token?.data;
 }
-
-Notifications.setNotificationHandler({
-  handleNotification: async (notification) => {
-    const { data } = notification.request.content;
-    
-    // If there's an image URL in the notification data, download it
-    let attachments = [];
-    if (data && data.senderImage) {
-      const imageAsset = await downloadAndSaveImage(data.senderImage);
-      if (imageAsset) {
-        attachments.push(imageAsset);
-      }
-    }
-
-    return {
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-      attachments,
-    };
-  },
-});
-
-async function downloadAndSaveImage(url: string): Promise<string | null> {
-  try {
-    const { uri } = await FileSystem.downloadAsync(
-      url,
-      FileSystem.cacheDirectory + 'temp_notification_image.jpg'
-    );
-    return uri;
-  } catch (error) {
-    console.error('Error downloading image:', error);
-    return null;
-  }
-}
