@@ -6,9 +6,9 @@ export async function uploadImage(file:string) {
     const res = await fetch(file);
     const blob = await res.blob();
 
-    // const fs = fs
+    const newFile = new File([blob],'')
     var formData = new FormData();
-    formData.append('file', blob );
+    formData.append('file', 'fi;e' );
 
     const response = await fetch(`${endpoint}/upload`, {
       method: 'POST',

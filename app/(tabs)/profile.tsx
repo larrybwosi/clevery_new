@@ -1,26 +1,26 @@
-import { useState } from 'react';
 import { TouchableOpacity, FlatList } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useState } from 'react';
+
 import { Loader, MenuItems, Text, UserCard, UserInfo, View } from '@/components';
-import { formatDateString, useAuthorPosts, useProfileStore } from '@/lib';
+import { formatDateString, useProfileStore } from '@/lib';
 import Image from '@/components/image';
 
 const ProfilePage = () => {
   const [activeButton, setActiveButton] = useState('profile');
   const { profile } = useProfileStore();
-  const { data: posts } = useAuthorPosts(profile?.id);
 
   if (!profile) return <Loader loadingText='Loading Profile'/>;
 
   const stats = {
-    Posts: posts?.length || 0,
+    Posts: 0,
     Friends: profile?.friends?.length || 0,
   };
 
   const renderItem = ({ item }:any) => {
     if (item.type === 'menu') return <MenuItems />;
-    // if (item.type === 'friends') return <FriendsComponent friends={profile.friends} />;
+    if (item.type === 'friends') return <FriendsComponent friends={profile.friends} />;
     return null;
   };
 
@@ -110,7 +110,7 @@ const FriendsComponent = ({friends}:any) => {
             </View>
             <View className='flex-1'>
               <Text className='font-rmedium mt-1.5 text-sm'>{item.name}</Text>
-              <Text className='text-gray-400 text-xs font-rthin' >@{item.username}</Text>
+              <Text className='text-gray-400 text-xs font-rthin' >@{item.username || item.name}</Text>
             </View>
           </TouchableOpacity>
         )}

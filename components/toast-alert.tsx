@@ -1,4 +1,4 @@
-import { Alert, CloseIcon, HStack, IconButton, Text, VStack, useToast } from "native-base";
+import { Alert, CloseIcon, HStack, IconButton, Text, Toast, VStack, useToast } from "native-base";
 
 interface ToastProps {
   id: string;
@@ -9,6 +9,20 @@ interface ToastProps {
   isClosable?: boolean;
 }
 
+export const showToastMessage = ({id,title,status,description}:ToastProps) => {
+  return (
+    Toast.show({
+      render: () => (
+        <ToastAlert
+          id={id}
+          title={title}
+          description={description}
+          status={status}
+        />
+      ),
+    })
+  )
+};
 const ToastAlert: React.FC<ToastProps> = ({
   id,
   title,

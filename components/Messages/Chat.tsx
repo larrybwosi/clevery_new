@@ -56,7 +56,7 @@ const Chat = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1">
       <FlatList
         data={conversations}
         keyExtractor={(item) => item?.id}
@@ -66,15 +66,7 @@ const Chat = () => {
             onSelectUser={navigate}
           />
         )}
-        ListHeaderComponent={() => (
-          <View className="p-4 bg-white border-b border-gray-200">
-            <Text className="text-lg font-semibold text-gray-800">Your Conversations</Text>
-            <Text className="text-sm text-gray-600 mt-1">
-              {conversations.length} {conversations.length === 1 ? 'conversation' : 'conversations'}
-            </Text>
-          </View>
-        )}
-        ItemSeparatorComponent={() => <View className="h-px bg-gray-200" />}
+        ItemSeparatorComponent={() => <View className="h-px bg-gray-600" />}
         ListEmptyComponent={() => (
           <View className="flex-1 justify-center items-center p-5">
             <Text className="text-lg text-gray-600 text-center">No conversations to display</Text>

@@ -43,7 +43,7 @@ const UserProfileEdit = () => {
       setIsLoading(true);
       
       const res = await uploadImage(avatarUri)
-      return
+      
       setAvatarUri(res?.url)
       const updated = {id:userinfo.id, ...profile, ...connections,image:res }
 
@@ -97,7 +97,7 @@ const UserProfileEdit = () => {
               <FormControl key={key}>
                 <FormControl.Label>{key.charAt(0).toUpperCase() + key.slice(1)}</FormControl.Label>
                 <Input 
-                  value={value} 
+                  value={value!} 
                   onChangeText={(text) => setProfile({ ...profile, [key]: text })}
                   variant="filled"
                   bg="gray.100"

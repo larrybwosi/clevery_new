@@ -47,7 +47,7 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     conversations.forEach(async conversation => {
       try {
         await pusher.subscribe({
-          channelName: `private-conversation-${conversation.id}`,
+          channelName: `private-${conversation.id}`,
           onEvent: (event: PusherEvent) => {
             console.log('Pusher event received:', event.eventName);
             if (event.eventName === 'new-message') {
@@ -56,7 +56,7 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             }
           }
         });
-        console.log(`Subscribed to channel: private-conversation-${conversation.id}`);
+        console.log(`Subscribed to channel: private-${conversation.id}`);
       } catch (error) {
         console.error(`Error subscribing to channel for conversation ${conversation.id}:`, error);
       }
@@ -242,7 +242,7 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       subscription.remove();
       if (pusher && profile.id) {
         conversations.forEach(conversation => {
-          pusher.unsubscribe({channelName: `private-conversation-${conversation.id}`});
+          pusher.unsubscribe({channelName: `private-${conversation.id}`});
         });
         console.log('Unsubscribed from all conversation channels');
       }

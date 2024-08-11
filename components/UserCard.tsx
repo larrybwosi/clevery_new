@@ -25,7 +25,7 @@ const UserCard: React.FC<UserCardProps> = ({ conversation, onSelectUser }) => {
       </View>
       <View className='flex-1'>
         <Text className='font-rmedium mt-1.5 text-sm'>{name}</Text>
-         <Text className='text-gray-400 text-xs font-rthin' >@{username}</Text>
+         <Text className='text-gray-400 text-xs font-rthin' >@{username || name}</Text>
          <Text className='mt-1.5 font-pthin text-[10px] '>{lastMessage?.text}</Text>
       </View>
     </TouchableOpacity>

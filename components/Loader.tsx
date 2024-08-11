@@ -15,7 +15,7 @@ const Loader = ({ loadingText = 'Loading...' }) => {
         className='w-[300px] h-[300px] rounded-5 justify-center items-center shadow-[0_0_10px_0_rgba(0,0,0,0.5)] '
       >
         <LottieView
-          source={require('@/assets/animations/elegant-loading.json')}
+          source={require('@/assets/animations/loading.json')}
           ref={animation}
           autoPlay
           loop
@@ -29,6 +29,5 @@ const Loader = ({ loadingText = 'Loading...' }) => {
     </View>
   );
 };
-
 
 export default Loader;

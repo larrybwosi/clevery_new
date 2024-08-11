@@ -1,4 +1,3 @@
-export { urlForImage } from "./sanity/image";
 export {env,endpoint} from "./env"
 export {Providers} from './Providers'
 export {pusher,pusherConnector} from './pusher/config'
@@ -41,7 +40,7 @@ export {
   useSavePost,
   useCommentPost,
   useUpdatePost
-} from "@/lib/actions/hooks/posts";
+} from "./actions/hooks/posts";
 
 export {
   useAddFriend,
@@ -56,7 +55,7 @@ export {
   useUpdateProfilePicture,
   useUser,
   useUsers
-} from "@/lib/actions/hooks/users";
+} from "./actions/hooks/users";
 
 export {
   useCreateChannel,
@@ -76,6 +75,6 @@ export {
   useServerChannels,
   useServerMembers,
   useTopServers
-} from "@/lib/actions/hooks/servers";
+} from "./actions/hooks/servers";
 
-export {useChannelData,useServerData} from "@/lib/hooks/server"
+export {useChannelData,useServerData} from "./hooks/server"

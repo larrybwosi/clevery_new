@@ -57,7 +57,7 @@ const NotificationItem: React.FC<{ item: Notification; onPress: () => void }> = 
   };
 
   return (
-    <Animated.View className="mb-3 rounded-xl bg-white shadow-md" style={{ transform: [{ scale: scaleAnim }] }}>
+    <Animated.View className="mb-3 rounded-xl  shadow-md" style={{ transform: [{ scale: scaleAnim }] }}>
       <TouchableOpacity onPress={handlePress} className="flex-row items-center p-3">
         <LinearGradient
           colors={item.read ? ['#e0e0e0', '#f5f5f5'] : ['#4c669f', '#3b5998']}
@@ -119,7 +119,7 @@ const Notifications = () => {
   return (
     <View className="flex-1 p-4">
       <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-2xl font-bold">Notifications</Text>
+        <Text className="text-base font-rregular">Your Notifications</Text>
         <TouchableOpacity onPress={() => setShowSettings(!showSettings)}>
           <Ionicons name={showSettings ? "close" : "settings-outline"} size={24} color="#4c669f" />
         </TouchableOpacity>

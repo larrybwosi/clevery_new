@@ -29,7 +29,7 @@ const Image: React.FC<ImageProps> = React.memo(({ source, width, height, style }
   const memoizedSkeleton = useMemo(() => (
     <Skeleton 
       size="16" 
-      rounded="full" 
+      // rounded="full" 
       h={'12'} 
       w={'12'} 
       startColor='gray.500' 

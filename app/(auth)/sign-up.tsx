@@ -3,16 +3,19 @@ import { View, Text, ScrollView, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 
-import { authHooks, showToastMessage } from "@/lib";
+import { showToastMessage } from "@/lib";
 import { CustomButton, FormField,Butttons } from "@/components";
 import ToastAlert from "@/components/toast-alert";
+import { useAuth } from "@/lib/contexts/auth";
 
 type AuthProviders = "google" | "facebook" | "github";
 const SignUp = () => {
 
   const {
-     googleAsync,facebookAsync,gitAsync
-   }= authHooks()
+    loading,
+    signIn,
+    user
+  } = useAuth()
    
   const [form, setForm] = useState({
     username: "",
@@ -27,9 +30,9 @@ const SignUp = () => {
 // } = useCreateEmailUser()
 
 const signInWithProvider = async (provider: AuthProviders) => {
-  if (provider === 'google') return googleAsync();
-  if (provider === 'facebook') return facebookAsync();
-  if (provider === 'github') return gitAsync()
+  if (provider === 'google') return signIn("google");
+  if (provider === 'facebook') return signIn("google");
+  if (provider === 'github') return signIn("github")
 }
 
   const submit = async () => {

@@ -6,9 +6,8 @@ import { Toast } from "native-base";
 
 import { CustomButton, FormField,Butttons } from "@/components";
 import { showToastMessage } from "@/lib";
-import ToastAlert from "@/components/toast-alert"; 
-import { useAuth } from "@/lib/contexts/custom";
-
+import ToastAlert from "@/components/toast-alert";
+import { useAuth } from "@/lib/contexts/auth";
 
 type AuthProviders = "google" | "facebook" | "github";
 const SignIn = () => {
