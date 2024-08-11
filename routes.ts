@@ -2,7 +2,7 @@
 const userPaths = {
   currentUser: '/profile',
   users: '/users',
-  topCreators: '/users/creators',
+  topCreators: '/users/top',
   user: (id: string) => `/users/${id}`,
   friends: '/profile/friends',
   friend: (id: string) => `/users/friends/${id}`,
@@ -34,7 +34,7 @@ const postsPaths = {
 };
 
 const serverPaths = {
-  servers: '/servers',
+  servers: '/servers/top',
   topServers: '/servers/top',
   server: (id: string) => `/servers/${id}`,
   serverChannels: (id: string) => `/servers/${id}/channels`,

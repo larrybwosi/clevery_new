@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Loader, MenuItems, Text, UserCard, UserInfo, View } from '@/components';
-import { multiFormatDateString, urlForImage, useAuthorPosts, useProfileStore } from '@/lib';
+import { multiFormatDateString, useAuthorPosts, useProfileStore } from '@/lib';
 import { Image } from 'expo-image';
 import { Feather } from '@expo/vector-icons';
 import FriendCard from '../user-card';

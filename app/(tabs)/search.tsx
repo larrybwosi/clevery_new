@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FlatList, TextInput, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 
@@ -23,8 +23,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearch }) => (
 
 const ExploreComponent: React.FC = () => {
   const [selectedTabBar, setSelectedTabBar] = useState<TabBarOptions>('recents');
-  const { 
-    query, 
+  const {
     setQuery, 
     searchType, 
     setSearchType, 

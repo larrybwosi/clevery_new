@@ -108,13 +108,13 @@ const UserMessages: React.FC = () => {
   const handleMessageChange = useCallback((text: string) => {
     setNewMessage((prev) => ({ ...prev, caption: text }));
     // Emit typing event
-    if (conversation?.id) {
-      pusher.trigger({
-        channelName: `private-${conversation.id}`,
-        eventName: 'typing',
-        data: {}
-      });
-    }
+    // if (conversation?.id) {
+    //   pusher.trigger({
+    //     channelName: `private-${conversation.id}`,
+    //     eventName: 'typing',
+    //     data: {}
+    //   });
+    // }
   }, [conversation?.id]);
 
   if (loadingConversation) return <Loader loadingText='Loading your conversation' />;
@@ -150,7 +150,7 @@ const UserMessages: React.FC = () => {
         closeFile={closeFile}
         createdAt={conversation?.createdAt!}
       />
-      {isTyping && <Text className="text-gray-500 italic ml-2">User is typing...</Text>}
+      {isTyping && <Text className="text-gray-500 italic ml-2">{conversation?.user?.name} is typing...</Text>}
       <MessageInput
         caption={newMessage.caption}
         onMessageChange={handleMessageChange}

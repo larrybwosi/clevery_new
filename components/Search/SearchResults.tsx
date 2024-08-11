@@ -1,7 +1,8 @@
 import { View, FlatList, Text, TouchableOpacity, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import { Post as PostType, Server, User} from '@/types';
 import Post from '../Home/Post';
-import { Ionicons } from '@expo/vector-icons';
 
 interface Link {
   id: number;

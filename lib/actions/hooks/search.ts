@@ -15,10 +15,10 @@ export const useCombinedSearch = (initialQuery: string = '', initialType: Search
   const {data: topCreators, isPending: loadingCreators} = useTopCreators();
   const {data: topServers, isPending: loadingServers} = useTopServers();
 
-  const debouncedSetQuery = useMemo(
-    () => useDebounce(setQuery, DEBOUNCE_DELAY),
-    []
-  );
+  // const debouncedSetQuery = useMemo(
+  //   () => useDebounce(setQuery, DEBOUNCE_DELAY),
+  //   []
+  // );
 
   // TODO: Figure out how to handle errors
   const searchQueries = useQueries({
@@ -48,7 +48,7 @@ export const useCombinedSearch = (initialQuery: string = '', initialType: Search
 
   return {
     query,
-    setQuery: debouncedSetQuery,
+    setQuery: useDebounce(setQuery, DEBOUNCE_DELAY),
     searchType,
     setSearchType,
     results: {

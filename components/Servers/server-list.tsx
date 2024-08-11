@@ -10,7 +10,7 @@ export default function ServerList() {
   
  const {data:servers ,isLoading:loading,error} = useServers()
 
- console.log(servers)
+ 
  const onPress=(serverId:string)=>{
  router.push(`/server/${serverId}`)
  }

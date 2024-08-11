@@ -74,7 +74,7 @@ const Messages: React.FC = () => {
     }, []);
   
     return (
-      <View className='bg-gray-900 px-4 pt-4 pb-2 rounded-b-3xl shadow-lg'>
+      <View className=' px-4 pt-4 pb-2 rounded-b-3xl shadow-lg'>
         <View className='flex-row justify-between mb-4 items-center'>
           <Text className='font-rmedium text-2xl text-light'>
             {getFilterName(activeFilter)}

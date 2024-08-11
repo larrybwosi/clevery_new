@@ -56,7 +56,7 @@ const Post = memo(({ author, content: caption, createdAt: timestamp, id: postId,
       <AuthorInfo author={author} timestamp={timestamp} />
       <ImageCont images={images} caption={caption} />
       <View className="flex-row flex-wrap gap-1">
-        {tags?.map((tag, index) => (
+        {!!tags?.length && tags?.map((tag, index) => (
           <Text key={index} className="text-light p-2 text-xs font-rregular">#{tag}</Text>
         ))}
       </View>

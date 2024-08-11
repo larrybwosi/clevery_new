@@ -40,7 +40,7 @@ const PopupComponent = () => {
     <Animated.View 
       entering={FadeInUp.springify()}
       exiting={FadeOutDown.springify()}
-      className="absolute bottom-0 left-0 right-0 bg-gradient-to-b from-gray-800 to-gray-900 rounded-t-3xl shadow-lg"
+      className="absolute bottom-0 left-0 right-0 bg-gray-900 rounded-t-3xl shadow-lg z-50"
     >
       <LinearGradient
         colors={['rgba(52, 152, 219, 0.1)', 'rgba(41, 128, 185, 0.1)']}

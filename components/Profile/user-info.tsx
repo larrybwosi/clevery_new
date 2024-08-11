@@ -1,4 +1,4 @@
-import { urlForImage, useProfileStore } from '@/lib';
+import { useProfileStore } from '@/lib';
 import { memo } from 'react';
 import { Text, View } from '../Themed';
 import { Image } from 'expo-image';

@@ -21,7 +21,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
   const [fields, setFields] = useState<CreatePostData>({
     content:post?.content?post.content:'',
-    tags:post?.tags?post.tags:[''],
+    tags:post?.tags?post.tags:[],
     images:post?.images?post.images.map((img)=>img):[]
   })  
   

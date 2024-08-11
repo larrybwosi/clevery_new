@@ -3,7 +3,7 @@ import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { multiFormatDateString, urlForImage, useUser } from '@/lib';
+import { multiFormatDateString, useUser } from '@/lib';
 import { Loader, UserInfo } from '@/components';
 import MembersList from '@/components/members-list';
 import Image from '@/components/image';

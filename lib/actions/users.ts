@@ -6,7 +6,6 @@ import { userPaths as apiPaths } from "@/routes";
 import { Profile } from "../zustand/store";
 
 type UserDetailsResponse = User & {
-type UserDetailsResponse = User & {
   commonFriends: Array<{ id: string; name: string; image: string }>;
   commonServers: Array<{ id: string; name: string; image: string | null }>;
   isFriend: boolean;
@@ -132,9 +131,7 @@ export const userApi = {
    * @throws Error with a descriptive message if the request fails
    */
   getFriends: async (): Promise<User[]> => {
-  getFriends: async (): Promise<User[]> => {
     try {
-      const response = await axios.get<User[]>(`${endpoint}${apiPaths.friends}`);
       const response = await axios.get<User[]>(`${endpoint}${apiPaths.friends}`);
       return response.data;
     } catch (error) {
@@ -163,11 +160,9 @@ export const userApi = {
    * @throws Error with a descriptive message if the request fails
    */
   updateProfilePicture: async (imageFile: File): Promise<User> => {
-  updateProfilePicture: async (imageFile: File): Promise<User> => {
     try {
       const formData = new FormData();
       formData.append('image', imageFile);
-      const response = await axios.put<User>(`${endpoint}${apiPaths.profilePicture}`, formData, {
       const response = await axios.put<User>(`${endpoint}${apiPaths.profilePicture}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -198,9 +193,7 @@ export const userApi = {
    * @throws Error with a descriptive message if the request fails
    */
   searchUsers: async (query: string): Promise<User[]> => {
-  searchUsers: async (query: string): Promise<User[]> => {
     try {
-      const response = await axios.get<User[]>(`${endpoint}${apiPaths.searchUsers}`, {
       const response = await axios.get<User[]>(`${endpoint}${apiPaths.searchUsers}`, {
         params: { q: query },
       });

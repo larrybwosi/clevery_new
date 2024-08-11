@@ -31,7 +31,7 @@ const onButtonPress = (route: string) => {
 
 const MenuItems: React.FC = () => {
   return (
-    <View className='rounded-[10px] p-[1px] m-1 gap-3  '>
+    <View className='rounded-[10px] p-[1px] m-1 gap-3 mt-4 '>
       <MenuItem iconName="user" label="Account" route="account" />
       <MenuItem iconName="moon" label="Appearance" route="appearance" />
       <MenuItem iconName="bell" label="Notification preferences" route="notifications" />

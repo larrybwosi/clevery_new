@@ -9,6 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { showToastMessage, useProfileStore, useUpdateCurrentUser } from '@/lib';
 import { uploadImage } from '@/lib/sanity/image';
 import { router } from 'expo-router';
+import { uploadFile } from '@/lib/utils';
 
 const UserProfileEdit = () => {
   const { profile:userinfo,setProfile:updateProfileLocaly } = useProfileStore();
@@ -37,14 +38,15 @@ const UserProfileEdit = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async() => {
-    setIsLoading(true);
+    // setIsLoading(true);
     
     try {
-      setIsLoading(true);
+      // setIsLoading(true);
       
-      const res = await uploadImage(avatarUri)
-      
-      setAvatarUri(res?.url)
+      const res = await uploadFile(avatarUri)
+      console.log(res)
+      // setAvatarUri(res?.url)
+      return
       const updated = {id:userinfo.id, ...profile, ...connections,image:res }
 
       const response = await updateProfile(updated)

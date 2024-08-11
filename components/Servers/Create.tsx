@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { selectImage, urlForImage } from '@/lib'
+import { selectImage } from '@/lib'
 import { Text, View } from '@/components/Themed';
 import UploadImage from './upload-image';
 import { Image } from 'expo-image';
@@ -71,7 +71,7 @@ import { CreateServerData, User } from '@/types';
                 {selectedUsers?.map((user) => (
                   <Avatar
                     key={user.id}
-                    source={{ uri: urlForImage(user.image).width(100).url() }}
+                    source={{ uri: user.image }}
                     size="md"
                   >
                     {user.name.charAt(0)}

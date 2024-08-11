@@ -117,9 +117,9 @@ const Messages: React.FC<Props> = ({
         )}
       />
       
-      <Animated.View style={{ opacity: fadeAnim }}>
+      {/* <Animated.View style={{ opacity: fadeAnim }}> */}
         {popupVisible && <PopupComponent />}
-      </Animated.View>
+      {/* </Animated.View> */}
     </View>
   );
 };

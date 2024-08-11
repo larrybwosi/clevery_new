@@ -4,10 +4,10 @@ import { Link, router } from 'expo-router';
 import { Image } from 'expo-image';
 
 import SearchSuggestions from '@/components/skeletons/search-suggestions';
-import { urlForImage, useSearchStore } from '@/lib';
+import { useSearchStore } from '@/lib';
 import { Text, View } from '@/components/Themed';
-import { Badge } from '../badges/user';
-import { Server, User } from '@/validations';
+import { Badge } from '../badges/user'; 
+import { Server, User } from '@/types';
 
 type RecentItem = {
   id: string;
@@ -50,11 +50,11 @@ const TopUsers =({suggestedUsers,addSearch}:Users)=>{
         renderItem={({ item }) =>  (
           <TouchableOpacity className='flex-row items-center p-1.5' onPress={()=>handleUserClick(item)}>
           <Image
-          source={{ uri: urlForImage(item.image).width(100).url() }}
+          source={{ uri: item.image }}
           className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
           />
             <View>
-              <Text className='text-sm font-rmedium'>{item.name} <Badge text='ace'/></Text>
+              <Text className='text-sm font-rmedium'>{item.name} <Badge text='ace' colors={[]}/></Text>
               <Text className='text-[10px] font-rregular'>{item.username}</Text>
             </View>
             
@@ -76,7 +76,7 @@ const TopServers =({suggestedServers}:{suggestedServers:Server[]})=>{
       renderItem={({ item }) =>  (
         <View className='flex-row items-center p-1.5'>
           <Image
-          source={{ uri: urlForImage(item.image).width(100).url() }}
+          source={{ uri: item.image! }}
           className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
           />
           <View>
@@ -115,7 +115,7 @@ const Suggestions: React.FC<SuggestionsProps> = ({
     <View className='flex-row  justify-between items-center '>
       <TouchableOpacity className='flex-row items-center p-1.5' >
         <Image
-          source={{ uri: urlForImage(item.image).width(100).url() }}
+          source={{ uri: item.image }}
           className='h-[10px] w-[10px] rounded-[25px] border mr-4 '
         />
 

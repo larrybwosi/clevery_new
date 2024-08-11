@@ -6,36 +6,29 @@ import { Text } from '@/components/Themed';
 import UserCard from '@/components/UserCard';
 import { useGetConversations } from '@/lib';
 import Loader from '../Loader';
-import { useOnlineFriends } from '@/lib/contexts/online_friends';
+import { useMessaging } from '@/lib/contexts/messaging';
 
 const Chat = () => {
-  const {
-    data: conversations,
-    isLoading: loading,
-    error
-  } = useGetConversations();
-
-  const {onlineFriends} = useOnlineFriends();
-  console.log(onlineFriends)
+  const { conversations, } = useMessaging();
 
   const navigate = (userId: string) => {
     router.navigate(`/conversation/${userId}`);
   };
-
+  
   const navigateToUsers = () => {
     router.navigate('/users');
   };
 
-  if (loading) return <Loader loadingText='Loading your conversations' />;
+  // if (loading) return <Loader loadingText='Loading your conversations' />;
 
-  if (error) {
-    return (
-      <View className="flex-1 justify-center items-center p-5">
-        <Text className="text-lg font-semibold text-red-500 mb-2 font-rregular">Oops! Something went wrong</Text>
-        <Text className="text-sm text-gray-600 text-center">We couldn't load your conversations. Please try again later.</Text>
-      </View>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <View className="flex-1 justify-center items-center p-5">
+  //       <Text className="text-lg font-semibold text-red-500 mb-2 font-rregular">Oops! Something went wrong</Text>
+  //       <Text className="text-sm text-gray-600 text-center">We couldn't load your conversations. Please try again later.</Text>
+  //     </View>
+  //   );
+  // }
 
   if (!conversations?.length) {
     return (

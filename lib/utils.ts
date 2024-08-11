@@ -266,7 +266,7 @@ export async function uploadImage(localUri: string): Promise<string | null> {
   }
 }
 
-async function uploadFile(fileUri: string) {
+export async function uploadFile(fileUri: string) {
   try {
     const response = await FileSystem.uploadAsync(`${endpoint}/upload`, fileUri, {
       fieldName: 'file',

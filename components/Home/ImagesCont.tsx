@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { Image } from 'expo-image';
 import { Text, View } from '../Themed';
-import { urlForImage } from '@/lib';
 
 interface ImageComponentProps {
   image: string;
@@ -13,7 +12,7 @@ interface ImageComponentProps {
 const ImageComponent = ({ image, width, height, onLoad }:ImageComponentProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const imageUrl = useMemo(() => 
-    urlForImage(image).width(imageLoaded ? width : 20).url(), 
+    image, 
     [image, imageLoaded, width]
   );
 
