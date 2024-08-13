@@ -221,112 +221,16 @@ export const requestAndUpdatePermissions = async () => {
   }
 };
 
-// export async function uploadImage(localUri: string): Promise<string | null> {
-//   try {
-//     console.log(localUri)
-//     // Get the file name from the local URI
-//     const fileName = localUri.split('/').pop();
-
-//     // Create a form data object
-//     const formData = new FormData();
-
-//     // If the platform is web, we can directly add the file to formData
-//     // if (Platform.OS === 'web') {
-//     //   const response = await fetch(localUri);
-//     //   const blob = await response.blob();
-//     //   formData.append('file', blob, fileName);
-//     // } else {
-//       // For native platforms, we need to read the file as base64
-//       const base64 = await FileSystem.readAsStringAsync(localUri, {
-//         encoding: FileSystem.EncodingType.Base64,
-//       });
-      
-//       // Create a Blob from the base64 string
-//       const blob = await fetch(`data:image/jpeg;base64,${base64}`).then(res => res.blob());
-
-//       formData.append('file', blob, fileName);
-//     // }
-
-//     // Send the request to your backend
-//     // const response = await fetch(`${endpoint}/upload`, {
-//     //   method: 'POST',
-//     //   body: formData,
-//     //   headers: {
-//     //     'Content-Type': 'multipart/form-data',
-//     //   },
-//     // });
-//       console.log(formData)
-//     const res = await axios.post(`${endpoint}/upload`,formData)
-// console.log(res.data)
-//     // if (!response.ok) {
-//     //   throw new Error(`HTTP error! status: ${response.status}`);
-//     // }
-
-//     const imageUrl = ''
-//     return imageUrl;
-//   } catch (error) {
-//     console.error('Error uploading image:', error);
-//     return null;
-//   }
-// }
-
-
-// const createFormData = (uri: string) => {
-//   const fileName = uri?.split('/').pop();
-//   const fileType = fileName?.split('.').pop();
-//   const formData = new FormData();
-//   formData.append('file', { 
-//     uri, 
-//     name: fileName, 
-//     type: `image/${fileType}` 
-//   });
-  
-//   return formData;
-// }
-export const uploadingFile= async(uri: string) => {
-  var fs = require("fs");
-  var options = {
-    method: "POST",
-    url: endpoint + "/upload",
-    headers: {},
-    formData: {
-      file: {
-        value: fs.createReadStream(uri),
-        options: {
-          filename: "image.jpg",
-          contentType: null
-        }
-      }
-    }
-  };
-
-  try {
-    const response = await axios.request(options);
-    console.log(response.data);
-    return response.data
-  } catch (error) {
-    console.error(error);
-  }
-  
-}
 export async function uploadFile(fileUri: string) {
   try {
-    const response = await FileSystem.uploadAsync(`${endpoint}/upload`, fileUri, {
-      fieldName: 'file',
-      httpMethod: 'POST',
-      mimeType:'application/octet-stream',
-      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-    });
-
-    console.log(response)
-    if (response.status === 200) {
-      const result = JSON.parse(response.body);
-      console.log('File uploaded successfully:', result.url);
-      return result.url;
-    } else {
-      console.error('Upload failed:', response.body);
-      throw new Error('Upload failed');
-    }
+    const response = await fetch(`https://mqczcmfz.api.sanity.io/v2021-06-07/assets/images/production`,{
+      method:"POST",
+      headers: {
+      'Authorization':`Bearer ${token}`
+      }
+    })
+    const data = await response.json()
+    return  
   } catch (error) {
     console.error('Error uploading file:', error);
     throw error;
