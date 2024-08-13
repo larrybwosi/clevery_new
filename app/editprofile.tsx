@@ -7,9 +7,8 @@ import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
 import { showToastMessage, useProfileStore, useUpdateCurrentUser } from '@/lib';
-import { uploadImage } from '@/lib/sanity/image';
 import { router } from 'expo-router';
-import { uploadFile } from '@/lib/utils';
+import { uploadFile,  } from '@/lib/utils';
 
 const UserProfileEdit = () => {
   const { profile:userinfo,setProfile:updateProfileLocaly } = useProfileStore();

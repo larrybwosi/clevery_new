@@ -33,13 +33,12 @@ const MessagingContext = createContext<MessagingContextValue | null>(null);
 export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const { profile } = useProfileStore();
-
   /**
    * Subscribes to Pusher channels for each conversation
    */
   const subscribeToPusherChannels = async () => {
     console.log('Subscribing to Pusher channels for conversations');
-    if (!pusher || !profile.id) {
+    if (!pusher || !profile?.id) {
       console.log('Pusher not initialized or user not logged in');
       return;
     }
@@ -148,7 +147,7 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
    */
   const fetchConversations = async (): Promise<void> => {
     console.log('Fetching conversations');
-    if (!profile.id) {
+    if (!profile?.id) {
       console.log('User not logged in, skipping conversation fetch');
       return;
     }
@@ -170,7 +169,7 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
    */
   const sendMessage = async (conversationId: string, message: string): Promise<void> => {
     console.log(`Sending message to conversation ${conversationId}`);
-    if (!profile.id) {
+    if (!profile?.id) {
       console.log('User not logged in, cannot send message');
       return;
     }
@@ -223,10 +222,10 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     } else {
       console.log('User not logged in, skipping setup');
     }
-  }, [profile.id]);
+  }, [profile?.id]);
 
   useEffect(() => {
-    if (pusher && profile.id) {
+    if (pusher && profile?.id) {
       subscribeToPusherChannels();
     }
 
@@ -240,14 +239,14 @@ export const MessagingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return () => {
       console.log('Cleaning up MessagingProvider');
       subscription.remove();
-      if (pusher && profile.id) {
+      if (pusher && profile?.id) {
         conversations.forEach(conversation => {
           pusher.unsubscribe({channelName: `private-${conversation.id}`});
         });
         console.log('Unsubscribed from all conversation channels');
       }
     };
-  }, [pusher, conversations, profile.id]);
+  }, [pusher, conversations, profile?.id]);
 
   const contextValue: MessagingContextValue = {
     conversations,

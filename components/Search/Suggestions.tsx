@@ -6,7 +6,6 @@ import { Image } from 'expo-image';
 import SearchSuggestions from '@/components/skeletons/search-suggestions';
 import { useSearchStore } from '@/lib';
 import { Text, View } from '@/components/Themed';
-import { Badge } from '../badges/user'; 
 import { Server, User } from '@/types';
 
 type RecentItem = {
@@ -54,7 +53,7 @@ const TopUsers =({suggestedUsers,addSearch}:Users)=>{
           className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
           />
             <View>
-              <Text className='text-sm font-rmedium'>{item.name} <Badge text='ace' colors={[]}/></Text>
+              <Text className='text-sm font-rmedium'>{item.name}</Text>
               <Text className='text-[10px] font-rregular'>{item.username}</Text>
             </View>
             

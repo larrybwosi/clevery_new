@@ -37,6 +37,7 @@ const UserProfile = () => {
   const { id } = useLocalSearchParams();
   const { data: user, isPending: loading, isError: netError } = useUser(id as string);
 
+  console.log(user)
   if (loading || netError) {
     return <Loader loadingText="Loading user profile..." />;
   }
@@ -70,7 +71,7 @@ const UserProfile = () => {
         entering={FadeInRight.duration(600).delay(600).springify()}
       >
         <Text className="text-xl font-bold mb-2 text-gray-800">Mutual Friends</Text>
-        {user?.commonFriends?.length ? (
+        {user?.commonFriends? (
           <MembersList 
             label="Mutual Friends"
             images={user.commonFriends.map(usr => usr?.image)} 

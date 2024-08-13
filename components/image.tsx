@@ -30,8 +30,8 @@ const Image: React.FC<ImageProps> = React.memo(({ source, width, height, style }
     <Skeleton 
       size="16" 
       // rounded="full" 
-      h={'12'} 
-      w={'12'} 
+      // h={''} 
+      // w={'12'} 
       startColor='gray.500' 
       endColor={'gray.800'} 
       borderRadius="full" 

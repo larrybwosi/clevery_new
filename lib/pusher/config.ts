@@ -13,7 +13,7 @@ import { endpoint } from '../env';
         apiKey: '824b4f0c4520e22ea7e3',
         cluster: 'ap1',
         authEndpoint:`${endpoint}/pusher/auth`,
-        activityTimeout: 0, // Disable activity timeout
+        // activityTimeout: 10, // Disable activity timeout
         pongTimeout: 90000, // Increase pong timeout (adjust as needed)
       });
 

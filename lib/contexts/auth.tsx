@@ -52,20 +52,21 @@ const useOAuthSignIn = (provider: 'google' | 'github') => {
         {
           clientId: GITHUB_CLIENT_ID,
           scopes: ['identity'],
-          redirectUri: AuthSession.makeRedirectUri({ scheme: 'clevery' }),
+          redirectUri: AuthSession.makeRedirectUri({ scheme: 'com.clevery.app' }),
         },
         githubDiscovery
       )
     : Google.useAuthRequest({
-        clientId: GOOGLE_CLIENT_ID,
-        scopes: ['identity'],
-        redirectUri: AuthSession.makeRedirectUri({ scheme: 'clevery' }),
+        clientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
+        // scopes: ['email,profile'],
+        redirectUri: AuthSession.makeRedirectUri({ scheme: 'com.clevery.app' }),
       });
 
   const [authResult, setAuthResult] = useState<AuthSession.AuthSessionResult | null>(null);
 
   useEffect(() => {
     if (response?.type === 'success') {
+      console.log(response)
       setAuthResult(response);
     }
   }, [response]);

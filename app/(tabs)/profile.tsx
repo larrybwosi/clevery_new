@@ -96,7 +96,7 @@ const FriendsComponent = ({friends}:any) => {
       <Text className='font-rmedium p-2.5'>Your Friends</Text>
       <FlatList
         data={friends}
-        keyExtractor={(item) => item?._id}
+        keyExtractor={(item) => item?.id}
         renderItem={({ item }) => (
           <TouchableOpacity className='flex-row items-center px-4xs py-1' activeOpacity={1} onPress={() =>{}}>
             <View className='mr-2.5'>

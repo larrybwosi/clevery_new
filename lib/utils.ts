@@ -14,6 +14,7 @@ import { Message } from "../types";
 
 import { Toast } from "native-base";
 import { endpoint } from "./env";
+import axios from "axios";
 
 
 interface User{
@@ -220,61 +221,65 @@ export const requestAndUpdatePermissions = async () => {
   }
 };
 
-export async function uploadImage(localUri: string): Promise<string | null> {
-  try {
-    // Get the file name from the local URI
-    const fileName = localUri.split('/').pop();
+// export async function uploadImage(localUri: string): Promise<string | null> {
+//   try {
+//     console.log(localUri)
+//     // Get the file name from the local URI
+//     const fileName = localUri.split('/').pop();
 
-    // Create a form data object
-    const formData = new FormData();
+//     // Create a form data object
+//     const formData = new FormData();
 
-    // If the platform is web, we can directly add the file to formData
-    if (Platform.OS === 'web') {
-      const response = await fetch(localUri);
-      const blob = await response.blob();
-      formData.append('file', blob, fileName);
-    } else {
-      // For native platforms, we need to read the file as base64
-      const base64 = await FileSystem.readAsStringAsync(localUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+//     // If the platform is web, we can directly add the file to formData
+//     // if (Platform.OS === 'web') {
+//     //   const response = await fetch(localUri);
+//     //   const blob = await response.blob();
+//     //   formData.append('file', blob, fileName);
+//     // } else {
+//       // For native platforms, we need to read the file as base64
+//       const base64 = await FileSystem.readAsStringAsync(localUri, {
+//         encoding: FileSystem.EncodingType.Base64,
+//       });
       
+//       // Create a Blob from the base64 string
+//       const blob = await fetch(`data:image/jpeg;base64,${base64}`).then(res => res.blob());
 
-      // Create a Blob from the base64 string
-      const blob = await fetch(`data:image/jpeg;base64,${base64}`).then(res => res.blob());
+//       formData.append('file', blob, fileName);
+//     // }
 
-      formData.append('file', blob, fileName);
-    }
+//     // Send the request to your backend
+//     // const response = await fetch(`${endpoint}/upload`, {
+//     //   method: 'POST',
+//     //   body: formData,
+//     //   headers: {
+//     //     'Content-Type': 'multipart/form-data',
+//     //   },
+//     // });
+//       console.log(formData)
+//     const res = await axios.post(`${endpoint}/upload`,formData)
+// console.log(res.data)
+//     // if (!response.ok) {
+//     //   throw new Error(`HTTP error! status: ${response.status}`);
+//     // }
 
-    // Send the request to your backend
-    const response = await fetch(`${endpoint}/upload`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const imageUrl = await response.json();
-    return imageUrl;
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    return null;
-  }
-}
+//     const imageUrl = ''
+//     return imageUrl;
+//   } catch (error) {
+//     console.error('Error uploading image:', error);
+//     return null;
+//   }
+// }
 
 export async function uploadFile(fileUri: string) {
   try {
     const response = await FileSystem.uploadAsync(`${endpoint}/upload`, fileUri, {
       fieldName: 'file',
       httpMethod: 'POST',
+      mimeType:'application/octet-stream',
       uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
     });
 
+    console.log(response)
     if (response.status === 200) {
       const result = JSON.parse(response.body);
       console.log('File uploaded successfully:', result.url);

@@ -35,7 +35,7 @@ export const OnlineFriendsProvider: React.FC<{ children: React.ReactNode }> = ({
    */
   const subscribeToPusherChannel = async () => {
     console.log('Subscribing to Pusher channel');
-    if (!pusher || !profile.id.trim()) {
+    if (!pusher || !profile?.id.trim()) {
       console.log('Pusher not initialized or user not logged in');
       return;
     }
@@ -102,7 +102,7 @@ export const OnlineFriendsProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    if (profile.id) {
+    if (profile?.id) {
       console.log('User logged in, setting up Pusher subscription');
       subscribeToPusherChannel();
     } else {
@@ -119,12 +119,12 @@ export const OnlineFriendsProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       console.log('Cleaning up OnlineFriendsProvider');
       subscription.remove();
-      if (pusher && profile.id) {
+      if (pusher && profile?.id) {
         pusher.unsubscribe({channelName: 'presence-friends'});
         console.log('Unsubscribed from Pusher channel');
       }
     };
-  }, [profile.id]);
+  }, [profile?.id]);
 
   const contextValue: OnlineFriendsContextValue = {
     onlineFriends,

@@ -32,10 +32,10 @@ const Chat = () => {
 
   if (!conversations?.length) {
     return (
-      <View className="flex-1 justify-center items-center p-5 bg-gray-50">
+      <View className="flex-1 justify-center items-center p-5">
         <Ionicons name="chatbubbles-outline" size={64} color="#4B5563" />
-        <Text className="text-xl font-semibold text-gray-800 mt-4 mb-2 font-rregular">No conversations yet</Text>
-        <Text className="text-sm text-gray-600 text-center mb-6 font-rregular">
+        <Text className="text-xl font-semibold text-gray-600 mt-4 mb-2 font-rregular">No conversations yet</Text>
+        <Text className="text-sm text-gray-400 text-center mb-6 font-rregular">
           Start by adding friends and begin chatting!
         </Text>
         <TouchableOpacity 

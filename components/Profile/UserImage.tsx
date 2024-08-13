@@ -6,10 +6,10 @@ import { Image } from 'expo-image';
 
  
 const ProfImage = () => {
-  const { profile:{image} } = useProfileStore();
-    const userImage = image? image:''
+  const { profile } = useProfileStore();
+    const userImage = profile?.image? profile?.image:''
 
-    if(image==''){
+    if(profile?.image==''){
         return<Ionicons name="person"size={20} color="grey"/>
     }
     
