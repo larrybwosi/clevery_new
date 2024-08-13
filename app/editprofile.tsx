@@ -44,7 +44,7 @@ const UserProfileEdit = () => {
       
       const res = await uploadingFile(avatarUri)
       console.log(res)
-      // setAvatarUri(res?.url)
+      setAvatarUri(res)
       return
       const updated = {id:userinfo.id, ...profile, ...connections,image:res }
 
