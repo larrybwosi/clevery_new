@@ -11,7 +11,7 @@ import Header from './Header';
 
 type NewMessage = {
   caption: string;
-  file: string[];
+  file: string | undefined;
 };
 
 type Props = {
@@ -104,9 +104,9 @@ const Messages: React.FC<Props> = ({
         ListFooterComponent={() => (
           <View className="h-3/4">
             <View className="ml-1/2 -mt-12">
-              {newMessage.file.length > 0 && (
+              {newMessage?.file && (
                 <ImageWithCaption
-                  source={newMessage.file[0]}
+                  source={newMessage?.file!}
                   showInputs={true}
                   onCaptionChange={setNewMessage}
                   closeFile={closeFile}

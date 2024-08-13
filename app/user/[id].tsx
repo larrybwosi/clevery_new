@@ -43,9 +43,9 @@ const UserSection = ({ title, content, icon }: { title: string; content: Content
       <FontAwesome5 name={icon} size={20} color="#4A5568" />
       <Text className="text-lg font-bold ml-2 text-gray-700">{title}</Text>
     </View>
-    {content ? (
+    {/* {content ? (
       <View className="flex-row flex-wrap">
-        {content.map((item) => (
+        {content?.map((item) => (
           <View key={item.id} className="mr-2 mb-2">
             <Image 
               source={ item.image! } height={50} width={50} style="w-12 h-12 rounded-full" />
@@ -54,7 +54,7 @@ const UserSection = ({ title, content, icon }: { title: string; content: Content
       </View>
     ) : (
       <Text className="text-base italic text-gray-400">No data available</Text>
-    )}
+    )} */}
   </Animated.View>
 );
 

@@ -8,7 +8,7 @@ const Loader = ({
 }) => {
   return (
     <View className="flex-1 justify-center items-center ">
-      <View className="bg-gray-50 rounded-2xl shadow-md p-8 items-center max-w-sm w-full">
+      <View className="rounded-2xl shadow-md p-8 items-center max-w-sm w-full">
         <View className="w-20 h-20 mb-6">
           <ActivityIndicator size="large" color="#3B82F6" />
         </View>

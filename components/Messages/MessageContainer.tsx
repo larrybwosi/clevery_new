@@ -1,10 +1,10 @@
 import { TouchableOpacity, Linking } from 'react-native';
-import { Image } from 'expo-image';
 import { View as SepV, Text as SepT } from 'native-base';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 
 import { formatDateString, multiFormatDateString } from '@/lib/utils';
 import { Text, View } from '@/components/Themed';
+import Image from '../image';
 
 interface Message {
   id: string;
@@ -17,10 +17,7 @@ interface Message {
     isAdmin?: boolean;
   };
   isSeparator?: boolean;
-  file?: {
-    url: string;
-    type: string;
-  };
+  file?: string
   reactions?: string;
 }
 
@@ -44,11 +41,12 @@ const MessageSeparator = ({ timestamp }: { timestamp: string }) => (
 const FileAttachment = ({ file }: { file: Message['file'] }) => {
   if (!file) return null;
 
-  const isPDF = file.type === 'application/pdf';
+  const isPDF = false
+  console.log(file)
 
   return (
     <TouchableOpacity 
-      onPress={() => Linking.openURL(file.url)}
+      onPress={() => Linking.openURL(file)}
       className="mb-2"
     >
       {isPDF ? (
@@ -58,8 +56,10 @@ const FileAttachment = ({ file }: { file: Message['file'] }) => {
         </View>
       ) : (
         <Image 
-          source={{ uri: file.url }} 
-          className="w-[280px] h-[150px] border border-gray-300 rounded-[10px]"
+          source={file} 
+          width={250}
+          height={150}
+          style="w-contain border border-gray-300 rounded-[10px]"
         />
       )}
     </TouchableOpacity>
@@ -108,8 +108,10 @@ const MessagesContainer: React.FC<MessagesProps> = ({ item, onDelete, onLongPres
     >
       <TouchableOpacity>
         <Image
-          source={{ uri: sender?.image }}
-          className="rounded-2xl border border-gray-300 h-10 w-10 mr-2.5"
+          source={ sender?.image}
+          width={40}
+          height={40}
+          style="rounded-2xl border border-gray-300 h-10 w-10 mr-2.5"
         />
       </TouchableOpacity>
       <View className="flex-1">

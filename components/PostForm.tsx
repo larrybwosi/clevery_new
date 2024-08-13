@@ -10,6 +10,7 @@ import { Text, View } from "./Themed";
 import Loader from "./Loader";
 import { Badge } from "./badges/user";
 import { CreatePostData, Post } from "@/types";
+import { uploadFile } from "@/lib/utils";
 
 type PostFormProps = {
   post?: Post;
@@ -38,6 +39,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
     }
     
     if(action==='Create'){
+      // const file = await uploadFile(fields.images[0])
       await createPost(fields)
     }
     if(action==='Update'){

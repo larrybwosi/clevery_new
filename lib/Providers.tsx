@@ -30,11 +30,11 @@ export const Providers = ({ children }:{children:React.ReactNode}) => {
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <NativeBaseProvider config={config} >
-          {/* <MessagingProvider> */}
+          <MessagingProvider>
             <OnlineFriendsProvider>
               {children}
             </OnlineFriendsProvider>
-          {/* </MessagingProvider> */}
+          </MessagingProvider>
         </NativeBaseProvider>
       </QueryClientProvider>
     </AuthProvider>

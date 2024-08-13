@@ -8,7 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
 import { showToastMessage, useProfileStore, useUpdateCurrentUser } from '@/lib';
 import { router } from 'expo-router';
-import { selectImage, uploadFile, uploadingFile,  } from '@/lib/utils';
+import { selectImage, uploadFile } from '@/lib/utils';
 
 const UserProfileEdit = () => {
   const { profile:userinfo,setProfile:updateProfileLocaly } = useProfileStore();
@@ -37,15 +37,12 @@ const UserProfileEdit = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async() => {
-    // setIsLoading(true);
+    setIsLoading(true);
     
     try {
-      // setIsLoading(true);
+      setIsLoading(true);
       
-      const res = await uploadingFile(avatarUri)
-      console.log(res)
-      setAvatarUri(res)
-      return
+      const res = await uploadFile(avatarUri)
       const updated = {id:userinfo.id, ...profile, ...connections,image:res }
 
       const response = await updateProfile(updated)

@@ -50,7 +50,7 @@ export const PostSchema = baseSchema.extend({
 export const MessageSchema = baseSchema.extend({
   text: z.string(),
   senderId: z.string(),
-  file: z.string().url().nullable(),
+  file: z.string().url().nullable().optional(),
   seen: z.boolean(),
   conversationId: z.string().nullable(),
   channelId: z.string().nullable(),
@@ -153,7 +153,7 @@ export const Validations = {
 
   CreateChannel: ChannelSchema.omit({ id: true, createdAt: true, updatedAt: true, serverId: true, messages: true }),
 
-  SendMessage: MessageSchema.omit({ id: true, createdAt: true, updatedAt: true, senderId: true, seen: true,sender: true,file: true,conversationId: true,channelId: true}),
+  SendMessage: MessageSchema.omit({ id: true, createdAt: true, updatedAt: true, senderId: true, seen: true,sender: true, conversationId: true,channelId: true}),
 
   UpdateMessage: MessageSchema.omit({ createdAt: true, updatedAt: true, senderId: true, seen: true,sender: true}),
 

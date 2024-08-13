@@ -16,21 +16,22 @@ import {
 } from '@/lib';
 import { Loader, MessageInput, Text, View, ErrorMessage, Messages } from '@/components';
 import { Message } from '@/types';
+import { uploadFile } from '@/lib/utils';
 
 interface NewMessage {
   caption: string;
-  file: any[];
+  file: string | undefined;
 }
 
 const UserMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<NewMessage>({
     caption: '',
-    file: []
+    file: undefined
   });
   const [isTyping, setIsTyping] = useState(false);
   const {profile} = useProfileStore();
-
+console.log(JSON.stringify(messages))
   const { id } = useLocalSearchParams();
 
   const {
@@ -97,27 +98,32 @@ const UserMessages: React.FC = () => {
   const chooseFile = useCallback(async () => {
     const file = await selectImage();
     if (file) {
-      setNewMessage((prev) => ({ ...prev, file }));
+      setNewMessage((prev) => ({ ...prev, file:file[0] }));
     }
   }, []);
 
   const handleSend = useCallback(async () => {
     const { caption, file } = newMessage;
     if (!conversation || !id) return;
-    if (!caption && !file.length) return showToastMessage("Please input a message");
+    if (!caption && !file?.trim()) return showToastMessage("Please input a message");
 
+    let fileUrl = undefined
+    if (file) { 
+      fileUrl = await uploadFile(file)
+    }
     await sendMessage({
       conversationId: conversation.id,
       message: {
-        text: caption
+        text: caption,
+        file:fileUrl
       }
     });
 
-    setNewMessage({ caption: '', file: [] });
+    setNewMessage({ caption: '', file: undefined});
   }, [newMessage, conversation, id, sendMessage]);
 
   const closeFile = useCallback(() => {
-    setNewMessage((prev) => ({ ...prev, file: [] }));
+    setNewMessage((prev) => ({ ...prev, file: undefined }));
   }, []);
 
   const handleMessageChange = useCallback((text: string) => {

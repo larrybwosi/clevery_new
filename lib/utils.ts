@@ -237,7 +237,7 @@ export async function uploadFile(file: string) {
       body: blob
     })
     const data = await response.json()
-    return  data.document._id
+    return  data.document.url
   } catch (error) {
     console.error('Error uploading file:', error);
     throw error;
