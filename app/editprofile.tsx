@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { 
   Avatar, Box, Button, Flex, FormControl, Heading, Icon, Input, 
   ScrollView, Text, VStack, Pressable, HStack
@@ -8,7 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import * as ImagePicker from 'expo-image-picker';
 import { showToastMessage, useProfileStore, useUpdateCurrentUser } from '@/lib';
 import { router } from 'expo-router';
-import { uploadFile,  } from '@/lib/utils';
+import { selectImage, uploadFile, uploadingFile,  } from '@/lib/utils';
 
 const UserProfileEdit = () => {
   const { profile:userinfo,setProfile:updateProfileLocaly } = useProfileStore();
@@ -42,7 +42,7 @@ const UserProfileEdit = () => {
     try {
       // setIsLoading(true);
       
-      const res = await uploadFile(avatarUri)
+      const res = await uploadingFile(avatarUri)
       console.log(res)
       // setAvatarUri(res?.url)
       return
@@ -60,25 +60,18 @@ const UserProfileEdit = () => {
   };
 
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) { 
-      setAvatarUri(result.assets[0].uri);
+  const chooseFile = useCallback(async () => {
+    const file = await selectImage();
+    if (file) {
+      setAvatarUri(file[0]);
     }
-  };
-
+  }, []);
   return (
     <ScrollView bg="gray.100"  pt={"20"} pb="16">
 
       <VStack space={4} mt="-50px" px={4} pb={6} pt="16">
         <Animatable.View animation="bounceIn" duration={1500}>
-          <Pressable onPress={pickImage}>
+          <Pressable onPress={chooseFile}>
             <Avatar 
               size="2xl" 
               source={{ uri: avatarUri }}

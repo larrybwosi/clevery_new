@@ -10,7 +10,9 @@ import {
   parseIncomingMessage,
   showToastMessage,
   useGetConversation,
-  useSendMessage
+  useSendMessage,
+  useProfileStore,
+  useMarkMessagesAsSeen
 } from '@/lib';
 import { Loader, MessageInput, Text, View, ErrorMessage, Messages } from '@/components';
 import { Message } from '@/types';
@@ -27,6 +29,7 @@ const UserMessages: React.FC = () => {
     file: []
   });
   const [isTyping, setIsTyping] = useState(false);
+  const {profile} = useProfileStore();
 
   const { id } = useLocalSearchParams();
 
@@ -40,6 +43,10 @@ const UserMessages: React.FC = () => {
     mutateAsync: sendMessage,
     isPending: sendingMessage,
   } = useSendMessage();
+
+  const {
+    mutateAsync: markAsSeen,
+  } = useMarkMessagesAsSeen();
 
   useEffect(() => {
     const messageHandler = (message: Message) => {
@@ -74,8 +81,16 @@ const UserMessages: React.FC = () => {
   }, [conversation?.id]);
 
   useEffect(() => {
+    if (!conversation) return;
     if (conversation?.messages) {
       setMessages(conversation.messages);
+    }
+    const unreadIds = conversation.messages
+        .filter(msg => !msg.seen && msg.senderId !== profile?.id)
+        .map(msg => msg.id);
+        console.log('unreadIds', unreadIds)
+    if (unreadIds.length > 0) {
+      markAsSeen({ conversationId: conversation.id, messageIds: unreadIds });
     }
   }, [conversation?.messages]);
 
@@ -107,14 +122,6 @@ const UserMessages: React.FC = () => {
 
   const handleMessageChange = useCallback((text: string) => {
     setNewMessage((prev) => ({ ...prev, caption: text }));
-    // Emit typing event
-    // if (conversation?.id) {
-    //   pusher.trigger({
-    //     channelName: `private-${conversation.id}`,
-    //     eventName: 'typing',
-    //     data: {}
-    //   });
-    // }
   }, [conversation?.id]);
 
   if (loadingConversation) return <Loader loadingText='Loading your conversation' />;

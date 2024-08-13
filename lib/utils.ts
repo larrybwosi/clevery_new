@@ -270,6 +270,45 @@ export const requestAndUpdatePermissions = async () => {
 //   }
 // }
 
+
+// const createFormData = (uri: string) => {
+//   const fileName = uri?.split('/').pop();
+//   const fileType = fileName?.split('.').pop();
+//   const formData = new FormData();
+//   formData.append('file', { 
+//     uri, 
+//     name: fileName, 
+//     type: `image/${fileType}` 
+//   });
+  
+//   return formData;
+// }
+export const uploadingFile= async(uri: string) => {
+  var fs = require("fs");
+  var options = {
+    method: "POST",
+    url: endpoint + "/upload",
+    headers: {},
+    formData: {
+      file: {
+        value: fs.createReadStream(uri),
+        options: {
+          filename: "image.jpg",
+          contentType: null
+        }
+      }
+    }
+  };
+
+  try {
+    const response = await axios.request(options);
+    console.log(response.data);
+    return response.data
+  } catch (error) {
+    console.error(error);
+  }
+  
+}
 export async function uploadFile(fileUri: string) {
   try {
     const response = await FileSystem.uploadAsync(`${endpoint}/upload`, fileUri, {
