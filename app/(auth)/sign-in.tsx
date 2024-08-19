@@ -5,7 +5,7 @@ import { Link, router } from "expo-router";
 
 import { CustomButton, FormField,Butttons } from "@/components";
 import { showToastMessage } from "@/lib";
-import ToastAlert, { showToastAlert } from "@/components/toast-alert";
+import { showToastAlert } from "@/components/toast-alert";
 import { useAuth } from "@/lib/contexts/auth";
 
 type AuthProviders = "google" | "facebook" | "github";
@@ -46,6 +46,7 @@ const SignIn = () => {
         description: "You have successfully logged in",
         status: "success",
       })
+      router.navigate('/editprofile')
       
     } catch (error) {
       console.log("Sign-in",error)

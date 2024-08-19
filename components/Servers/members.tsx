@@ -1,7 +1,8 @@
-import { Skeleton, HStack, Image } from 'native-base';
+import { Skeleton, HStack } from 'native-base';
 import { FlatList, View } from 'react-native';
 
 import { Text } from '../Themed';
+import Image from '../image';
 
 interface MembersComponentProps {
   userImages: string[];
@@ -10,11 +11,10 @@ interface MembersComponentProps {
 const MembersComponent: React.FC<MembersComponentProps> = ({ userImages }) => {
   const renderItem = ({ item }: { item: string }) => (
     <Image
-      source={{ uri: item }}
-      alt={`User Image`}
-      size={10}
-      rounded="full"
-      mr={2}
+      source={ item }
+      height={30}
+      width={30}
+      style='w-[30px] h-[30px] rounded-[15px] border-[0.5px]'
     />
   );
 

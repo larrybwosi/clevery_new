@@ -16,7 +16,7 @@ const UserInfo = ({profile:{name, image, username } }:any) => {
         <Text className='font-rbold text-xl' >
           {name}
           </Text> 
-        <Text className='font-plight text-xs' >@{username|| name}</Text>
+        <Text className='font-rregular text-xs' >@{username|| name}</Text>
       </View>
     </View>
   ); 

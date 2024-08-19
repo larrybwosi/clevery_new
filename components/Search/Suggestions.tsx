@@ -1,14 +1,14 @@
 import { TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Image } from 'expo-image';
 
 import SearchSuggestions from '@/components/skeletons/search-suggestions';
-import { ContributorBadge, LegendBadge, NewcomerBadge } from '@/components/badges/user';
 import { Text, View } from '@/components/Themed';
 import { useSearchStore } from '@/lib';
 import { Server, User } from '@/types';
 import { HStack } from 'native-base';
+import Badge from '../badges/user';
+import Image from '../image';
 
 type RecentItem = {
   id: string;
@@ -51,8 +51,10 @@ const TopUsers =({suggestedUsers,addSearch}:Users)=>{
           <HStack>
             <TouchableOpacity className='flex-row items-center p-1.5' onPress={()=>handleUserClick(item)}>
               <Image
-              source={{ uri: item.image }}
-              className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
+                source={item.image! }
+                height={80}  
+                width={80}
+                style='h-[50px] w-[50px] rounded-[25px] border mr-4 '
               />
                 <View>
                   <Text className='text-sm font-rmedium'>{item.name}</Text>
@@ -60,7 +62,6 @@ const TopUsers =({suggestedUsers,addSearch}:Users)=>{
                 </View>
                 
             </TouchableOpacity>
-            <LegendBadge/>
           </HStack>
           )
         }
@@ -74,28 +75,30 @@ const TopServers =({suggestedServers}:{suggestedServers:Server[]})=>{
     <>
       <Text className='text-[10px] pb-2 font-rregular' >Top Servers</Text>
       <FlatList
-      data={suggestedServers}
-      ListEmptyComponent={<SearchSuggestions/>}
-      renderItem={({ item }) =>  (
-        <View className='flex-row items-center p-1.5'>
-          <Image
-          source={{ uri: item.image! }}
-          className='h-[50px] w-[50px] rounded-[25px] border mr-4 '
-          />
-          <View>
-            <Text className='text-sm font-rmedium'>
-              {item.name}
-            </Text>
+        data={suggestedServers}
+        ListEmptyComponent={<SearchSuggestions/>}
+        renderItem={({ item }) =>  (
+          <View className='flex-row items-center p-1.5'>
+            <Image
+            source={item.image! }
+            height={80}  
+            width={80}
+            style='h-[50px] w-[50px] rounded-[25px] border mr-4 '
+            />
+            <View>
+              <Text className='text-sm font-rmedium'>
+                {item.name}
+              </Text>
 
-            <Text className='text-[10px] font-rregular' >
-              {item.description}
-            </Text>
+              <Text className='text-[10px] font-rregular' >
+                {item.description}
+              </Text>
+            </View>
           </View>
-        </View>
-        )
-      }
-      keyExtractor={(item) => item.id.toString()}
-    />
+          )
+        }
+        keyExtractor={(item) => item.id.toString()}
+      />
     </>
   )
 }
@@ -118,8 +121,10 @@ const Suggestions: React.FC<SuggestionsProps> = ({
     <View className='flex-row  justify-between items-center '>
       <TouchableOpacity className='flex-row items-center p-1.5' >
         <Image
-          source={{ uri: item.image }}
-          className='h-[10px] w-[10px] rounded-[25px] border mr-4 '
+          source={item.image! }
+          height={80}  
+          width={80}
+          style='h-[50px] w-[50px] rounded-[25px] border mr-4 '
         />
 
         <View>

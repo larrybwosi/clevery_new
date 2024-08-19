@@ -3,7 +3,6 @@ import { Platform } from "react-native";
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import * as WebBrowser from "expo-web-browser";
-import * as Updates from 'expo-updates';
 import React from "react";
 
 import { Message } from "../types";
@@ -12,11 +11,6 @@ import { Message } from "../types";
 import { Toast } from "native-base";
 import { endpoint } from "./env";
 
-
-interface User{
-  id:string
-  name:string;
-}
 export const showToastMessage = (message:string) => {
   Toast.show({
     id:message,
@@ -124,18 +118,6 @@ export const selectImage = async () => {
   }
 };
 
-export async function fetchUpdate() {
-  try {
-    const update = await Updates.checkForUpdateAsync();
-
-    if (update.isAvailable) {
-      await Updates.fetchUpdateAsync();
-      await Updates.reloadAsync();
-    }
-  } catch (error) {
-    alert(error) 
-  }
-}
 
 // export const displayNotification = async (notification: any) => {
 //   const settings = await notifee.requestPermission();

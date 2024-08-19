@@ -24,8 +24,8 @@ const AuthorInfo = ({ author, timestamp,iscomment }:AuthorInfoProps) => {
           {author?.image &&
            <Image 
             source={author?.image} 
-            width={100}
-            height={100}
+            width={80}
+            height={80}
             style='mr-2.5 w-[50px] h-[50px] rounded-3xl'
           />
           }

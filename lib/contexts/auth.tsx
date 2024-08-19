@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setProfile(currentAccount)
       } catch (error) {
         console.error('Error checking current user:', error);
-        router.navigate('sign-in');
+        router.replace('sign-in');
       }
     };
 

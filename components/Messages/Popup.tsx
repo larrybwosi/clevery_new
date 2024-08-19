@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { Box, FlatList, Text, View, Pressable } from 'native-base';
+import { Box, FlatList, Text, View, Pressable } from '@gluestack-ui/themed';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 

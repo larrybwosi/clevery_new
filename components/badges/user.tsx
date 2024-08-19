@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { StyleSheet, Animated, ViewStyle } from 'react-native';
-import { Box, Icon } from "native-base";
 import { Ionicons } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
 import { Text } from "../Themed";
+import { LinearGradient } from "@gluestack-ui/themed";
+import { Box } from "@gluestack-ui/themed";
+import { Icon } from "@gluestack-ui/themed";
 
 interface BadgeProps {
   text: string;
@@ -45,7 +47,8 @@ const BadgeBase: React.FC<BadgeProps> = ({ text, colors, icon, animation, elite,
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
-      <Box
+      <LinearGradient
+
         bg={{
           linearGradient: {
             colors: colors,

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, VStack, Input, Text, Button, Icon, useToast } from 'native-base';
+import { Box, VStack, Input, InputField, Text, Button, ButtonText, Icon, Toast, useToast } from '@gluestack-ui/themed';
 import { Ionicons } from '@expo/vector-icons';
 
 const CreateChannelComponent = () => {
@@ -19,24 +19,30 @@ const CreateChannelComponent = () => {
     // Implement channel creation logic here
     // If there's an error, show the toast notification
     toast.show({
-      title: "Error creating channel",
-      description: "Please try again later.",
+      render: () => (
+        <Toast>
+          <Text>Error creating channel</Text>
+          <Text>Please try again later.</Text>
+        </Toast>
+      ),
     });
   };
 
   return (
-    <Box p={4} bg="white" safeArea>
-      <VStack space={4}>
-        <Text fontSize="2xl" fontWeight="bold">Create channel</Text>
-        <Text fontSize="md" color="gray.500">Create your own channel from below.</Text>
+    <Box p="$4" bg="$white" >
+      <VStack gap="$4">
+        <Text fontSize="$2xl" fontWeight="$bold">Create channel</Text>
+        <Text fontSize="$md" color="$gray500">Create your own channel from below.</Text>
 
-        <Input
-          placeholder="Channel name"
-          value={channelName}
-          onChangeText={setChannelName}
-        />
+        <Input>
+          <InputField
+            placeholder="Channel name"
+            value={channelName}
+            onChangeText={setChannelName}
+          />
+        </Input>
 
-        <Text fontSize="md" fontWeight="bold">Categories</Text>
+        <Text fontSize="$md" fontWeight="$bold">Categories</Text>
         <Box flexDirection="row" justifyContent="space-between">
           {categories.map((category) => (
             <Button
@@ -45,33 +51,34 @@ const CreateChannelComponent = () => {
               onPress={() => setSelectedCategory(category.name)}
             >
               <VStack>
-                <Icon as={Ionicons} name={category.icon} size="md" />
-                <Text fontSize="xs">{category.name}</Text>
+                <Ionicons name={category.icon} size="md" />
+                <Text fontSize="$xs">{category.name}</Text>
               </VStack>
             </Button>
           ))}
         </Box>
 
-        <Text fontSize="md" fontWeight="bold">Description</Text>
-        <Input
-          placeholder="Write here ..."
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          numberOfLines={3}
-        />
+        <Text fontSize="$md" fontWeight="$bold">Description</Text>
+        <Input>
+          <InputField
+            placeholder="Write here ..."
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={3}
+          />
+        </Input>
 
         <Box
-          // onPress={handleCreateChannel}
           bg={{
             linearGradient: {
-              colors: ['lightBlue.300', 'violet.800'],
+              colors: ['$lightBlue300', '$violet800'],
               start: [0, 0],
               end: [1, 0],
             },
           }}
         >
-          Confirm and create
+          <ButtonText>Confirm and create</ButtonText>
         </Box>
       </VStack>
     </Box>

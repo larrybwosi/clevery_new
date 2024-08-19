@@ -1,5 +1,6 @@
+import { Image } from 'expo-image';
 import { useState, useEffect } from 'react';
-import { View, Image, Dimensions, LayoutChangeEvent } from 'react-native';
+import { View, Dimensions, LayoutChangeEvent } from 'react-native';
 
 interface ImageItem {
   uri: string;

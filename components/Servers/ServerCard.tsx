@@ -1,24 +1,27 @@
-import { Image, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Text, View } from '../Themed';
 import { router } from 'expo-router';
+import Image from '../image';
 
 interface ServerCardProps {
   id: string;
   name: string;
   description: string;
   image: string;
-  onPress: () => void;
 }
 
-const ServerCard: React.FC<ServerCardProps> = ({ id, name, description, image, onPress }) => {
+const ServerCard: React.FC<ServerCardProps> = ({ id, name, description, image }) => {
 
     return (
     <TouchableOpacity onPress={()=>router.navigate(`/server/${id}`)} className='flex-1' >
       <View className='flex-row items-center p-4'>
-        <Image 
-        source={{ uri: image }} 
-        className='h-16 w-16 rounded-[32px]' />
+        <Image
+          source={ image } 
+          width={80}
+          height={80}
+          style='h-[60px] w-[60px] rounded-[30px]' 
+        />
         <View className='ml-4'>
           <Text className='text-base font-rbold'>{name}</Text>
           <Text 

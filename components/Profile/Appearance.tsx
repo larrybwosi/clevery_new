@@ -2,7 +2,6 @@ import { memo, useCallback } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { TouchableOpacity, View, ScrollView } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 
 import { useThemeStore } from '@/lib/zustand/store';
 import { Text } from '@/components/Themed';
@@ -27,14 +26,14 @@ const Appearance = () => {
     }));
 
     return (
-      <Animated.View className="mb-4 rounded-lg overflow-hidden" style={animatedStyle}>
-        <BlurView intensity={80} tint={mode} className="p-4">
+      <Animated.View className="mb-4 rounded-lg overflow-hidden bg-white/10" style={animatedStyle}>
+        <View className="p-4">
           <View className="flex-row items-center mb-1">
             <Feather name={iconName} size={24} color="gray" />
-            <Text className="text-lg font-rmedium ml-2">{label}</Text>
+            <Text className="text-lg font-rmedium ml-2 ">{label}</Text>
           </View>
           <Text className="text-xs font-rregular opacity-70">{description}</Text>
-        </BlurView>
+        </View>
       </Animated.View>
     );
   });
@@ -80,7 +79,7 @@ const Appearance = () => {
             <View className={`h-5 w-5 rounded-full border-2 border-blue-500 items-center justify-center ${mode === theme ? 'bg-blue-500' : ''}`}>
               {mode === theme && <View className="h-2.5 w-2.5 rounded-full bg-white" />}
             </View>
-            <Text className="text-sm ml-2 font-pregular">{theme}</Text>
+            <Text className="text-sm ml-2 font-rregular">{theme}</Text>
           </TouchableOpacity>
         ))}
       </View>

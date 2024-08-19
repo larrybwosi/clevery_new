@@ -1,10 +1,11 @@
 import React from 'react';
-import { FlatList, TouchableOpacity, Image } from 'react-native';
+import { FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Post as PostType, Server, User } from '@/types';
 import { Text, View } from '../Themed';
 import { HStack } from 'native-base';
+import Image from '../image';
 
 interface Link {
   id: number;
@@ -19,15 +20,25 @@ interface SearchResultsProps {
 
 const UserItem: React.FC<User> = ({ id, username, image, name }) => (
   <TouchableOpacity className="flex-row items-center p-4 rounded-lg mb-2 shadow-sm">
-    <Image source={{ uri: image }} className="w-12 h-12 rounded-full" />
+    <Image
+      source={image! }
+      height={80}  
+      width={80}
+      style='h-[50px] w-[50px] rounded-[25px] border '
+    />
     <Text className="ml-4 text-sm font-rregular">{username || name}</Text>
   </TouchableOpacity>
 );
 
 const ServerItem: React.FC<Server> = ({ id, name, image }) => (
   <TouchableOpacity className="flex-row items-center p-4 rounded-lg mb-2 shadow-sm">
-    <Image source={{ uri: image! }} className="w-12 h-12 rounded-lg" />
-    <Text className="ml-4 text-sm font-rregular">{name}</Text>
+
+    <Image
+      source={image|| ''}
+      height={80}  
+      width={80}
+      style='h-[50px] w-[50px] rounded-[25px] border '
+    />    <Text className="ml-4 text-sm font-rregular">{name}</Text>
   </TouchableOpacity>
 );
 
@@ -43,8 +54,13 @@ const Post: React.FC<PostType> = ({ id, content, createdAt, author }) => (
     <HStack style={{ gap:80 }} alignItems={'center'}>
       <View>
         <View className="flex-row items-center mb-2">
-          <Image source={{ uri: author.image }} className="w-8 h-8 rounded-full" />
-          <Text className="ml-2 font-rbold">{author.name}</Text>
+        <Image
+          source={author.image! }
+          height={80}  
+          width={80}
+          style='h-[50px] w-[50px] rounded-[25px] border'
+        />          
+        <Text className="ml-2 font-rbold">{author.name}</Text>
         </View>
         <Text className="font-rregular mb-2">{content}</Text>
       </View>

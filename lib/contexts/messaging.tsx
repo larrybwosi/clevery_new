@@ -1,14 +1,13 @@
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { PusherEvent } from '@pusher/pusher-websocket-react-native';
 import { AppState } from 'react-native';
-import axios from 'axios';
 import notifee, { AndroidImportance, AndroidStyle, AndroidCategory, EventType } from '@notifee/react-native';
-import { useQuery, useMutation, useQueryClient, QueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { Conversation, Message, User } from '@/types';
+import { Conversation, Message } from '@/types';
 import { pusher } from '@/lib/pusher/config';
-import { endpoint } from '@/lib/env';
 import { useProfileStore } from '../zustand/store';
+import { useGetConversations, useSendMessage } from '@/lib/actions/hooks/conversation';
 
 const NOTIFICATION_CHANNEL_ID = 'new-messages';
 
@@ -22,10 +21,8 @@ interface MessagingContextValue {
   isLoading: boolean;
   /** Any error that occurred while fetching conversations */
   error: Error | null;
-  /** Function to refresh conversations */
-  refreshConversations: () => Promise<void>;
   /** Function to send a message */
-  sendMessage: (conversationId: string, message: string) => Promise<void>;
+  sendMessage: (conversationId: string, message: string) => Promise<Message>;
 }
 
 const MessagingContext = createContext<MessagingContextValue | null>(null);
@@ -46,52 +43,14 @@ interface MessagingProviderProps {
 export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }) => {
   const { profile } = useProfileStore();
 
-  /**
-   * Fetches conversations from the API
-   */
-  const fetchConversations = useCallback(async (): Promise<Conversation[]> => {
-    console.log('Fetching conversations');
-    if (!profile?.id) {
-      console.log('User not logged in, skipping conversation fetch');
-      return [];
-    }
-
-    const response = await axios.get<Conversation[]>(`${endpoint}/conversations`);
-    console.log('Conversations fetched successfully');
-    return response.data;
-  }, [profile?.id]);
-
-  const { data: conversations = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['conversations', profile?.id],
-    queryFn: fetchConversations,
-    enabled: !!profile?.id,
-  });
+  const { data: conversations = [], isLoading, error, refetch } = useGetConversations()
 
   const queryClient = useQueryClient();
 
-  const sendMessageMutation = useMutation({
-    mutationFn: async ({ conversationId, message }: { conversationId: string; message: string }) => {
-      console.log(`Sending message to conversation ${conversationId}`);
-      if (!profile?.id) {
-        throw new Error('User not logged in, cannot send message');
-      }
-      const response = await axios.post(`${endpoint}/conversations/${conversationId}/messages`, { content: message });
-      console.log('Message sent successfully');
-      return response.data;
-    },
-    onSuccess: (newMessage, { conversationId }) => {
-      queryClient.setQueryData(['conversations', profile?.id], (oldData: Conversation[] | undefined) => 
-        oldData?.map(conv => 
-          conv.id === conversationId
-            ? { ...conv, lastMessage: newMessage }
-            : conv
-        )
-      );
-    },
-    onError: (error) => {
-      console.error('Error sending message:', error);
-    },
-  });
+  const {
+    mutateAsync: sendMessageMutation,
+    isPending: sendingMessage,
+  } = useSendMessage();
 
   /**
    * Subscribes to Pusher channels for each conversation
@@ -207,7 +166,7 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
         if (type === EventType.ACTION_PRESS && detail.pressAction?.id === 'reply') {
           const { input, notification } = detail;
           if (input && notification?.data?.conversationId) {
-            sendMessageMutation.mutate({ conversationId: notification.data.conversationId as string, message: input });
+            sendMessageMutation({ conversationId: notification.data.conversationId as string, message:{text: input }});
           }
         }
       });
@@ -216,7 +175,7 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
         if (type === EventType.ACTION_PRESS && detail.pressAction?.id === 'reply') {
           const { input, notification } = detail;
           if (input && notification?.data?.conversationId) {
-            await sendMessageMutation.mutateAsync({ conversationId: notification.data.conversationId as string, message: input });
+            sendMessageMutation({ conversationId: notification.data.conversationId as string, message:{text: input }});
           }
         }
       });
@@ -257,9 +216,8 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
     conversations,
     isLoading,
     error,
-    refreshConversations: refetch(),
     sendMessage: (conversationId: string, message: string) => 
-      sendMessageMutation.mutateAsync({ conversationId, message }),
+      sendMessageMutation({ conversationId, message:{text: message } }),
   }), [conversations, isLoading, error, refetch, sendMessageMutation]);
 
   return (

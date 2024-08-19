@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, Animated } from 'react-native';
-import { Box, Text, VStack, HStack, Heading, Icon, Spinner } from 'native-base';
+import { Box, Text, VStack, HStack, Heading, Icon, Spinner } from '@gluestack-ui/themed';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -45,24 +45,24 @@ const FriendRequestItem: React.FC<{ item: FriendRequest; onAccept: () => void; o
 
   return (
     <AnimatedTouchableOpacity style={animatedStyle}>
-      <Box bg="white" rounded="xl" shadow={3} p={4} mb={3}>
-        <HStack space={4} alignItems="center">
+      <Box bg="$white" rounded="$xl" p={4} mb={'$3'}>
+        <HStack space={'md'} alignItems="center">
           <Image 
             source={{ uri: item.avatar }} 
             style={{ width: 60, height: 60, borderRadius: 30 }}
             transition={1000}
           />
           <VStack flex={1}>
-            <Text fontSize="lg" fontWeight="bold" mb={1}>{item.username}</Text>
-            <Text fontSize="sm" color="gray.600">Wants to be your friend</Text>
+            <Text fontSize="$lg" fontWeight="bold" mb={1}>{item.username}</Text>
+            <Text fontSize="$sm" color="gray.600">Wants to be your friend</Text>
           </VStack>
-          <HStack space={2}>
+          <HStack space={'sm'}>
             <TouchableOpacity onPress={onAccept}>
               <LinearGradient
                 colors={['#4CAF50', '#45B649']}
                 style={{ width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' }}
               >
-                <Icon as={Ionicons} name="checkmark-outline" size={6} color="white" />
+                <Ionicons name="checkmark-outline" size={20} color="white" />
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity onPress={onReject}>
@@ -70,7 +70,7 @@ const FriendRequestItem: React.FC<{ item: FriendRequest; onAccept: () => void; o
                 colors={['#FF5252', '#FF1744']}
                 style={{ width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' }}
               >
-                <Icon as={Ionicons} name="close-outline" size={6} color="white" />
+                <Ionicons name="close-outline" size={20} color="white" />
               </LinearGradient>
             </TouchableOpacity>
           </HStack>
@@ -101,8 +101,8 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests, isLoadi
   if (isLoading) {
     return (
       <Box flex={1} justifyContent="center" alignItems="center" bg="gray.100">
-        <Spinner size="lg" color="blue.500" />
-        <Text mt={4} fontSize="md" color="gray.600">Loading friend requests...</Text>
+        <Spinner size="large" color="$blue.500" />
+        <Text mt={4} fontSize="$md" color="gray.600">Loading friend requests...</Text>
       </Box>
     );
   }
@@ -111,7 +111,7 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests, isLoadi
     <Box flex={1}p={4}>
       
       {friendRequests.length === 0 ? (
-        <VStack flex={1} justifyContent="center" alignItems="center" space={4}>
+        <VStack flex={1} justifyContent="center" alignItems="center" space={'md'}>
           <LottieView
             source={require('@/assets/animations/empty.json')}
             ref={animation}
@@ -119,10 +119,10 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests, isLoadi
             loop
             style={{ width: 200, height: 200 }}
           />
-          <Text fontSize="lg" color="gray.600" textAlign="center">
+          <Text fontSize="$lg" color="gray.600" textAlign="center">
             No friend requests at the moment.
           </Text>
-          <Text fontSize="md" color="gray.500" textAlign="center">
+          <Text fontSize="$md" color="gray.500" textAlign="center">
             When someone sends you a friend request, it will appear here.
           </Text>
         </VStack>

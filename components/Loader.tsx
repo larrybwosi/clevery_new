@@ -1,4 +1,3 @@
-import { ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from './Themed';
 import LottieView from 'lottie-react-native';
@@ -12,7 +11,7 @@ const Loader = ({
       <View className="rounded-2xl shadow-md p-8 items-center max-w-sm w-full">
         <View className="w-36 h-36 mb-6">
           <LottieView
-            source={require('@/assets/animations/loading.json')}
+            source={require('@/assets/animations/loader.json')}
             autoPlay
             loop
             style={{

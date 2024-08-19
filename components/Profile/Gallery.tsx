@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
 
@@ -74,12 +73,12 @@ const Gallery: React.FC<GalleryProps> = ({ images, loading }) => {
         contentContainerStyle={{ paddingHorizontal: 4 }}
       /> */}
       <Overlay
-        isVisible={!!selectedImage}
         onBackdropPress={() => setSelectedImage(null)}
         overlayStyle={{ backgroundColor: 'transparent', padding: 0 }}
         fullScreen
+        isOpen={!!selectedImage}
       >
-        <BlurView intensity={100} tint="dark" style={{ flex: 1 }}>
+        <View className="flex-1 bg-black/80">
           <TouchableOpacity
             onPress={() => setSelectedImage(null)}
             className="absolute top-10 right-5 z-10"
@@ -89,12 +88,12 @@ const Gallery: React.FC<GalleryProps> = ({ images, loading }) => {
           {selectedImage && (
             <Image
               source={{ uri: selectedImage }}
-              style={{ width: '100%', height: '100%' }}
+              className="w-full h-full"
               contentFit="contain"
               transition={300}
             />
           )}
-        </BlurView>
+        </View>
       </Overlay>
     </View>
   );

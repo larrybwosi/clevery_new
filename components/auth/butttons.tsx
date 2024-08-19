@@ -9,10 +9,10 @@ const Butttons = ({signInWithProvider}:{signInWithProvider:(provider:AuthProvide
   return (
     <View className='flex-row justify-around mt-3 w-full mb-4 bg-primary'>
         <TouchableOpacity className='p-2.5 rounded border border-gray-600 w-[30%] items-center' onPress={()=>signInWithProvider('google')} >
-          <Image source={require('../../assets/images/google.png')} className='w-6 h-6' />
+          <Image source={require('@/assets/images/google.png')} className='w-6 h-6' />
         </TouchableOpacity>
         <TouchableOpacity className='p-2.5 rounded border border-gray-600 w-[30%] items-center' onPress={()=>signInWithProvider('facebook')} >
-          <Image source={require('../../assets/images/facebook.png')} className='w-6 h-6' />
+          <Image source={require('@/assets/images/facebook.png')} className='w-6 h-6' />
         </TouchableOpacity>
         <TouchableOpacity className='p-2.5 rounded border border-gray-600 w-[30%] items-center' onPress={()=>signInWithProvider('github')} >
           <FontAwesome name="github" size={24} color="white" className='w-6 h-6' />

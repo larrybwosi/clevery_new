@@ -51,16 +51,16 @@ const ProfilePage = () => {
         <View className='flex-row justify-between items-center gap-1 mr-4 mt-3'>
           {Object.entries(stats).map(([label, number]) => (
             <View key={label} className='flex-col items-center mt-3'>
-              <Text className='font-pregular font-[15px]'>{number}</Text>
-              <Text className='font-rregular font-[10px] p-1 rounded-[9px]'>{label}</Text>
+              <Text className='font-pregular text-[15px]'>{number}</Text>
+              <Text className='font-rregular text-[10px] p-1 rounded-[9px]'>{label}</Text>
             </View>
           ))}
         </View>
       </View>
 
       <View className='mx-2.5'>
-        <Text className='font-rmedium mt-3.5'>About Me: <Text className='font-pregular mt-2.5 text-sm'>{profile.bio}</Text></Text>
-        <Text className='font-rmedium mt-3.5'>Member Since: <Text className='font-pregular mt-2.5 text-sm'>{profile.createdAt && formatDateString(profile.createdAt)}</Text></Text>
+        <Text className='font-rmedium mt-3.5'>About Me: <Text className='font-pregular mt-2.5 text-xs ml-3'>{profile.bio}</Text></Text>
+        <Text className='font-rmedium mt-3.5'>Member Since: <Text className='font-pregular mt-2.5 text-xs ml-3'>{profile.createdAt && formatDateString(profile.createdAt)}</Text></Text>
       </View>
 
       <View className='flex-row justify-between items-center p-5 me-12 ms-12'>

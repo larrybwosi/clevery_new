@@ -3,7 +3,7 @@ import { FlatList, TouchableOpacity, Animated } from 'react-native';
 import { Text, View } from '../Themed';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, Switch } from 'native-base';
+import { ScrollView, Switch } from '@gluestack-ui/themed';
 
 interface Notification {
   id: string;

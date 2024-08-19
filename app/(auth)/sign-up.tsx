@@ -13,6 +13,7 @@ const SignUp = () => {
   const {
     loading,
     signIn,
+    signUp,
     user
   } = useAuth()
    
@@ -22,12 +23,6 @@ const SignUp = () => {
     password: "",
   });
   
-// const {
-//   mutateAsync:createUser,
-//   isPending:creating,
-//   isError:error
-// } = useCreateEmailUser()
-
 const signInWithProvider = async (provider: AuthProviders) => {
   if (provider === 'google') return signIn("google");
   if (provider === 'facebook') return signIn("google");
@@ -41,8 +36,8 @@ const signInWithProvider = async (provider: AuthProviders) => {
     }
 
     try {
-      // await createUser(form)
-       
+     const res = await signUp(form)
+       console.log(res)
       // router.replace("/");
     } catch (error:any) {
       console.log("Failed to create user: ",error.message)
@@ -96,7 +91,6 @@ const signInWithProvider = async (provider: AuthProviders) => {
             title="Sign Up"
             handlePress={submit}
             containerStyles="mt-7 mb-3"
-            // isLoading={creating}
           />
 
         <Butttons

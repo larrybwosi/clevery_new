@@ -89,7 +89,6 @@ const closeFile = () => {
   // if (error) return <ErrorMessage message='Failed'/>
   const sortedMessages=messages ?sortMessages({messages:messages!}):[]
 
-  console.log(sortedMessages)
   if (channel?.type === "AUDIO"){
     return ( 
       <AudioVideoComponent

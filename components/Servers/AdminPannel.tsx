@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import { AntDesign, Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import {
   Box,
@@ -9,31 +9,37 @@ import {
   Icon,
   Avatar,
   Input,
+  InputField,
   Button,
-  IconButton,
-  useDisclose,
+  ButtonText,
+  ButtonIcon,
   AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogCloseButton,
+  AlertDialogBody,
+  AlertDialogFooter,
   Divider,
-  ScrollView,
   Fab,
-} from 'native-base';
+  FabIcon,
+  FabLabel,
+} from '@gluestack-ui/themed';
 import { showToastMessage, useProfileStore } from '@/lib';
-import { Server,Channel, User, ServerMember } from '@/types';
+import { Server, Channel, User, ServerMember } from '@/types';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
-import { Touchable } from 'react-native';
-import { TouchableOpacity } from 'react-native';
 
 interface StateProps {
   serverName: string,
-  members:ServerMember[],
-  channels:Channel[],
+  members: ServerMember[],
+  channels: Channel[],
   selectedChannel: Channel | undefined
 }
 
 interface AdminDashboardProps {
-  server:Server
-  onClose:any
+  server: Server
+  onClose: any
 }
 
 const AdminDashboard = ({
@@ -41,7 +47,7 @@ const AdminDashboard = ({
   name,
   channels,
   members
-}:Server) => {
+}: Server) => {
   const [state, setState] = useState<StateProps>({
     serverName: name,
     members,
@@ -49,27 +55,26 @@ const AdminDashboard = ({
     selectedChannel: undefined
   });
 
-  const { isOpen: isDeleteServerOpen, onOpen: onDeleteServerOpen, onClose: onDeleteServerClose } = useDisclose();
-  const { isOpen: isDeleteChannelOpen, onOpen: onDeleteChannelOpen, onClose: onDeleteChannelClose } = useDisclose();
+  const [isDeleteServerOpen, setIsDeleteServerOpen] = useState(false);
+  const [isDeleteChannelOpen, setIsDeleteChannelOpen] = useState(false);
   const { profile } = useProfileStore()
-  const updateState = (key:string, value:any) => {
+  const updateState = (key: string, value: any) => {
     setState(prevState => ({ ...prevState, [key]: value }));
   };
   const bannerImageUrl = 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=400'
   const currentUser = members.find(member => member.id === profile.id)
 
   const handleSubmit = () => {
-    // Here you can use the state object to submit all changes
     console.log('Submitting changes:', state);
     showToastMessage("Changes saved successfully");
   };
 
-  const handleDeleteMember = (memberId:string) => {
+  const handleDeleteMember = (memberId: string) => {
     updateState('members', state.members.filter(member => member.id !== memberId));
     showToastMessage("Member deleted successfully");
   };
 
-  const handleChangeRole = (memberId:string) => {
+  const handleChangeRole = (memberId: string) => {
     updateState('members', state.members.map(member =>
       member.id === memberId
         ? { ...member, role: member.role === 'MEMBER' ? 'MODERATOR' : 'MEMBER' }
@@ -81,14 +86,13 @@ const AdminDashboard = ({
   const handleDeleteChannel = () => {
     if (state.selectedChannel) {
       updateState('channels', state.channels.filter(channel => channel.id !== state?.selectedChannel?.id));
-      onDeleteChannelClose();
+      setIsDeleteChannelOpen(false);
       showToastMessage(`Channel "${state.selectedChannel.name}" deleted`);
     }
   };
 
   const handleDeleteServer = () => {
-    // Implement server deletion logic here
-    onDeleteServerClose();
+    setIsDeleteServerOpen(false);
     showToastMessage("Server deleted successfully");
   };
 
@@ -96,7 +100,7 @@ const AdminDashboard = ({
     <Box
       bg={{
         linearGradient: {
-          colors: ['#4c669f', '#3b5998', '#192f6a'],
+          colors: ['$blue400', '$blue600', '$blue800'],
           start: [0, 0],
           end: [1, 1],
         },
@@ -104,163 +108,171 @@ const AdminDashboard = ({
       style={{ flex: 1 }}
     >
       <ScrollView>
-        <Box safeArea p={2}>
-            <Image
-              className='w-full h-[180px] flex-1 z-10 shadow-sm '
-              source={{ uri: bannerImageUrl }}
-            />
-          <HStack justifyContent="space-between" alignItems="center" mb={6}>
-            <Text fontSize="3xl" className='font-rbold' color="white">
+        <Box p="$2">
+          <Image
+            className='w-full h-[180px] flex-1 z-10 shadow-sm'
+            source={{ uri: bannerImageUrl }}
+          />
+          <HStack justifyContent="space-between" alignItems="center" mb="$6">
+            <Text fontSize="$3xl" className='font-rbold' color="$white">
               Server Dashboard
             </Text>
             {currentUser?.role == "ADMIN" &&
-            <TouchableOpacity
-              className='rounded-lg bg-rose-700 p-2 px-4 my'
-              onPress={onDeleteServerOpen}
-            >
-              <Text className='text-sm  text-white font-rregular'>Delete</Text>
-            </TouchableOpacity>
-          }
+              <TouchableOpacity
+                className='rounded-lg bg-rose-700 p-2 px-4 my'
+                onPress={() => setIsDeleteServerOpen(true)}
+              >
+                <Text className='text-sm text-white font-rregular'>Delete</Text>
+              </TouchableOpacity>
+            }
           </HStack>
 
-          <VStack space={6}>
-            <Box  
-              rounded="xl" 
-              shadow={5} 
-              p={5}
+          <VStack space="$6">
+            <Box
+              rounded="$xl"
+              shadowColor="$black"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.25}
+              shadowRadius={3.84}
+              elevation={5}
+              p="$5"
               bg={{
                 linearGradient: {
-                  colors: ['gray.400', '#3b5998', '#192f6a'],
+                  colors: ['$gray400', '$blue600', '$blue800'],
                   start: [0, 0],
                   end: [1, 1],
                 },
               }}
             >
-              <Text fontSize="xl"  className='font-rmedium text-lg' mb={4}>
+              <Text fontSize="$xl" className='font-rmedium text-lg' mb="$4">
                 Server Settings
               </Text>
               <Input
                 value={state.serverName}
-                // onChangeText={setState()}
-                placeholder="Server Name"
-                mb={4}
-              />
-              <HStack space={3}>
-                <Button 
-                  flex={1} 
-                  leftIcon={<Icon as={MaterialIcons} name="image" />}
-                  
-                >
-                  <Text className='font-rregular text-white text-sm'>Change Server Image</Text>
+                mb="$4"
+              >
+                <InputField placeholder="Server Name" />
+              </Input>
+              <HStack space="$3">
+                <Button flex={1} variant="solid">
+                  <ButtonIcon as={MaterialIcons} name="image" />
+                  <ButtonText className='font-rregular text-white text-sm'>Change Server Image</ButtonText>
                 </Button>
-                <Button flex={1} leftIcon={<Icon as={MaterialIcons} name="panorama" />}>
-                  <Text className='font-rregular text-white text-sm'>Change Banner</Text>
+                <Button flex={1} variant="solid">
+                  <ButtonIcon as={MaterialIcons} name="panorama" />
+                  <ButtonText className='font-rregular text-white text-sm'>Change Banner</ButtonText>
                 </Button>
               </HStack>
             </Box>
 
             <Box
-              rounded="xl" 
-              shadow={5} p={5}
+              rounded="$xl"
+              shadowColor="$black"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.25}
+              shadowRadius={3.84}
+              elevation={5}
+              p="$5"
               bg={{
                 linearGradient: {
-                  colors: ['gray.400', '#3b5998', '#192f6a', '#192f6a'],
+                  colors: ['$gray400', '$blue600', '$blue800', '$blue800'],
                   start: [0, 0],
                   end: [1, 1],
                 },
               }}
             >
-              <Text fontSize="xl" className='font-rmedium text-lg' mb={4}>
+              <Text fontSize="$xl" className='font-rmedium text-lg' mb="$4">
                 Members
               </Text>
               <FlatList
                 data={members}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                  <HStack justifyContent="space-between" alignItems="center" mb={3}>
-                    <HStack space={3} alignItems="center">
+                  <HStack justifyContent="space-between" alignItems="center" mb="$3">
+                    <HStack space="$3" alignItems="center">
                       <Avatar source={{ uri: item.image! }} />
                       <VStack>
                         <Text className='font-rmedium text-xs'>
                           {item.name}
                           {item.role == "ADMIN" &&
-                            <Ionicons name='shield-checkmark-outline' color={'red'} size={14} style={{marginLeft:6}}/>
+                            <Ionicons name='shield-checkmark-outline' color={'red'} size={14} style={{ marginLeft: 6 }} />
                           }
                         </Text>
-                        <Text fontSize="xs" color="gray.500" className='font-rregular '>
+                        <Text fontSize="$xs" color="$gray500" className='font-rregular'>
                           {item.role}
                         </Text>
                       </VStack>
                     </HStack>
 
                     {item.role !== "ADMIN" &&
-                      <HStack space={2}>
-                        <IconButton
-                          icon={<Icon as={MaterialIcons} name="edit" />}
-                          size="sm"
+                      <HStack space="$2">
+                        <Button
                           variant="ghost"
                           onPress={() => handleChangeRole(item.id)}
-                        />
-                        <IconButton
-                          icon={<Icon as={MaterialIcons} name="delete" />}
-                          size="sm"
-                          colorScheme="red"
+                        >
+                          <ButtonIcon as={MaterialIcons} name="edit" />
+                        </Button>
+                        <Button
                           variant="ghost"
                           onPress={() => handleDeleteMember(item.id)}
-                        />
+                        >
+                          <ButtonIcon as={MaterialIcons} name="delete" color="$red500" />
+                        </Button>
                       </HStack>
                     }
                   </HStack>
                 )}
-                ItemSeparatorComponent={() => <Divider my={2} />}
+                ItemSeparatorComponent={() => <Divider my="$2" />}
               />
             </Box>
 
             <Box
-              rounded="xl" 
-              shadow={5} 
-              p={5}
+              rounded="$xl"
+              shadowColor="$black"
+              shadowOffset={{ width: 0, height: 2 }}
+              shadowOpacity={0.25}
+              shadowRadius={3.84}
+              elevation={5}
+              p="$5"
               bg={{
                 linearGradient: {
-                  colors: ['gray.400', '#3b5998', '#3b5998', '#192f6a'],
+                  colors: ['$gray400', '$blue600', '$blue600', '$blue800'],
                   start: [0, 0],
                   end: [1, 1],
                 },
               }}
             >
-              <Text fontSize="xl"  mb={4} className='font-rmedium text-lg'>
+              <Text fontSize="$xl" mb="$4" className='font-rmedium text-lg'>
                 Channels
               </Text>
               <FlatList
                 data={channels}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                  <HStack justifyContent="space-between" alignItems="center" mb={3}>
+                  <HStack justifyContent="space-between" alignItems="center" mb="$3">
                     <Text className='font-rregular'>{item.name}</Text>
                     
                     {item.name !== "general" &&
                       <HStack>
-                        <IconButton
-                          icon={<Icon as={Feather} name="edit" />}
-                          size="sm"
-                          colorScheme="black"
+                        <Button
                           variant="ghost"
-                        />
-                        <IconButton
-                          icon={<Icon as={MaterialIcons} name="delete" />}
-                          size="sm"
-                          colorScheme="red"
+                        >
+                          <ButtonIcon as={Feather} name="edit" />
+                        </Button>
+                        <Button
                           variant="ghost"
                           onPress={() => {
-                            updateState('selectedChannel',item);
-                            onDeleteChannelOpen();
+                            updateState('selectedChannel', item);
+                            setIsDeleteChannelOpen(true);
                           }}
-                        />
+                        >
+                          <ButtonIcon as={MaterialIcons} name="delete" color="$red500" />
+                        </Button>
                       </HStack>
                     }
                   </HStack>
                 )}
-                ItemSeparatorComponent={() => <Divider my={2} />}
+                ItemSeparatorComponent={() => <Divider my="$2" />}
               />
             </Box>
           </VStack>
@@ -268,68 +280,62 @@ const AdminDashboard = ({
       </ScrollView>
 
       <Fab
-        renderInPortal={false}
-        shadow={2}
         size="sm"
-        icon={<Icon color="white" as={MaterialIcons} name="add" size="sm" />}
-        label="New Channel"
-        onPress={()=>router.navigate(`/create-channel/${id}`)}
-      />
+        onPress={() => router.navigate(`/create-channel/${id}`)}
+      >
+        <FabIcon as={MaterialIcons} name="add" />
+        <FabLabel>New Channel</FabLabel>
+      </Fab>
 
-      <AlertDialog isOpen={isDeleteServerOpen} onClose={onDeleteServerClose}>
-        <AlertDialog.Content>
-          <AlertDialog.CloseButton />
-          <AlertDialog.Header>
-            <HStack >
-              <Text className='font-rmedium  text-lg flex-row items-center'>Delete Server</Text>
-              <Icon as={AntDesign} name="warning" ml={3} mt={1} colorScheme={'red'} color={'red.500'}/>
+      <AlertDialog isOpen={isDeleteServerOpen} onClose={() => setIsDeleteServerOpen(false)}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <HStack>
+              <Text className='font-rmedium text-lg flex-row items-center'>Delete Server</Text>
+              <Icon as={AntDesign} name="warning" ml="$3" mt="$1" color="$red500" />
             </HStack>
-          </AlertDialog.Header>
-          <AlertDialog.Body>
-          <Text className='font-rregular  text-xs'>
-            Are you sure you want to delete this server? This action cannot be undone.
-          </Text>
-          </AlertDialog.Body>
-          <AlertDialog.Footer>
-            <Button.Group space={2}>
-              <Button variant="unstyled" colorScheme="coolGray" onPress={onDeleteServerClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="danger" onPress={handleDeleteServer}>
-                Delete
-              </Button>
-            </Button.Group>
-          </AlertDialog.Footer>
-        </AlertDialog.Content>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <Text className='font-rregular text-xs'>
+              Are you sure you want to delete this server? This action cannot be undone.
+            </Text>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button variant="outline" onPress={() => setIsDeleteServerOpen(false)}>
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <Button variant="solid" colorScheme="danger" onPress={handleDeleteServer}>
+              <ButtonText>Delete</ButtonText>
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog isOpen={isDeleteChannelOpen} onClose={onDeleteChannelClose} >
-        <AlertDialog.Content>
-          <AlertDialog.CloseButton />
-          <AlertDialog.Header className='flex-col'>
-            <HStack >
-              <Text className='font-rmedium  text-lg flex-row items-center'>Delete Channel</Text>
-              <Icon as={AntDesign} name="warning" ml={3} mt={1} colorScheme={'red'} color={'red.500'}/>
+      <AlertDialog isOpen={isDeleteChannelOpen} onClose={() => setIsDeleteChannelOpen(false)}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <HStack>
+              <Text className='font-rmedium text-lg flex-row items-center'>Delete Channel</Text>
+              <Icon as={AntDesign} name="warning" ml="$3" mt="$1" color="$red500" />
             </HStack>
-          </AlertDialog.Header>
-          <AlertDialog.Body >
-            
-          <Text className='font-rregular  text-xs'>
-            Are you sure you want to delete the channel "{state.selectedChannel?.name}"?
-            This action cannot be undone.
-          </Text>
-          </AlertDialog.Body>
-          <AlertDialog.Footer>
-            <Button.Group space={2}>
-              <Button variant="unstyled" colorScheme="coolGray" onPress={onDeleteChannelClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="danger" onPress={handleDeleteChannel}>
-                Delete
-              </Button>
-            </Button.Group>
-          </AlertDialog.Footer>
-        </AlertDialog.Content>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <Text className='font-rregular text-xs'>
+              Are you sure you want to delete the channel "{state.selectedChannel?.name}"?
+              This action cannot be undone.
+            </Text>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button variant="outline" onPress={() => setIsDeleteChannelOpen(false)}>
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <Button variant="solid" colorScheme="danger" onPress={handleDeleteChannel}>
+              <ButtonText>Delete</ButtonText>
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
     </Box>
   );

@@ -29,6 +29,9 @@ const Header = ({user,messages,created,channel}:any) => {
         <Text className='font-rregular text-[12px] ' >
           {channel.description}
         </Text>
+        <Text className='font-rregular text-base mt-4 text-gray-400 ' >
+          This is the begining of the #{channel.name}
+        </Text>
       </View>
       </>
    )

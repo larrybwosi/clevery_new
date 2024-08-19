@@ -6,6 +6,7 @@ import { formatDateString, multiFormatDateString } from '@/lib/utils';
 import { Text, View } from '@/components/Themed';
 import * as WebBrowser from 'expo-web-browser';
 import Image from '../image';
+import FullScreenImage from '../full-screen-image';
 
 interface Message {
   id: string;
@@ -111,8 +112,8 @@ const MessagesContainer: React.FC<MessagesProps> = ({ item, onDelete, onLongPres
       <TouchableOpacity>
         <Image
           source={ sender?.image}
-          width={40}
-          height={40}
+          width={80}
+          height={80}
           style="rounded-2xl border border-gray-300 h-10 w-10 mr-2.5"
         />
       </TouchableOpacity>

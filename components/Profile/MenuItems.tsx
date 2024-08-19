@@ -13,12 +13,13 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({ iconName, label, route }) => {
   return (
-    <TouchableOpacity className='flex-row items-center my-[2.5px] justify-between ml-3 '
+    <TouchableOpacity className='flex-row items-center my-[4px] justify-between ml-3 '
       onPress={() => onButtonPress(route)}>
       <View
-       className='items-center flex-row gap-2'>
-        <Feather name={iconName} size={20} color="gray" />
-        <Text className='font-rregular text-base ml-2.5'
+       className='items-center flex-row gap-2'
+      >
+        <Feather name={iconName} size={24} color="gray" />
+        <Text className='font-rregular text-base ml-3 text-gray-400'
         >{label}</Text>
       </View>
     </TouchableOpacity>

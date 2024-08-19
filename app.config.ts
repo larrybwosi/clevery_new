@@ -7,7 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: '2.0.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
-  scheme: ['clevery','com.clevery.app'],
+  scheme: 'com.clevery.app',
   userInterfaceStyle: 'automatic',
   splash: {
     image: './assets/images/splash.png',
@@ -27,46 +27,28 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: './assets/images/icon.png',
       backgroundColor: '#ffffff',
     },
-    versionCode: 1, // Add this line
+    versionCode: 1, 
   },
   web: {
     bundler: 'metro',
     output: 'static',
-    favicon: './assets/images/favicon.png',
+    favicon: './assets/images/icon.png',
   },
   plugins: [
     'expo-router',
     'expo-font',
+    // [
+    //   "expo-av",
+    //   {
+    //     "microphonePermission": "Allow Clevery to access your microphone."
+    //   }
+    // ],
     [
       'expo-notifications',
       {
         sounds: ['./assets/Sounds/notification.wav'],
       },
-    ],
-    [
-      '@stream-io/video-react-native-sdk',
-      {
-        "enableScreenshare": true,
-        androidPictureInPicture: {
-          enableAutomaticEnter: true
-        },
-      }
-    ],
-    [
-      '@config-plugins/react-native-webrtc',
-      {
-        cameraPermission: 'Allow Clevery to access your camera',
-        microphonePermission: 'Allow Clevery to access your microphone',
-      },
-    ],
-    [
-      'expo-build-properties',
-      {
-        android: {
-          minSdkVersion: 24,
-        },
-      },
-    ],
+    ]
   ],
   extra: {
     router: {
@@ -78,11 +60,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   owner: 'larrydean',
   runtimeVersion: {
-    policy: 'sdkVersion', // Change this line
-  },
-  updates: {
-    fallbackToCacheTimeout: 0, // Add this line
-    url: 'https://u.expo.dev/3df3e8bc-4bda-4ac6-bfbe-a38f7122ff3a',
+    policy: 'sdkVersion', 
   },
 });
 

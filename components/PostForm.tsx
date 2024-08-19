@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { router, useRouter } from "expo-router";
 
 import { chooseImage, showToastMessage, useCreatePost, useUpdatePost } from "@/lib";
@@ -91,7 +91,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
           keyboardType="default"
           autoCapitalize="none"
           enterKeyHint="done"
-          value={fields.tags.join(', ')}
+          value={fields?.tags?.join(', ')!}
           handleChangeText={(v) => setFields({ ...fields, tags: v.split(',').map(tag => tag.trim()) })}
         />
       </View>
@@ -101,8 +101,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
         disabled={creatingPost || updatingPost}
         className="flex-row bg-[#007faa] w-[45%] rounded-[10px] p-2.5 gap-1.5"
       >
-        <Text className="text-white font-psemibold">{action === 'Create' ? "Create Post" : "Update post"}</Text>
-        <Ionicons name={action === 'Create' ? "send" : "sync"} color={'white'} size={16} style={{marginTop: 3}} />
+        <Text className="text-white font-rmedium">{action === 'Create' ? "Create Post" : "Update post"}</Text>
+        <Feather name={action !== 'Create' ? "upload-cloud" : "refresh-cw"} color={'white'} size={16} style={{marginTop: 3}} />
       </TouchableOpacity>
     </View>
   );
