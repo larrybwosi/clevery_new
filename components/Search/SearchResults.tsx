@@ -1,12 +1,10 @@
-import React from 'react';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Post as PostType, Server, User } from '@/types';
-import { Text, View } from '../Themed';
-import { HStack } from 'native-base';
 import Image from '../image';
-
+import { View,Text} from '../Themed';
+import { HStack } from '@/components/ui/hstack'
 interface Link {
   id: number;
   title: string;
@@ -51,12 +49,12 @@ const LinkItem: React.FC<Link> = ({ id, title, url }) => (
 
 const Post: React.FC<PostType> = ({ id, content, createdAt, author }) => (
   <View className="p-4 rounded-lg mb-2 shadow-sm">
-    <HStack style={{ gap:80 }} alignItems={'center'}>
+    <HStack className='items-center gap-20'>
       <View>
         <View className="flex-row items-center mb-2">
         <Image
-          source={author.image! }
-          height={80}  
+          source={author.image!}
+          height={80}
           width={80}
           style='h-[50px] w-[50px] rounded-[25px] border'
         />          

@@ -6,9 +6,9 @@ import SearchSuggestions from '@/components/skeletons/search-suggestions';
 import { Text, View } from '@/components/Themed';
 import { useSearchStore } from '@/lib';
 import { Server, User } from '@/types';
-import { HStack } from 'native-base';
 import Badge from '../badges/user';
 import Image from '../image';
+import { HStack } from '../ui/hstack';
 
 type RecentItem = {
   id: string;

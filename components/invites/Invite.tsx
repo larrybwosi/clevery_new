@@ -8,7 +8,6 @@ import { Image } from 'expo-image';
 import { Text, View } from '../Themed';
 import { showToastMessage } from '@/lib';
 import { User } from '@/types';
-import { useClipboard } from 'native-base';
 
 const link = `https://clevery.vercel.app/`;
 

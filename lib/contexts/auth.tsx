@@ -3,13 +3,13 @@ import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
-import { Toast } from 'native-base';
 import axios from 'axios';
 
 import { useAuthStore, useProfileStore } from '@/lib/zustand/store';
 import ToastAlert, { showToastAlert } from '@/components/toast-alert';
 import { userApi } from '@/lib/actions/users';
 import { endpoint } from '@/lib/env';
+import { Toast } from '@/components/ui/toast';
 
 // Configuration variables
 const API_BASE_URL = endpoint;
@@ -201,16 +201,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     return (
-      Toast.show({
-        render: () => (
-          <ToastAlert
-            id="sign-up"
-            title="Something went wrong"
-            description={errorMessage}
-            status="error"
-          />
-        ),
-      })
+      <Toast />
+      // Toast.show({
+      //   render: () => (
+      //     <ToastAlert
+      //       id="sign-up"
+      //       title="Something went wrong"
+      //       description={errorMessage}
+      //       status="error"
+      //     />
+      //   ),
+      // })
     )
   };
 

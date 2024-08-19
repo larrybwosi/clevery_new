@@ -6,7 +6,7 @@ import { Image } from 'expo-image';
 
 import { Text, View } from '@/components/Themed';
 import Loader from '@/components/Loader';
-import { Button, Overlay } from 'native-base';
+import { Button, Overlay } from '@/components/ui';
 
 interface GalleryProps {
   images: string[];

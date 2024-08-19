@@ -1,9 +1,9 @@
 import { memo, useMemo } from 'react';
 import { Image as ExpoImage } from 'expo-image';
 import { useQuery } from '@tanstack/react-query';
-import { Skeleton } from 'native-base';
 
 import { endpoint } from '@/lib';
+import { Skeleton } from './ui/skeleton';
 
 interface ImageProps {
   source: string;
@@ -33,9 +33,7 @@ const Image: React.FC<ImageProps> = memo(({ source, width, height, style }) => {
 
   const memoizedSkeleton = useMemo(() => (
     <Skeleton 
-      size="16"
-      startColor='gray.500' 
-      endColor={'gray.800'}
+      startColor='gray.500'
       className={style} 
     />
   ), [style]);

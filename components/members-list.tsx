@@ -1,6 +1,7 @@
 import React from 'react'
-import { Modal, Text, View } from 'native-base'
 import MembersComponent from './Servers/members'
+import { Modal } from './ui/modal';
+import { Text } from './Themed';
 
 interface Props {
   label:string;
@@ -8,7 +9,7 @@ interface Props {
 }
 export default function MembersList({label,images}:Props) {
   return (
-    <Modal marginTop="10" >
+    <Modal className='mt-10' >
       <Text>{label}</Text>
       <MembersComponent userImages={images}/>
     </Modal>

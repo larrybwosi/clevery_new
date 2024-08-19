@@ -1,5 +1,5 @@
 import { TouchableOpacity, Linking } from 'react-native';
-import { View as SepV, Text as SepT } from 'native-base';
+import { View as SepV, Text as SepT } from '@/components';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 
 import { formatDateString, multiFormatDateString } from '@/lib/utils';

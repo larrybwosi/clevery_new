@@ -1,10 +1,15 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Platform, FlatList, ListRenderItem } from 'react-native';
-import { Box, Pressable, Text, Icon, Image, useTheme, VStack, HStack } from 'native-base';
+import { Platform, FlatList, ListRenderItem, Pressable } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useTheme } from '@react-navigation/native';
+import { Image } from 'expo-image';
+import { Box } from './ui/box';
+import { VStack } from './ui/vstack';
+import { Text } from './Themed';
+import { HStack } from './ui/hstack';
 
 interface ImagePickerProps {
   onSelect: (assets: (MediaLibrary.Asset | FileSystem.FileInfo)[]) => void;
@@ -84,12 +89,12 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
               />
             ) : (
               <Box bg="gray.200" justifyContent="center" alignItems="center">
-                <Icon as={Ionicons} name="document" size="xl" color="gray.500" />
+                <Ionicons name="document" size="25" color="gray.500" />
               </Box>
             )}
             {isSelected && (
-              <Box position="absolute" top={0} right={0} p={2} bg="rgba(0,0,0,0.5)">
-                <Icon as={Ionicons} name="checkmark-circle" size="md" color="white" />
+              <Box className='absolute top-0 right-0 p-1 bg-[rgba(0,0,0,0.5)]'>
+                <Ionicons name="checkmark-circle" size="20" color="white" />
               </Box>
             )}
           </Box>
@@ -131,7 +136,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({
           borderRadius="full"
           shadow={2}
         >
-          <Icon as={Ionicons} name="checkmark" size="xl" color="white" />
+          <Ionicons name="checkmark" size="xl" color="white" />
         </Pressable>
       </Box>
     </VStack>

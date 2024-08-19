@@ -1,22 +1,20 @@
 import Animated, { FadeInDown, FadeInRight, FadeIn } from 'react-native-reanimated';
 import { Feather, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import { 
-  Box, 
-  VStack, 
-  HStack,
-  Icon, 
-  Avatar, 
-  useTheme,
-  ScrollView,
-} from 'native-base';
 
 import { Loader, Text, UserInfo, View } from '@/components';
-import { formatDateString, useUser } from '@/lib';
+import { formatDateString, useThemeStore, useUser } from '@/lib';
 import MembersList from '@/components/members-list';
 import Image from '@/components/image';
 import { User } from '@/types';
 import Badge from '@/components/badges/user';
+import { useThemeColor } from '@/components/Themed';
+import { Box } from '@/components/ui/box';
+import { Icon } from '@/components/ui/icon';
+import { ScrollView } from 'react-native';
+import { VStack } from '@/components/ui/vstack';
+import { HStack } from '@/components/ui/hstack';
+import { AvatarImage } from '@/components/ui/avatar';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
@@ -24,8 +22,15 @@ interface UserBannerProps {
   bannerImage: string;
 }
 
+interface StatCardProps {
+  title: string;
+  value: number | string;
+  icon: string;
+  popularity?: number | string;
+}
+
 const UserBanner: React.FC<UserBannerProps> = ({ bannerImage }) => (
-  <AnimatedBox entering={FadeInDown.duration(800).springify()} position="relative">
+  <AnimatedBox entering={FadeInDown.duration(800).springify()} >
     <Image
       source={bannerImage}
       width={350}
@@ -45,24 +50,12 @@ const UserBanner: React.FC<UserBannerProps> = ({ bannerImage }) => (
   </AnimatedBox>
 );
 
-interface StatCardProps {
-  title: string;
-  value: number | string;
-  icon: string;
-  popularity?: number | string;
-}
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon,popularity }) => {
-  const { colors } = useTheme();
   
   return (
     <Box
-      p={4} 
-      rounded="xl" 
-      shadow={2} 
-      flex={1} 
-      mr={2} 
-      alignItems="center"
+      className='flex-1 items-center p-1 rounded-xl shadow-md'
       bg={{
         linearGradient: {
           colors: ['gray.400', '#3b5998', '#192f6a'],
@@ -74,8 +67,8 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon,popularity }) =>
       {title === "Popularity"
       ?
       //  <Icon as={Badge} name={icon} size={6} color={colors.blue[500]} mr={4}/>
-       <Badge popularity={popularity} />
-      :<Icon as={FontAwesome5} name={icon} size={6} color={colors.blue[500]} />
+       <Badge popularity={popularity|| 1} />
+      :<FontAwesome5  name={icon}  size={6} color={'blue'} />
       }
       <Text className='font-rbold text-lg'>{value}</Text>
       <Text className='font-rregular'>{title}</Text>
@@ -112,7 +105,6 @@ const UserSection: React.FC<UserSectionProps> = ({ title, content, icon }) => (
 const UserProfile: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: user, isPending: loading, isError: netError } = useUser(id as string);
-  const { colors } = useTheme();
 
   if (loading || netError) {
     return <Loader loadingText="Loading user profile..." />;
@@ -123,14 +115,14 @@ const UserProfile: React.FC = () => {
   }
   
   return (
-    <ScrollView flex={1} className='flex-1 w-full h-full'>
+    <ScrollView className='flex-1 w-full h-full'>
       <UserBanner bannerImage={user.bannerImage || ''} />
-      <Box px={4} mt={5}>
+      <Box className='px-4 mt-5' >
         <UserInfo profile={user} />
       </Box>
 
       <AnimatedBox 
-         m={4} p={4} rounded="xl" shadow={2}
+        className={`m-1 p-1 rounded-xl shadow-md`}
         entering={FadeInDown.duration(600).delay(400).springify()}
         bg={{
           linearGradient: {
@@ -145,7 +137,7 @@ const UserProfile: React.FC = () => {
       </AnimatedBox>
 
       <AnimatedBox 
-        flexDirection="row" justifyContent="between" mx={4} mb={4}
+        className={`flex-row justify-between mx1 mb-4`}
         entering={FadeInRight.duration(600).delay(300).springify()}
       >
         <StatCard title="Posts" value={user.postCount || 0} icon="pen-square" />
@@ -159,8 +151,8 @@ const UserProfile: React.FC = () => {
         icon="calendar-alt"
       />
       
-      <AnimatedBox 
-        m={4}
+      <AnimatedBox
+        className={`m-2`}
         entering={FadeInRight.duration(600).delay(600).springify()}
         bg={{
           linearGradient: {
@@ -185,10 +177,10 @@ const UserProfile: React.FC = () => {
         title="Mutual Servers" 
         icon="server" 
         content={
-          <VStack space={2}>
+          <VStack className='gap-3'>
             {user.commonServers?.map((server: any) => (
-              <HStack key={server.id} alignItems="center">
-                <Avatar source={{ uri: server.image }} size="sm" mr={2} />
+              <HStack key={server.id} className='items-center'>
+                <AvatarImage source={{ uri: server.image }} className='mr-1' />
                 <Text className='font-rregular text-sm'>{server.name}</Text>
               </HStack>
             ))}
@@ -200,7 +192,7 @@ const UserProfile: React.FC = () => {
         title="Connections" 
         icon="users" 
         content={
-          <HStack flexWrap="wrap">
+          <HStack className='flex-wrap'>
             {user.connections?.map((connection: User) => (
               // <Badge key={connection.id} colorScheme="blue" m={1}>
               //   {connection.username}
@@ -215,10 +207,10 @@ const UserProfile: React.FC = () => {
         title="Achievements"
         icon="trophy"
         content={
-          <VStack space={2}>
+          <VStack className="space-y-2" >
             {user?.achievements?.map((achievement:any, index:any) => (
-              <HStack key={index} alignItems="center">
-                <Icon as={FontAwesome5} name="medal" size={4} color={colors.yellow[500]} mr={2} />
+              <HStack key={index} className='items-center' >
+                <FontAwesome5 name="medal" size={4} color={"yellow"} mr={2} />
                 <Text className='font-rregular text-sm'>{achievement}</Text>
               </HStack>
             ))}

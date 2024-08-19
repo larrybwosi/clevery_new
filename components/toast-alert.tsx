@@ -1,17 +1,26 @@
-import { Alert, CloseIcon, HStack, IconButton, Text, Toast, VStack, useToast } from "native-base";
+// import { Alert, CloseIcon, HStack, IconButton, Text, Toast, VStack, useToast } from "native-base";
+
+import { Text } from "./Themed";
+import { Alert } from "./ui/alert";
+import { HStack } from "./ui/hstack";
+import { CloseIcon } from "./ui/icon";
+import { useToast } from "./ui/toast";
+// import { Toast } from "./ui/toast";
+import { VStack } from "./ui/vstack";
 
 interface ToastProps {
   id: string;
   title: string;
   description: string;
   status?: 'info' | 'warning' | 'success' | 'error';
-  variant?: 'solid' | 'subtle' | 'left-accent' | 'top-accent' | 'outline';
+  variant?: "solid" | "outline";
   isClosable?: boolean;
 }
 
 export const showToastAlert = ({id,title,status,description}:ToastProps) => {
+  const toast = useToast()
   return (
-    Toast.show({
+    toast.show({
       render: () => (
         <ToastAlert
           id={id}
@@ -32,17 +41,15 @@ const ToastAlert: React.FC<ToastProps> = ({
   isClosable = true,
   ...rest
 }) => {
-  const toast = useToast();
+  const toast = useToast()
 
   const handleClose = () => {
     toast.close(id);
   };
 
   return (
-    <Alert 
-      maxWidth="100%" 
-      alignSelf="center" 
-      flexDirection="row" 
+    <Alert
+      className="w-100 items-center flex-row"
       status={status}
       variant={variant}
       {...rest}
@@ -61,7 +68,7 @@ const ToastAlert: React.FC<ToastProps> = ({
             </Text>
           </HStack>
           {isClosable && (
-            <IconButton 
+            <IconButton
               variant="unstyled" 
               icon={<CloseIcon size="3" />} 
               _icon={{
@@ -71,7 +78,7 @@ const ToastAlert: React.FC<ToastProps> = ({
             />
           )}
         </HStack>
-        <Text 
+        <Text
           px="6" 
           color={variant === "solid" ? "lightText" : "darkText"}
         >
