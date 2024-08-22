@@ -78,7 +78,7 @@ const Account = () => {
           handleChangeText={(text:any) => handleFieldChange('username', text)}
           key="username" 
           placeholder="your username"
-          value={editedFields.username}
+          value={editedFields.username!}
         />
         <FormField
           title="Name" 

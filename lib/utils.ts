@@ -7,9 +7,8 @@ import React from "react";
 
 import { Message } from "../types";
 
-
-import { Toast } from "native-base";
 import { endpoint } from "./env";
+import { Toast } from "@/components";
 
 export const showToastMessage = (message:string) => {
   Toast.show({

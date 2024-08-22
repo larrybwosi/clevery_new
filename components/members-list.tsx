@@ -1,4 +1,3 @@
-import React from 'react'
 import MembersComponent from './Servers/members'
 import { Modal } from './ui/modal';
 import { Text } from './Themed';

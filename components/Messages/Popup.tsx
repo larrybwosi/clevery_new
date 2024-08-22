@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
-import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { Box, FlatList, Text, View, Pressable } from '@gluestack-ui/themed';
+import { useCallback } from 'react';
+import { FlatList, TouchableWithoutFeedback } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
+// import Animated, { FadeIn, SlideInDown, SlideOutDown } from 'react-native-reanimated';
+import { Box, LinearGradient, Text, View } from '@/components';
+import { Pressable } from '../ui/pressable';
 
-const PopupComponent = ({ isVisible, onClose }) => {
+const PopupComponent = ({ isVisible, onClose }: { isVisible: boolean; onClose: () => void }) => {
   const data = [
     { icon: 'corner-up-left', text: 'Reply' },
     { icon: 'copy', text: 'Copy Text' },
@@ -14,43 +15,37 @@ const PopupComponent = ({ isVisible, onClose }) => {
 
   const reactions = ['👍', '❤️', '😂', '😮', '😢', '😡'];
 
-  const renderItem = useCallback(({ item, index }) => (
-    <Animated.View entering={FadeIn.delay(index * 100).springify()}>
-      <Pressable flexDirection="row" alignItems="center" py={4}>
-        <Box
-          bg={{
-            linearGradient: {
-              colors: ['#3498db', '#2980b9'],
-              start: [0, 0],
-              end: [1, 1],
-            },
-          }}
-          rounded="lg"
-          p={3}
-          mr={4}
-        >
-          <Feather name={item.icon} size={20} color="#FFFFFF" />
-        </Box>
-        <Text color="white" fontSize="lg" fontWeight="medium">
-          {item.text}
-        </Text>
-      </Pressable>
-    </Animated.View>
-  ), []);
+  // const renderItem = useCallback(({ item, index }: { item: any; index: number }) => (
+  //   <Animated.View entering={FadeIn.delay(index * 100).springify()}>
+  //     <Pressable className='flex-row items-center py-1'>
+  //       <LinearGradient
+  //         colors= {['#3498db', '#2980b9']}
+  //         start= {[0, 0]}
+  //         end= {[1, 1]}
+  //         className="w-12 h-12 rounded-full justify-center items-center mr-3"
+  //       >
+  //         <Feather name={item.icon} size={20} color="#FFFFFF" />
+  //       </LinearGradient>
+  //       <Text className='text-white text-lg font-rmedium'>
+  //         {item.text}
+  //       </Text>
+  //     </Pressable>
+  //   </Animated.View>
+  // ), []);
 
-  const renderReaction = useCallback((emoji, index) => (
-    <Animated.View key={emoji} entering={FadeIn.delay(index * 50).springify()}>
-      <Pressable bg="rgba(255, 255, 255, 0.2)" rounded="full" p={3} mx={1}>
-        <Text fontSize="2xl">{emoji}</Text>
-      </Pressable>
-    </Animated.View>
-  ), []);
+  // const renderReaction = useCallback((emoji: string, index: number) => (
+  //   <Animated.View key={emoji} entering={FadeIn.delay(index * 50).springify()}>
+  //     <Pressable className=" bg-[gba(255, 255, 255, 0.2)] rounded-full items-center justify-center w-8 h-8 mr-2">
+  //       <Text className="text-white text-xl">{emoji}</Text>
+  //     </Pressable>
+  //   </Animated.View>
+  // ), []);
 
   if (!isVisible) return null;
 
   return (
     <TouchableWithoutFeedback onPress={onClose}>
-      <Animated.View 
+      {/* <Animated.View 
         entering={SlideInDown.springify()}
         exiting={SlideOutDown.springify()}
         style={{
@@ -63,31 +58,25 @@ const PopupComponent = ({ isVisible, onClose }) => {
         }}
       >
         <TouchableWithoutFeedback>
-          <Box
-            bg={{
-              linearGradient: {
-                colors: ['rgba(52, 152, 219, 0.95)', 'rgba(41, 128, 185, 0.95)'],
-                start: [0, 0],
-                end: [1, 1],
-              },
-            }}
-            rounded="3xl"
-            roundedBottom={0}
-            p={6}
+          <LinearGradient 
+            colors= {['rgba(52, 152, 219, 0.95)', 'rgba(41, 128, 185, 0.95)']}
+            start= {[0, 0]}
+            end= {[1, 1]}
+            className="rounded-3xl p-3"
           >
-            <View flexDirection="row" justifyContent="space-around" mb={6} pb={6} borderBottomWidth={1} borderBottomColor="rgba(255, 255, 255, 0.1)">
+            <View className='flex-row justify-around border-b-2 border-b-[rgba(255, 255, 255, 0.1)] pb-3 mb-3'>
               {reactions.map(renderReaction)}
             </View>
             <FlatList
               data={data}
               renderItem={renderItem}
               keyExtractor={(item) => item.text}
-              ItemSeparatorComponent={() => <Box h="1px" bg="rgba(255, 255, 255, 0.1)" />}
+              ItemSeparatorComponent={() => <Box className="full h-[1px] bg-[rgba(255, 255, 255, 0.1)]"/>}
               scrollEnabled={false}
             />
-          </Box>
+          </LinearGradient>
         </TouchableWithoutFeedback>
-      </Animated.View>
+      </Animated.View> */}
     </TouchableWithoutFeedback>
   );
 };

@@ -19,7 +19,7 @@ export default function ServerList() {
   router.navigate(`/create-server`)
 };
 
-if (servers?.length === 0) {
+if (servers?.items?.length === 0) {
   return (
     <View className="flex-1 justify-center items-center p-5">
       <Ionicons name="server-outline" size={64} color="#4B5563" />

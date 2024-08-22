@@ -37,12 +37,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     'expo-font',
-    // [
-    //   "expo-av",
-    //   {
-    //     "microphonePermission": "Allow Clevery to access your microphone."
-    //   }
-    // ],
     [
       'expo-notifications',
       {

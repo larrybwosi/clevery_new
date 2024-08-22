@@ -13,7 +13,7 @@ interface FullScreenImageProps {
 
 const FullScreenImage: React.FC<FullScreenImageProps> = ({ isOpen, onClose, imageUri }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="full" bg={'gray.700'}>
+    <Modal isOpen={isOpen} onClose={onClose} className='bg-gray-700 size-full'>
       <ModalContent className={`max-w-[400px] w-[${width}px] h-[${height}px]`} >
         <ModalCloseButton />
         <ModalBody>

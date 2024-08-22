@@ -2,7 +2,7 @@ import Animated, { FadeInDown, FadeInRight, FadeIn } from 'react-native-reanimat
 import { Feather, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 
-import { Loader, Text, UserInfo, View } from '@/components';
+import {LinearGradient, Text ,View } from '@/components';
 import { formatDateString, useThemeStore, useUser } from '@/lib';
 import MembersList from '@/components/members-list';
 import Image from '@/components/image';
@@ -15,8 +15,10 @@ import { ScrollView } from 'react-native';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { AvatarImage } from '@/components/ui/avatar';
+import UserInfo from '@/components/Profile/user-info';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 interface UserBannerProps {
   bannerImage: string;
@@ -54,15 +56,11 @@ const UserBanner: React.FC<UserBannerProps> = ({ bannerImage }) => (
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon,popularity }) => {
   
   return (
-    <Box
+    <LinearGradient
       className='flex-1 items-center p-1 rounded-xl shadow-md'
-      bg={{
-        linearGradient: {
-          colors: ['gray.400', '#3b5998', '#192f6a'],
-          start: [0, 0],
-          end: [1, 1],
-        },
-      }}
+      colors= {['gray.400', '#3b5998', '#192f6a']}
+      start= {[0, 0]}
+      end= {[1, 1]}
     >
       {title === "Popularity"
       ?
@@ -72,7 +70,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon,popularity }) =>
       }
       <Text className='font-rbold text-lg'>{value}</Text>
       <Text className='font-rregular'>{title}</Text>
-    </Box>
+    </LinearGradient>
   );
 };
 
@@ -83,7 +81,7 @@ interface UserSectionProps {
 }
 
 const UserSection: React.FC<UserSectionProps> = ({ title, content, icon }) => (
-  <AnimatedBox 
+  <AnimatedLinearGradient 
     m={4} p={4} rounded="xl" shadow={2}
     entering={FadeInRight.duration(600).delay(200).springify()}
     bg={{
@@ -94,12 +92,12 @@ const UserSection: React.FC<UserSectionProps> = ({ title, content, icon }) => (
       },
     }}
   >
-    <HStack alignItems="center" mb={2}>
+    <HStack className='items-center mb-2' >
       <Icon as={FontAwesome5} name={icon} size={5} color="gray.600" />
       <Text className='font-rbold ml-5'>{title}</Text>
     </HStack>
     {content}
-  </AnimatedBox>
+  </AnimatedLinearGradient>
 );
 
 const UserProfile: React.FC = () => {
@@ -121,20 +119,16 @@ const UserProfile: React.FC = () => {
         <UserInfo profile={user} />
       </Box>
 
-      <AnimatedBox 
+      <AnimatedLinearGradient 
         className={`m-1 p-1 rounded-xl shadow-md`}
         entering={FadeInDown.duration(600).delay(400).springify()}
-        bg={{
-          linearGradient: {
-            colors: ['gray.400', '#3b5998', '#192f6a'],
-            start: [0, 0],
-            end: [1, 1],
-          },
-        }}
+        colors= {['gray.400', '#3b5998', '#192f6a']}
+        start= {[0, 0]}
+        end= {[1, 1]}
       >
         <Text className='font-rbold text-lg'>About Me</Text>
         <Text className='font-rregular text-sm'>{user.bio || 'No bio available'}</Text>
-      </AnimatedBox>
+      </AnimatedLinearGradient>
 
       <AnimatedBox 
         className={`flex-row justify-between mx1 mb-4`}
@@ -151,16 +145,13 @@ const UserProfile: React.FC = () => {
         icon="calendar-alt"
       />
       
-      <AnimatedBox
+      <AnimatedLinearGradient
         className={`m-2`}
         entering={FadeInRight.duration(600).delay(600).springify()}
-        bg={{
-          linearGradient: {
-            colors: ['gray.400', '#3b5998', '#192f6a'],
-            start: [0, 0],
-            end: [1, 1],
-          },
-        }}
+        entering={FadeInDown.duration(600).delay(400).springify()}
+        colors={['gray.400', '#3b5998', '#192f6a']}
+        start={[0, 0]}
+        end={[1, 1]}
       >
         <Text className='font-rbold text-lg'>Mutual Friends</Text>
         {user.commonFriends && user.commonFriends.length > 0 ? (
@@ -171,7 +162,7 @@ const UserProfile: React.FC = () => {
         ) : (
           <Text className='text-white'>No mutual friends yet</Text>
         )}
-      </AnimatedBox>
+      </AnimatedLinearGradient>
 
       <UserSection 
         title="Mutual Servers" 

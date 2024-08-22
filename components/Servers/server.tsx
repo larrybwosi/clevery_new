@@ -12,8 +12,8 @@ import { Text, View } from '@/components/Themed';
 import Loader from '@/components/Loader';
 import MembersComponent from './members';
 import AdminDashboard from './AdminPannel';
-import { useDisclose } from 'native-base';
 import { Modal } from 'react-native';
+import useDisclose from '@/lib/hooks/useDisclose';
 
 interface ServerComponentProps {
   serverId: string;

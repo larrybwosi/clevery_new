@@ -5,6 +5,9 @@ import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import {  Linking, useColorScheme } from 'react-native';
 import { useFonts } from 'expo-font';
+import 'expo-dev-client';
+
+import "../global.css"
 
 import { Providers,pusherConnector, useThemeStore } from '@/lib'; 
 export { 

@@ -1,10 +1,9 @@
-import { Avatar, Button, Divider, HStack, Select, VStack } from "native-base";
+import { Avatar, Button, Divider, HStack, Select, SelectItem, VStack, Text, View, AvatarImage } from "@/components";
 import { CreateServerData, CreateChannelData, User } from '@/types';
 import { TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import FormField from '@/components/auth/FormField';
-import { Text, View } from '@/components/Themed';
 import UploadImage from './upload-image';
 import { selectImage } from '@/lib';
 
@@ -42,7 +41,7 @@ const Create: React.FC<CreateProps> = ({
 
   return (
     <View className="flex-1 p-6">
-      <VStack space={6} alignItems="center">
+      <VStack className='space-y-6 items-center' >
         <Text className="text-2xl font-rbold ">Create Your {title}</Text>
         <Text className="text-base text-gray-500 text-center font-pmedium">
           This is where you hang out with your friends. Create and start talking!
@@ -50,7 +49,7 @@ const Create: React.FC<CreateProps> = ({
 
         {isServer && (
           <UploadImage
-            image={fields.image}
+            image={fields.image!}
             chooseImage={chooseImage}
             removeImage={() => setFields({ ...fields, image: '' })}
           />
@@ -71,15 +70,17 @@ const Create: React.FC<CreateProps> = ({
         />
 
         {isServer && (
-          <VStack space={3} w="100%">
+          <VStack className="space-y-2">
             <Text className="text-lg font-rregular ">Members:</Text>
-            <HStack flexWrap="wrap" space={2}>
+            <HStack className="space-x-2 items-center">
               {selectedUsers?.map((user) => (
                 <Avatar
                   key={user.id}
-                  source={{ uri: user.image }}
                   size="md"
                 >
+                  <AvatarImage
+                  source={{ uri: user.image }}
+                  />
                   {user.name.charAt(0)}
                 </Avatar>
               ))}
@@ -97,30 +98,28 @@ const Create: React.FC<CreateProps> = ({
           <Select
             placeholder='Channel Type'
             accessibilityLabel='Channel Type'
-            _selectedItem={{ bg: "blue.600" }}
             defaultValue='TEXT'
             onValueChange={(v) => setFields({ ...fields, type: v } as CreateChannelData)}
-            w="100%"
-            borderColor="gray.700"
-            color="gray.400"
             selectedValue={(fields as CreateChannelData).type}
           >
-            <Select.Item label='Text' value='TEXT' leftIcon={<Feather name='hash' size={16} color="white" />} />
-            <Select.Item label='Voice' value='AUDIO' leftIcon={<Feather name='mic' size={16} color="white" />} />
-            <Select.Item label='Video' value='VIDEO' leftIcon={<Feather name='video' size={16} color="white" />} />
+            <SelectItem label='Text' value='TEXT'  >
+              <Feather name='hash' size={16} color="white" /> 
+            </SelectItem>
+            <SelectItem label='Voice' value='AUDIO'>
+              <Feather name='mic' size={16} color="white" />
+            </SelectItem> 
+            <SelectItem label='Video' value='VIDEO' >
+              <Feather name='video' size={16} color="white" />
+            </SelectItem> 
           </Select>
         )}
 
-        <Divider my={4} bg="gray.600" />
+        <Divider className='w-full my-4 bg-gray-600' />
 
         <Button
           onPress={handleSubmit}
-          isLoading={loading}
-          isLoadingText="Creating..."
-          colorScheme="blue"
-          size="lg"
-          w="full"
-          className="font-semibold"
+          isDisabled={loading}
+          className="font-semibold w-full bg-primary"
         >
           <Text className="font-pregular text-white ">Create {title}</Text>
         </Button>

@@ -17,7 +17,6 @@ export {default as UserComment} from "./Home/user-comment";
 export {default as ImageWithCaption} from "./Messages/ImageCont";
 export {default as PostForm} from './PostForm';
 export {default as UserCard} from "./UserCard"; 
-export {default as CertificateIcon} from "./CheckIcon";
 export {default as Loader} from "./Loader";
 export {default as ErrorMessage} from "./ErrorMessage";
 export {default as Header} from "./Messages/Header";
@@ -32,51 +31,41 @@ export {default as InviteFriends} from './invites/Invite'
 export {default as CustomButton} from './CustomButton'
 export {default as FormField} from './auth/FormField'
 export {default as Butttons} from './auth/butttons'
-export {default as LogoutComponent} from "./Profile/Logout";
+export * from "@/components/Profile/Logout";
+
 
 // Importing components
-import { Box } from '@/components/ui/box';
-import { Button } from '@/components/ui/button';
-import { Actionsheet } from '@/components/ui/actionsheet';
-import { Heading } from '@/components/ui/heading';
-import { Modal } from '@/components/ui/modal';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
-import { ScrollView } from '@/components/ui/scroll-view';
-import { Toast } from '@/components/ui/toast';
-import { Spinner } from '@/components/ui/spinner';
-import { Avatar } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Divider } from '@/components/ui/divider';
-import { Progress } from '@/components/ui/progress';
-import { Radio } from '@/components/ui/radio';
-import { Slider } from '@/components/ui/slider';
-import { FlatList } from '@/components/ui/flat-list';
-import { SectionList } from '@/components/ui/section-list';
-export {HStack} from '@/components/ui/hstack'
-export {VStack} from '@/components/ui/vstack'
+export * from '@/components/ui/box';
+export * from '@/components/ui/actionsheet';
+export * from '@/components/ui/heading';
+export * from '@/components/ui/modal';
+export * from '@/components/ui/input';
+export * from '@/components/ui/checkbox';
+export * from '@/components/ui/switch';
+export * from '@/components/ui/scroll-view';
+export * from '@/components/ui/toast';
+export * from '@/components/ui/spinner';
+export * from '@/components/ui/avatar';
+export * from '@/components/ui/badge';
+export * from '@/components/ui/section-list';
+export * from '@/components/ui/hstack'
+export * from '@/components/ui/vstack'
 export * from '@/components/ui/select'
+export * from '@/components/ui/lineargradient'
+export * from '@/components/ui/button'
+export * from '@/components/ui/progress'
+export * from '@/components/ui/radio'
+export * from '@/components/ui/slider'
+export * from '@/components/ui/flat-list'
+export * from '@/components/ui/section-list'
+export * from '@/components/ui/checkbox'
+export * from '@/components/ui/alert'
+export * from '@/components/ui/avatar'
+export * from '@/components/ui/alert-dialog'
+export * from '@/components/ui/fab'
+export * from '@/components/ui/icon'
+export * from '@/components/ui/input'
+export * from '@/components/ui/toast'
+export * from '@/components/ui/form-control'
+export * from '@/components/ui/divider';
 
-export {
-  Box,
-  Button,
-  Actionsheet,
-  Heading,
-  Modal,
-  Input,
-  Checkbox,
-  Switch,
-  ScrollView,
-  Toast,
-  Spinner,
-  Avatar,
-  Badge,
-  Divider,
-  Progress,
-  Radio,
-  Slider,
-  FlatList,
-  SectionList,
-  
-};

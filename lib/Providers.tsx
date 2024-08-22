@@ -2,10 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { MessagingProvider } from './contexts/messaging';
 import { AuthProvider } from './contexts/auth';
-import { GluestackUIProvider } from '@gluestack-ui/themed';
-import { config } from '@gluestack-ui/config';
-// import { OnlineFriendsProvider } from './contexts/online_friends';
-// import { MessagingProvider } from './contexts/socket/messaging';
+import { OverlayProvider } from '@gluestack-ui/overlay';
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 
 export const Providers = ({ children }:{children:React.ReactNode}) => {
 
@@ -14,13 +12,13 @@ export const Providers = ({ children }:{children:React.ReactNode}) => {
   return(
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <GluestackUIProvider config={config} >
-          <MessagingProvider>
-            {/* <OnlineFriendsProvider> */}
+        <MessagingProvider>
+          <GluestackUIProvider>
+            <OverlayProvider>
               {children}
-            {/* </OnlineFriendsProvider> */}
-          </MessagingProvider>
-        </GluestackUIProvider>
+            </OverlayProvider>
+          </GluestackUIProvider>
+        </MessagingProvider>
       </QueryClientProvider>
     </AuthProvider>
   )

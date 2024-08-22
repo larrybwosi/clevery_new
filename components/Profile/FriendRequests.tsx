@@ -1,11 +1,10 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { FlatList, TouchableOpacity, Animated } from 'react-native';
-import { Box, Text, VStack, HStack, Heading, Icon, Spinner } from '@gluestack-ui/themed';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
-
+import { Box, HStack, VStack, Text, Spinner } from '@/components';
 interface FriendRequest {
   id: string;
   username: string;
@@ -45,16 +44,16 @@ const FriendRequestItem: React.FC<{ item: FriendRequest; onAccept: () => void; o
 
   return (
     <AnimatedTouchableOpacity style={animatedStyle}>
-      <Box bg="$white" rounded="$xl" p={4} mb={'$3'}>
-        <HStack space={'md'} alignItems="center">
+      <Box className='bg-white rounded-xl'>
+        <HStack className='items-center' >
           <Image 
             source={{ uri: item.avatar }} 
             style={{ width: 60, height: 60, borderRadius: 30 }}
             transition={1000}
           />
-          <VStack flex={1}>
-            <Text fontSize="$lg" fontWeight="bold" mb={1}>{item.username}</Text>
-            <Text fontSize="$sm" color="gray.600">Wants to be your friend</Text>
+          <VStack className='flex-1'>
+            <Text className='font-rmedium text-lg' >{item.username}</Text>
+            <Text className='font-rregular text-sm text-gray-600'>Wants to be your friend</Text>
           </VStack>
           <HStack space={'sm'}>
             <TouchableOpacity onPress={onAccept}>
@@ -100,18 +99,18 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests, isLoadi
 
   if (isLoading) {
     return (
-      <Box flex={1} justifyContent="center" alignItems="center" bg="gray.100">
+      <Box className='flex-1 justify-center items-center bg-gray-100' >
         <Spinner size="large" color="$blue.500" />
-        <Text mt={4} fontSize="$md" color="gray.600">Loading friend requests...</Text>
+        <Text className='font-rmedium mt-1 text-gray-600'>Loading friend requests...</Text>
       </Box>
     );
   }
 
   return (
-    <Box flex={1}p={4}>
+    <Box className='flex-1'>
       
       {friendRequests.length === 0 ? (
-        <VStack flex={1} justifyContent="center" alignItems="center" space={'md'}>
+        <VStack className='flex-1 justify-center items-center bg-gray-100' >
           <LottieView
             source={require('@/assets/animations/empty.json')}
             ref={animation}
@@ -119,10 +118,10 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ friendRequests, isLoadi
             loop
             style={{ width: 200, height: 200 }}
           />
-          <Text fontSize="$lg" color="gray.600" textAlign="center">
+          <Text className='text-lg text-gray-600 items-center'>
             No friend requests at the moment.
           </Text>
-          <Text fontSize="$md" color="gray.500" textAlign="center">
+          <Text className='font-rmedium text-gray-500 items-center' >
             When someone sends you a friend request, it will appear here.
           </Text>
         </VStack>

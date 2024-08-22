@@ -4,9 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
 
-import { Text, View } from '@/components/Themed';
+import { } from '@/components/Themed';
 import Loader from '@/components/Loader';
-import { Button, Overlay } from '@/components/ui';
+import { Button, Text, View} from '@/components';
+import { Overlay } from '@gluestack-ui/overlay';
 
 interface GalleryProps {
   images: string[];
@@ -73,9 +74,9 @@ const Gallery: React.FC<GalleryProps> = ({ images, loading }) => {
         contentContainerStyle={{ paddingHorizontal: 4 }}
       /> */}
       <Overlay
-        onBackdropPress={() => setSelectedImage(null)}
-        overlayStyle={{ backgroundColor: 'transparent', padding: 0 }}
-        fullScreen
+        // onBackdropPress={() => setSelectedImage(null)}
+        // overlayStyle={{ backgroundColor: 'transparent', padding: 0 }}
+        // fullScreen
         isOpen={!!selectedImage}
       >
         <View className="flex-1 bg-black/80">

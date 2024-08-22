@@ -2,6 +2,13 @@ import { TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Text, View } from '../Themed';
 
+type selected = 'recents' | 'people' | 'media-links' | 'files';
+
+interface SearchTabBarProps {
+  onTabPress: (tab: selected) => void;
+  selected: selected;
+}
+
 const SearchTabBar = ({ onTabPress, selected }: SearchTabBarProps) => (
   <View className="py-1 px-2 border-b border-gray-500">
     <View className="flex-row justify-between">
@@ -27,12 +34,5 @@ const SearchTabBar = ({ onTabPress, selected }: SearchTabBarProps) => (
     </View>
   </View>
 );
-
-type selected = 'recents' | 'people' | 'media-links' | 'files';
-
-interface SearchTabBarProps {
-  onTabPress: (tab: selected) => void;
-  selected: selected;
-}
 
 export default SearchTabBar;

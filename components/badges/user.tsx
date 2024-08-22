@@ -3,14 +3,13 @@ import { StyleSheet, Animated, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
 import { Text } from "../Themed";
-import { LinearGradient } from "@gluestack-ui/themed";
-import { Box } from "@gluestack-ui/themed";
-import { Icon } from "@gluestack-ui/themed";
+import { Box } from "../ui/box";
+import { LinearGradient } from "../ui/lineargradient";
 
 interface BadgeProps {
   text: string;
   colors: string[];
-  icon?: string;
+  icon?: any;
   animation?: any;
   elite?: boolean;
   popularity?: number;
@@ -48,7 +47,6 @@ const BadgeBase: React.FC<BadgeProps> = ({ text, colors, icon, animation, elite,
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
       <LinearGradient
-
         bg={{
           linearGradient: {
             colors: colors,
@@ -61,7 +59,7 @@ const BadgeBase: React.FC<BadgeProps> = ({ text, colors, icon, animation, elite,
         py={1.5}
         rounded="full"
       >
-        {icon && <Icon as={Ionicons} name={icon} size="sm" color="white" />}
+        {icon && <Ionicons name={icon} size={10} color="white" />}
         <Text style={[styles.text, elite && styles.eliteText]}>{text}</Text>
         {animation && (
           <Box style={styles.animationContainer}>
@@ -75,7 +73,7 @@ const BadgeBase: React.FC<BadgeProps> = ({ text, colors, icon, animation, elite,
             />
           </Box>
         )}
-      </Box>
+      </LinearGradient>
     </Animated.View>
   );
 };

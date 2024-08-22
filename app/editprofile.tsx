@@ -14,9 +14,8 @@ import {
   InputIcon,
   VStack,
   HStack,
-  Pressable,
-} from '@gluestack-ui/themed';
-import { ScrollView } from 'react-native';
+} from '@/components';
+import { Pressable, ScrollView } from 'react-native';
 import { FontAwesome6, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { showToastMessage, useProfileStore, useUpdateCurrentUser } from '@/lib';
 import { router } from 'expo-router';
@@ -81,7 +80,7 @@ const UserProfileEdit = () => {
         <Animated.View>
           <Pressable onPress={chooseFile}>
             <Avatar size="2xl" source={{ uri: avatarUri }} borderWidth={4} borderColor="white">
-              <AvatarBadge bg="$green500">
+              <AvatarBadge className='bg-green-600'>
                 <MaterialIcons name="edit" color="white" size={20}/>
               </AvatarBadge>
             </Avatar>

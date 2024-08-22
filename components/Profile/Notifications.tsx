@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { FlatList, TouchableOpacity, Animated } from 'react-native';
+import { FlatList, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { Text, View } from '../Themed';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, Switch } from '@gluestack-ui/themed';
+import { Switch } from '../ui/switch';
 
 interface Notification {
   id: string;

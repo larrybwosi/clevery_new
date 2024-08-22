@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, VStack, Input, InputField, Text, Button, ButtonText, Icon, Toast, useToast } from '@gluestack-ui/themed';
+import { Box, VStack, Input, InputField, Text, Button, ButtonText, Icon, Toast, useToast, LinearGradient } from '@/components';
 import { Ionicons } from '@expo/vector-icons';
 
 const CreateChannelComponent = () => {
@@ -29,10 +29,10 @@ const CreateChannelComponent = () => {
   };
 
   return (
-    <Box p="$4" bg="$white" >
-      <VStack gap="$4">
-        <Text fontSize="$2xl" fontWeight="$bold">Create channel</Text>
-        <Text fontSize="$md" color="$gray500">Create your own channel from below.</Text>
+    <Box className='flex-1 p-6 bg-white' >
+      <VStack  className='space-y-4'>
+        <Text className='font-rbold text-2xl'>Create channel</Text>
+        <Text className='font-rmedium text-base' >Create your own channel from below.</Text>
 
         <Input>
           <InputField
@@ -42,8 +42,8 @@ const CreateChannelComponent = () => {
           />
         </Input>
 
-        <Text fontSize="$md" fontWeight="$bold">Categories</Text>
-        <Box flexDirection="row" justifyContent="space-between">
+        <Text className='font-rmedium '>Categories</Text>
+        <Box className='space-y-2 flex-row justify-between' >
           {categories.map((category) => (
             <Button
               key={category.name}
@@ -51,14 +51,14 @@ const CreateChannelComponent = () => {
               onPress={() => setSelectedCategory(category.name)}
             >
               <VStack>
-                <Ionicons name={category.icon} size="md" />
-                <Text fontSize="$xs">{category.name}</Text>
+                <Ionicons name={category.icon} size={24} color="black" />
+                <Text className='font-rmedium'>{category.name}</Text>
               </VStack>
             </Button>
           ))}
         </Box>
 
-        <Text fontSize="$md" fontWeight="$bold">Description</Text>
+        <Text className='font-rmedium'>Description</Text>
         <Input>
           <InputField
             placeholder="Write here ..."
@@ -69,17 +69,13 @@ const CreateChannelComponent = () => {
           />
         </Input>
 
-        <Box
-          bg={{
-            linearGradient: {
-              colors: ['$lightBlue300', '$violet800'],
-              start: [0, 0],
-              end: [1, 0],
-            },
-          }}
+        <LinearGradient
+          colors={['$lightBlue300', '$violet800']} 
+          start={[0, 0]}
+          end={[1, 0]}
         >
           <ButtonText>Confirm and create</ButtonText>
-        </Box>
+        </LinearGradient>
       </VStack>
     </Box>
   );

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TouchableOpacity } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import { router, useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 import { chooseImage, showToastMessage, useCreatePost, useUpdatePost } from "@/lib";
 import SelectedImages from "./SelectedImages";

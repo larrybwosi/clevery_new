@@ -1,8 +1,9 @@
-import { Skeleton, HStack } from 'native-base';
 import { FlatList, View } from 'react-native';
 
 import { Text } from '../Themed';
 import Image from '../image';
+import { HStack } from '../ui/hstack';
+import { Skeleton } from '../ui/skeleton';
 
 interface MembersComponentProps {
   userImages: string[];
@@ -19,9 +20,9 @@ const MembersComponent: React.FC<MembersComponentProps> = ({ userImages }) => {
   );
 
   const renderSkeleton = () => (
-    <HStack space={2}>
+    <HStack className='space-x-2'>
       {Array.from({ length: 5 }).map((_, index) => (
-        <Skeleton key={index} size={10} rounded="full" />
+        <Skeleton className='w-[10px] rounded-lg' key={index} />
       ))}
     </HStack>
   );

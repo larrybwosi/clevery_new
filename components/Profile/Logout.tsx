@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { TouchableOpacity, Animated } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Box } from '@gluestack-ui/themed';
+import { Box } from '../ui/box';
 import { Text, View } from '../Themed';
+// import { Text, View, Box } from '@/components';
 
 interface LogoutComponentProps {
   onLogout: () => void;
