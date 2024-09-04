@@ -1,4 +1,4 @@
-import { TouchableOpacity } from 'react-native';
+import { Pressable, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 // import { Image } from 'expo-image';
 
@@ -20,7 +20,7 @@ type AuthorInfoProps = {
 const AuthorInfo = ({ author, timestamp,iscomment }:AuthorInfoProps) => {
     return (
       <View className='flex-row items-center mb-2.5'>
-        <TouchableOpacity onPress={() => router.push(`/user/${author?.id}`)}>
+        <Pressable onPress={() => router.push(`/user/${author?.id}`)}>
           {author?.image &&
            <Image 
             source={author?.image} 
@@ -29,7 +29,7 @@ const AuthorInfo = ({ author, timestamp,iscomment }:AuthorInfoProps) => {
             style='mr-2.5 w-[50px] h-[50px] rounded-3xl'
           />
           }
-        </TouchableOpacity>
+        </Pressable>
         <View className='flex-1'>
           <View className='flex-row gap-1.5'>
             <Text className={`text-4 font-rmedium text-${iscomment? "[12px]":"[16px]"}`} >{author?.name}</Text>

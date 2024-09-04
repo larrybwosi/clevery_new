@@ -1,4 +1,4 @@
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 
@@ -12,9 +12,9 @@ const Settings = () => {
   return (
     <View className="flex-1 mt-7.5">
       <View className="flex-row items-center">
-        <TouchableOpacity onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()}>
           <Feather name="arrow-left" size={24} color="gray" />
-        </TouchableOpacity>
+        </Pressable>
         <Text className="font-rmedium text-xl ml-[20%]">{header}</Text>
       </View>
       {renderContent(setting)}

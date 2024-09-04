@@ -1,8 +1,8 @@
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 
 import { Text, View } from '../themed';
 import { Conversation } from '@/types';
-import Image from './image';
+import Image from '../image';
 interface UserCardProps {
   conversation: Conversation
   onSelectUser: (id: string) => void;
@@ -16,7 +16,7 @@ const UserCard: React.FC<UserCardProps> = ({ conversation, onSelectUser }) => {
   const unreadMessages = 3
 
   return (
-    <TouchableOpacity className='flex-row items-center px-4xs py-1' activeOpacity={1} onPress={() => onSelectUser(id)}>
+    <Pressable className='flex-row items-center px-4xs py-1' onPress={() => onSelectUser(id)}>
       <View className='mr-2.5'>
         <Image
           source={image ? image : "https://via.placeholder.com/150"}
@@ -33,7 +33,7 @@ const UserCard: React.FC<UserCardProps> = ({ conversation, onSelectUser }) => {
         <Text className='text-gray-400 text-[11px] font-rthin' >@{username || name}</Text>
         <Text className='mt-1.5 font-rthin text-[10px] '>{lastMessage?.text}</Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

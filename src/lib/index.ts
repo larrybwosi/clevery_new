@@ -12,7 +12,8 @@ export {
   selectImage,
   sortMessages,
   showToastMessage,
-  parseIncomingMessage
+  parseIncomingMessage,
+  checkIsLiked
 } from './utils'
 
 export {
@@ -37,7 +38,8 @@ export {
   useLikePost,
   useSavePost,
   useCommentPost,
-  useUpdatePost
+  useUpdatePost,
+  useLikeComment
 } from "./actions/hooks/posts";
 
 export {

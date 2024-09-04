@@ -1,12 +1,14 @@
-import { TouchableOpacity, Linking, BackHandler } from 'react-native';
-import { View as SepV, Text as SepT } from '@/components';
+import { useState, useCallback, useEffect } from 'react';
+import { TouchableOpacity, Linking, BackHandler, Pressable, Text, View as RNView, PanResponder, GestureResponderEvent, PanResponderGestureState } from 'react-native';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { formatDateString, multiFormatDateString } from '@/lib/utils';
-import { Text, View } from '@/components/themed';
+import { View } from '@/components/themed';
 import * as WebBrowser from 'expo-web-browser';
-import { useState, useEffect } from 'react';
 import Image from '@/components/image';
 import FullScreenImage from './full_image';
+import { router } from 'expo-router';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 
 interface Message {
   id: string;
@@ -23,16 +25,19 @@ interface Message {
   reactions?: string;
 }
 
-interface MessagesProps {
+interface MessageProps {
   item: Message;
-  onDelete: (key: string) => void;
+  onDelete: (id: string) => void;
+  onReply: (id: string, text: string) => void;
   onLongPress: (id: string) => void;
-  onClose: (id: string) => void;
 }
 
-const Message: React.FC<MessagesProps> = ({ item, onDelete, onLongPress }) => {
+const Message: React.FC<MessageProps> = ({ item, onDelete, onReply, onLongPress }) => {
   const { id, text, sender, createdAt, isSeparator, file, reactions } = item;
   const [isFullScreenImageOpen, setIsFullScreenImageOpen] = useState(false);
+  const swipeProgress = useSharedValue(0);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -46,12 +51,57 @@ const Message: React.FC<MessagesProps> = ({ item, onDelete, onLongPress }) => {
     return () => backHandler.remove();
   }, [isFullScreenImageOpen]);
 
+  const panGestureEvent = useCallback((event: PanGestureHandlerGestureEvent) => {
+    'worklet';
+    swipeProgress.value = event.nativeEvent.translationX;
+    if (event.nativeEvent.translationX < -50) {
+      setSwipeDirection('left');
+    } else if (event.nativeEvent.translationX > 50) {
+      setSwipeDirection('right');
+    } else {
+      setSwipeDirection(null);
+    }
+  }, [swipeProgress]);
+
+  const actionButtonStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: swipeProgress.value }],
+      opacity: swipeProgress.value.interpolate({
+        inputRange: [-150, 0],
+        outputRange: [1, 0],
+      }),
+    };
+  }, [swipeProgress]);
+
+  const handlePanRelease = useCallback(() => {
+    'worklet';
+    if (swipeDirection === 'left') {
+      swipeProgress.value = withTiming(-150);
+    } else if (swipeDirection === 'right') {
+      swipeProgress.value = withTiming(0);
+    } else {
+      swipeProgress.value = withTiming(0);
+    }
+  }, [swipeProgress, swipeDirection]);
+
   const handleImagePress = () => {
     setIsFullScreenImageOpen(true);
   };
 
   const handleCloseFullScreenImage = () => {
     setIsFullScreenImageOpen(false);
+  };
+
+  const handleReply = () => {
+    // Prompt the user to construct the reply message
+    const replyText = prompt('Enter your reply:');
+    if (replyText) {
+      onReply(id, replyText);
+    }
+  };
+
+  const handleDelete = () => {
+    onDelete(id);
   };
 
   if (isSeparator) {
@@ -61,43 +111,69 @@ const Message: React.FC<MessagesProps> = ({ item, onDelete, onLongPress }) => {
   const formattedTimestamp = multiFormatDateString(createdAt);
 
   return (
-    <TouchableOpacity
-      className="flex flex-row items-start mb-[15px] px-[5px]"
-      activeOpacity={1}
-      onLongPress={() => onLongPress(id)}
-    >
-      <TouchableOpacity>
-        <Image
-          source={sender?.image}
-          width={80}
-          height={80}
-          style="rounded-2xl border border-gray-300 h-10 w-10 mr-2.5"
-        />
-      </TouchableOpacity>
-      <View className="flex-1">
-        <View className="flex-row items-center mb-1.5">
-          <Text className="font-rmedium mr-1.5 text-light">
-            {sender.name}
-            {sender.isAdmin && <Feather name="shield" color="red" size={12} className="ml-1" />}
-          </Text>
-          <Text className="font-rmedium text-xs text-[#666]">{formattedTimestamp}</Text>
-        </View>
-        <FileAttachment file={file} onImagePress={handleImagePress} />
-        <MessageText text={text} />
-        {reactions && (
-          <View className="flex-row mt-1">
-            {/* Implement reactions here */}
+    <GestureHandlerRootView>
+      <PanGestureHandler onGestureEvent={panGestureEvent} onEnded={handlePanRelease}>
+        <Pressable
+          className="flex flex-row items-start mb-[15px] px-[5px]"
+          onLongPress={() => onLongPress(id)}
+        >
+          <Pressable>
+            <Image
+              source={sender?.image}
+              width={80}
+              height={80}
+              style="rounded-2xl border border-gray-300 h-10 w-10 mr-2.5"
+            />
+          </Pressable>
+          <View className="flex-1">
+            <View className="flex-row items-center mb-1.5">
+              <Text className="font-rmedium mr-1.5 text-white">
+                {sender.name}
+                {sender.isAdmin && <Feather name="shield" color="red" size={12} className="ml-1" />}
+              </Text>
+              <Text className="font-rmedium text-xs text-[#666]">{formattedTimestamp}</Text>
+            </View>
+            <FileAttachment file={file} onImagePress={handleImagePress} />
+            <MessageText text={text} />
+            {reactions && (
+              <View className="flex-row mt-1">
+                {/* Implement reactions here */}
+              </View>
+            )}
           </View>
-        )}
-      </View>
-      {file && (
-        <FullScreenImage
-          isOpen={isFullScreenImageOpen}
-          onClose={handleCloseFullScreenImage}
-          imageUri={file}
-        />
-      )}
-    </TouchableOpacity>
+          <Animated.View
+            style={[
+              {
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                bottom: 0,
+                width: 150,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-around',
+                backgroundColor: 'gray',
+              },
+              actionButtonStyle,
+            ]}
+          >
+            <TouchableOpacity onPress={handleReply}>
+              <Feather name="send" size={24} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleDelete}>
+              <Feather name="trash-2" size={24} color="white" />
+            </TouchableOpacity>
+          </Animated.View>
+          {file && isFullScreenImageOpen && (
+            <FullScreenImage
+              uri={file}
+              isOpen={isFullScreenImageOpen}
+              onClose={handleCloseFullScreenImage}
+            />
+          )}
+        </Pressable>
+      </PanGestureHandler>
+    </GestureHandlerRootView>
   );
 };
 
@@ -130,33 +206,37 @@ const FileAttachment = ({ file, onImagePress }: { file: Message['file']; onImage
 };
 
 const MessageSeparator = ({ timestamp }: { timestamp: string }) => (
-  <SepV className='flex-row items-center my-3' >
-    <SepV className='flex-1 h-[0.35px] bg-gray-400' />
-    <SepT className="font-rregular mx-2 text-[8px]">
+  <RNView className='flex-row items-center my-3'>
+    <RNView className='flex-1 h-[0.35px] bg-gray-400' />
+    <Text className="font-rregular mx-2 text-[8px]">
       {formatDateString(timestamp)}
-    </SepT>
-    <SepV className='flex-1 h-[0.35px] bg-gray-400' />
-  </SepV>
+    </Text>
+    <RNView className='flex-1 h-[0.35px] bg-gray-400' />
+  </RNView>
 );
 
 const MessageText = ({ text }: { text: string }) => {
   const parts = text.split(/(@\w+|\bhttps?:\/\/\S+\b)/gi);
 
   return (
-    <Text className="text-sm mr-10 font-rregular mb-1.5">
+    <Pressable className="text-sm mr-10 font-rregular mb-1.5">
       {parts.map((part, index) => {
         if (part.startsWith('@')) {
-          return <Text key={index} className="text-blue-500 font-rmedium">{part}</Text>;
+          return (
+            <Pressable key={index} className="text-light underline" onPress={() => router.navigate(`/user/${part.slice(1)}`)}>
+              <Text className="text-light underline">{part}</Text>
+            </Pressable>
+          );
         } else if (part.startsWith('http')) {
           return (
-            <Text key={index} className="text-blue-500 underline" onPress={() => Linking.openURL(part)}>
-              {part}
-            </Text>
+            <Pressable key={index} className="text-light underline" onPress={() => Linking.openURL(part)}>
+              <Text className="text-light underline">{part}</Text>
+            </Pressable>
           );
         }
-        return part;
+        return <Text className="font-rregular text-white">{part}</Text>
       })}
-    </Text>
+    </Pressable>
   );
 };
 

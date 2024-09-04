@@ -1,4 +1,4 @@
-import { TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { Feather } from '@expo/vector-icons';
 import { Text, View } from '@/components/themed';
@@ -19,26 +19,26 @@ const UploadImage: React.FC<UploadImageProps> = ({ image, chooseImage, removeIma
             source={{ uri: image }}
             className="w-52 h-52 rounded-[104px]"
           />
-          <TouchableOpacity
+          <Pressable
             onPress={removeImage}
             className="absolute bottom-0 right-0 bg-gray-800 rounded-md p-2"
           >
             <Text className="font-medium text-xs text-white">Remove Image</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       ) : (
-        <TouchableOpacity
+        <Pressable
           onPress={chooseImage}
-          className="w-32 h-32 rounded-[58px] border-2 border-gray-900 border-dashed flex items-center justify-center "
+          className="w-32 h-32 rounded-[58px] border-2 border-white border-dashed flex items-center justify-center"
         >
           <Feather name="camera" size={34} color="gray" />
           <Feather
             name="plus"
             size={18}
-            className="absolute top-0 right-0 bg-purple-600 p-1 rounded-md text-white"
+            className="absolute top-0 right-0 bg-purple-600 p-1 rounded-full text-white"
           />
           <Text className="text-gray-500 mt-2 font-pregular">Upload</Text>
-        </TouchableOpacity>
+        </Pressable>
       )}
     </View>
   );

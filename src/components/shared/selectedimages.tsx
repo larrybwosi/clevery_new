@@ -1,4 +1,4 @@
-import { TouchableOpacity, FlatList, FlatListProps } from 'react-native';
+import { TouchableOpacity, FlatList, FlatListProps, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from '@/components/themed';
 import { SvgFromXml } from 'react-native-svg';
@@ -29,18 +29,18 @@ const SelectedImages: React.FC<SelectedImagesProps> = ({ images, onDeleteImage, 
   if (images.length === 0) {
 
     return (
-      <TouchableOpacity
-        className='flex-1 items-center justify-center border rounded-lg p-[20%]'
+      <Pressable
+        className='flex-1 items-center justify-center border rounded-lg p-[20%] h-16'
         onPress={handleSelectImages}
       >
-        <Image source={createSvg}/>
+        <SvgFromXml xml={createSvg} />
 
         <Text
           className='mt-1.5 font-pregular text-base text-[#555]'
         >
           Select images
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 

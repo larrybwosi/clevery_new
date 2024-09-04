@@ -1,9 +1,8 @@
 import axios from "axios";
-import { CreatePostData, Post, PostQuery, User } from "@/types";
-import { postsPaths as apiPaths } from "../../../routes";
+import { CreatePostData, Post, PostQuery } from "@/types";
+import { postsPaths as apiPaths } from "@/routes";
 import { handleApiError } from "./error";
 import { endpoint } from "@/lib/env";
-import { uploadFile } from "../utils";
 
 type FullModel<T> = T & { id: string; createdAt: Date; updatedAt: Date };
 
@@ -51,11 +50,6 @@ export const postsApi = {
    */
   createPost: async (postData: CreatePostData): Promise<FullModel<Post>> => {
     try {
-      if(postData.images){
-      const uploadPromises = postData.images.map(file=> uploadFile(file))
-      const result = await Promise.all(uploadPromises)
-      postData.images = result
-    }
       const response = await axios.post<FullModel<Post>>(`${endpoint}${apiPaths.createPost}`, postData);
       return response.data;
     } catch (error) {
@@ -101,11 +95,6 @@ export const postsApi = {
    */
   updatePost: async (postData: UpdatePostData): Promise<FullModel<Post>> => {
     try {
-      if(postData.images){
-        const uploadPromises = postData.images.map(file=> uploadFile(file))
-        const result = await Promise.all(uploadPromises)
-        postData.images = result
-      }
       const response = await axios.patch<FullModel<Post>>(`${endpoint}${apiPaths.updatePost(postData.id as string)}`, postData);
       return response.data;
     } catch (error) {
@@ -159,6 +148,21 @@ export const postsApi = {
       return response.data;
     } catch (error) {
       throw handleApiError(error, `Failed to comment on post with ID ${commentObj.postId}`);
+    }
+  },
+
+  /**
+   * Likes a comment
+   * @param commentId - The ID of the comment to like
+   * @returns A promise that resolves to the API response containing the updated comment
+   * @throws Error with a descriptive message if the request fails
+   */
+  likeComment: async (commentId: string): Promise<FullModel<Comment>> => {
+    try {
+      const response = await axios.post<FullModel<Comment>>(`${endpoint}${apiPaths.interactComment(commentId)}`, { action: 'like' });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error, `Failed to like comment with ID ${commentId}`);
     }
   },
 

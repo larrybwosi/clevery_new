@@ -57,7 +57,7 @@ const Chat = () => {
             onSelectUser={navigate}
           />
         )}
-        ItemSeparatorComponent={() => <View className="h-px bg-gray-600" />}
+        ItemSeparatorComponent={() => <View className="h-px bg-gray-400 mx-1" />}
         ListEmptyComponent={() => (
           <View className="flex-1 justify-center items-center p-5">
             <Text className="text-lg text-gray-600 text-center">No conversations to display</Text>

@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { View, Text, ScrollView, Dimensions, SafeAreaView } from "react-native";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 
 import { CustomButton, FormField,Butttons, Button } from "@/components";
 import { showToastMessage } from "@/lib";
-import { googleSignIn, useAuth } from "@/lib/contexts/auth";
+import { useAuth } from "@/lib/contexts/auth";
 import { GoogleSigninButton } from "@react-native-google-signin/google-signin";
-import { Divider } from "@/components/ui/divider";
-
+import * as WebBrowser from 'expo-web-browser';
 type AuthProviders = "google" | "facebook" | "github";
 
+WebBrowser.maybeCompleteAuthSession();
 const SignIn = () => {
   const {
     loading,
@@ -18,15 +18,15 @@ const SignIn = () => {
   } = useAuth()
 
   const handleGoogleSignIn = async () => {
-    const result = await googleSignIn();
-    if (result.success) {
-      // Handle successful sign-in
-      console.log('Signed in with Google:', result.idToken);
-      // You might want to send this token to your backend
-    } else {
-      // Handle sign-in failure
-      console.log('Google sign-in failed:', result.error);
-    }
+    // const result = await googleSignIn();
+    // if (result.success) {
+    //   // Handle successful sign-in
+    //   console.log('Signed in with Google:', result.idToken);
+    //   // You might want to send this token to your backend
+    // } else {
+    //   // Handle sign-in failure
+    //   console.log('Google sign-in failed:', result.error);
+    // }
   };
  
   const [form, setForm] = useState({
@@ -82,8 +82,8 @@ const signInWithProvider = async (provider: AuthProviders) => {
 
 
   return (
-    <SafeAreaView className="bg-primary-800 h-full">
-      <ScrollView>
+    <SafeAreaView className="bg-black h-full">
+      <ScrollView> 
         <View
           className="w-full flex justify-center h-full px-4 my-4"
           style={{

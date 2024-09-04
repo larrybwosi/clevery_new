@@ -55,7 +55,19 @@ export interface Comment extends BaseModel {
   text: string;
   authorId: string;
   postId: string;
-  user: User;
+  author: {
+    id: string;
+    name: string;
+    username: string | null;
+    image: string | null;
+  };
+  replies?: Comment[] | null;
+  likes?: {
+    id: string;
+    name: string;
+    username: string | null;
+    image: string | null;
+  }[] | null;
 }
 
 // Post interface

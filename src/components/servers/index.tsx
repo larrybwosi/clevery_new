@@ -1,6 +1,7 @@
 import {
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Image
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -14,7 +15,6 @@ import Loader from '../states/loading';
 import { Text, View } from '../themed';
 import MembersComponent from './members';
 import AdminDashboard from './admin';
-import Image from '../image';
 
 interface ServerComponentProps {
   serverId: string;
@@ -46,19 +46,15 @@ const ServerComponent: React.FC<ServerComponentProps> = ({
     <>
       <ScrollView className='flex-1'>
         <Image
-          style='w-full justify-end items-center h-52'
-          height={500}
-          width={350}
-          source={bannerImageUrl}
+          className='w-full justify-end items-center h-52'
+          source={{uri:bannerImageUrl}}
         />
         <View className='p-4'>
           <View className='flex-row  justify-between items-center mb-4'>
             <View className='flex-col' >
               <Image
-                source={server?.image!}
-                width={80}
-                height={80}
-                style='h-[70px] w-[70px] rounded-[35px] border'
+                source={{uri:server?.image!}}
+                className='h-[70px] w-[70px] rounded-[35px] border'
               />
               <Text className='font-rbold  mt-5 mr-auto text-lg '>{server?.name}</Text>
             </View>

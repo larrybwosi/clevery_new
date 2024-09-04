@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList, TouchableOpacity, Animated, ScrollView } from 'react-native';
+import { FlatList, TouchableOpacity, Animated, ScrollView, Pressable } from 'react-native';
 import { Text, View } from '../themed';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -58,19 +58,19 @@ const NotificationItem: React.FC<{ item: Notification; onPress: () => void }> = 
 
   return (
     <Animated.View className="mb-3 rounded-xl  shadow-md" style={{ transform: [{ scale: scaleAnim }] }}>
-      <TouchableOpacity onPress={handlePress} className="flex-row items-center p-3">
+      <Pressable onPress={handlePress} className="flex-row items-center p-3">
         <LinearGradient
-          colors={item.read ? ['#e0e0e0', '#f5f5f5'] : ['#4c669f', '#3b5998']}
+          colors={item.read ? ['#4c669f', '#fca5a5'] : ['#4c669f', '#06b6d4']}
           className="w-12 h-12 rounded-full justify-center items-center mr-3"
         >
           <Ionicons name={getIcon(item.type)} size={24} color={item.read ? '#666' : '#fff'} />
         </LinearGradient>
         <View className="flex-1">
-          <Text className={`text-base mb-1 ${!item.read ? 'font-bold' : ''}`}>{item.content}</Text>
-          <Text className="text-xs text-gray-500">{item.time}</Text>
+          <Text className={`text-base mb-1 ${!item.read ? 'font-pmedium' : 'font-pmedium'}`}>{item.content}</Text>
+          <Text className="text-xs text-gray-500 font-pregular">{item.time}</Text>
         </View>
-        {!item.read && <View className="w-2.5 h-2.5 rounded-full bg-green-500 ml-2" />}
-      </TouchableOpacity>
+        {!item.read && <View className="w-2.5 h-2.5 rounded-full bg-green-500 ml-3" />}
+      </Pressable>
     </Animated.View>
   );
 };

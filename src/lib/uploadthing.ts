@@ -1,42 +1,7 @@
 import { generateReactNativeHelpers } from "@uploadthing/expo";
-import { createUploadthing, UploadThingError } from "uploadthing/server";
-import type { FileRouter } from "uploadthing/server";
 import { endpoint } from "./env";
-
-const f = createUploadthing();
-
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
-
-const uploadRouter = {
-  profileImage: f({
-    image: {
-      maxFileSize: "4MB",
-    },
-  })
-    .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const user = await auth(req);
-
-      // If you throw, the user will not be able to upload
-      if (!user) throw new UploadThingError("Unauthorized");
-
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
-    })
-    .onUploadComplete(({ file, metadata }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
-
-      console.log("file url", file.url);
-
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId };
-    }),
-} satisfies FileRouter;
-export type UploadRouter = typeof uploadRouter;
-
 export const { useImageUploader, useDocumentUploader } =
-  generateReactNativeHelpers<UploadRouter>({
+  generateReactNativeHelpers<any>({
     /**
      * Your server url.
      * @default process.env.EXPO_PUBLIC_SERVER_URL
@@ -44,3 +9,28 @@ export const { useImageUploader, useDocumentUploader } =
      */
     url: `${endpoint}/uploadthing`,
   });
+
+//   const { openDocumentPicker, isUploading } = useDocumentUploader("document", {
+//     /**
+//      * Any props here are forwarded to the underlying `useUploadThing` hook.
+//      * Refer to the React API reference for more info.
+//      */
+//     onClientUploadComplete: () => Alert.alert("Upload Completed"),
+//     onUploadError: (error) => Alert.alert("Upload Error", error.message),
+//   });
+
+//   export const uploadDocument =()=>{
+//     openDocumentPicker({
+//       // input, // Matches the input schema from the FileRouter endpoint
+//       onInsufficientPermissions: () => {
+//         Alert.alert(
+//           "No Permissions",
+//           "You need to grant permission to your Photos to use this",
+//           [
+//             { text: "Dismiss" },
+//             { text: "Open Settings", onPress: openSettings },
+//           ],
+//         );
+//       },
+// });
+//   }

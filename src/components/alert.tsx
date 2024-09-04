@@ -56,6 +56,8 @@ const ToastAlert: React.FC<ToastProps> = ({
   return (
     <Alert
       className={`w-full rounded-lg shadow-lg ${variant === 'solid' ? bgColors[status] : 'bg-white border border-' + bgColors[status].split('-')[1] + '-500'}`}
+      action='muted'
+      variant={variant}
     >
       <div className="flex items-start justify-between p-4">
         <div className="flex items-start">

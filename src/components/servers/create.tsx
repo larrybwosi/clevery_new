@@ -1,10 +1,16 @@
-import { Avatar, Button, HStack, Select, SelectItem, VStack, Text, View, AvatarImage, FormField } from "@/components";
 import { CreateServerData, CreateChannelData, User } from '@/types';
 import { TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { selectImage } from '@/lib';
 import UploadImage from "../uploadimage";
+import { VStack } from '@/components/ui/vstack';
+import { Text, View } from '@/components/themed';
+import FormField from '@/components/shared/form_field';
+import { HStack } from '@/components/ui/hstack';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { Select, SelectItem } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 type Fields = CreateServerData | CreateChannelData;
 

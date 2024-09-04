@@ -4,7 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import LottieView from 'lottie-react-native';
-import { Box, HStack, VStack, Text, ButtonSpinner } from '@/components';
+import { Box } from '@/components/ui/box';
+import { VStack } from '@/components/ui/vstack';
+import { Text } from '@/components/themed';
+import { ButtonSpinner } from '@/components/ui/button';
+import { HStack } from '@/components/ui/hstack';
 interface FriendRequest {
   id: string;
   username: string;

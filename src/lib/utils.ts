@@ -8,7 +8,7 @@ import React from "react";
 import { Message } from "../types";
 
 import { endpoint } from "./env";
-import { useCustomToast, useToast } from "@/components";
+import { useCustomToast } from "@/components";
 export const showToastMessage = (message: string) => {
   const showToast  = useCustomToast();
   showToast({
@@ -200,29 +200,6 @@ export const requestAndUpdatePermissions = async () => {
     ]);
   }
 };
-
-export async function uploadFile(file: string) {
-  const token = `skvnw3I2ESwFWn6wPrPOxarSGbdpitgEcgDs0KC44Bmq7H713C8ix2XubQej6vJ8lnecCMktXgxMn4x2BNZ1sgT2YLWtu3Pu8vRbqwH0uaQPtbD4C1XTW1R9oURJgQmfMICesX1C14rkDcPd8BBp3ePSrbzB0MkWBianw94KIOuMqtQSXivG`
-  try {
-    const res = await fetch(file);
-    const blob = await res.blob();
-
-    const formData = new FormData();
-    formData.append('file', blob);
-    const response = await fetch(`https://mqczcmfz.api.sanity.io/v2021-06-07/assets/images/production`,{
-      method:"POST",
-      headers: {
-      'Authorization':`Bearer ${token}`
-      },
-      body: blob
-    })
-    const data = await response.json()
-    return  data.document.url
-  } catch (error) {
-    console.error('Error uploading file:', error);
-    throw error;
-  }
-}
 
 /**
  * Given an image URL, returns an optimized image URL

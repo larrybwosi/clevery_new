@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { FlatList, Text, Touchable, TouchableOpacity, View } from 'react-native';
-import { endpoint, usePosts } from '@/lib';
+import { FlatList, View } from 'react-native';
+import { usePosts } from '@/lib';
 import Post from '@/components/posts';
-import { Button } from '@/components';
 import * as WebBrowser from 'expo-web-browser';
-import { router } from 'expo-router';
 
 import "../global.css"
 WebBrowser.maybeCompleteAuthSession();
@@ -26,21 +24,6 @@ export default function Home() {
     setRefreshing(false);
     refetchPosts();
   };
-
-  const googleSignUp = async () => {
-    // console.log('start')
-    router.push('/sign-in')
-    // const res = await fetch(`http://192.168.42.236:3000/api/auth/oauth?provider=google`)
-    // const url = await res.json().then(d => d.url)
-
-    // console.log(url)
-    // const responce = await WebBrowser.openBrowserAsync(url)
-    // console.log(responce)
-  }
-
-  // if (feedLoading) return <LoaderIcon />;
-  // if (postsError) return <ErrorMessage message="There was an error communicating with the servers. Please ensure you have an internet connection then refresh" onRetry={() => handleRefresh()} />
-
 
   const keyExtractor = (item: any) => item?.id;
 

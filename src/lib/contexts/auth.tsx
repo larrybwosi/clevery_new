@@ -9,6 +9,7 @@ import { useAuthStore, useProfileStore } from '@/lib/zustand/store';
 import { userApi } from '@/lib/actions/users';
 import { endpoint, env } from '@/lib/env'; 
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { showToastAlert } from '@/components/alert';
 
 // Configuration variables
 const API_BASE_URL = endpoint;
@@ -129,16 +130,13 @@ export const googleSignIn = async () => {
 };
 
 
-
-
-
 /**
  * AuthProvider component that wraps the application and provides authentication context
  * @param props - The component props
  * @returns The AuthProvider component
  */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { user, token, loading, setUser, setToken, setLoading } = useAuthStore();
+  const { user, token, loading, setUser, setLoading } = useAuthStore();
   const { profile, setProfile } = useProfileStore();
 
   const { handleSignIn: handleGoogleSignIn } = useOAuthSignIn('google');
@@ -199,8 +197,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const handleCredentialsSignIn = async (credentials: { email: string; password: string }) => {
     const response = await axios.post(`${API_BASE_URL}sign-in`, credentials);
     const data = response.data
-    console.log("CredRes 1", data)
-    await handleAuthSuccess(data);
+    await handleAuthSuccess({user:data,token:""}); 
     return data
   };
 
@@ -221,18 +218,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @param data - The user data returned from the server
    */
   const handleAuthSuccess = async ({ user, token }: { user: User; token: string }) => {
-    console.log("CredRes 2", user)
+    showToastAlert({
+      id: 'sign-up',
+      title: 'Authentication successful',
+      description: 'You are now logged in.',
+    })
     //@ts-ignore
     setUser(user);
     //@ts-ignore
     setProfile(user)
-    setToken(token);
     // showToastAlert({
     //   id: 'sign-up',
     //   title: 'Authentication successful',
     //   description: 'You are now logged in.',
     // })
-    // router.navigate('/editprofile')
+    router.replace('/')
   };
 
   /**
@@ -270,7 +270,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setUser(null);
-      setToken(null);
       router.navigate('sign-in');
     } catch (error) {
       console.error('Error during sign out:', error);
@@ -278,7 +277,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [setLoading, setUser, setToken, router]);
+  }, [setLoading, setUser, router]);
 
   return (
     <AuthContext.Provider value={{ user, loading, signIn, signOut, signUp }}>

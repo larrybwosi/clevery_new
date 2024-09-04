@@ -1,7 +1,7 @@
 import { View } from '@/components';
+import Image from '@/components/image';
 import { useProfileStore } from '@/lib';
 import { Feather, Ionicons } from '@expo/vector-icons';
-import { Image } from 'react-native';
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
@@ -15,8 +15,10 @@ export default function TabLayout() {
 
     return (
       <View>
-        <Image source={{ uri: userImage }}
-          className='h-[30px] w-[30px] rounded-[15px] border-[0.5px] border-gray-400'
+        <Image source={userImage}
+          width={80}
+          height={80}
+          style='h-[30px] w-[30px] rounded-[15px] border-[0.5px] border-gray-400'
         />
       </View>
     )
@@ -24,13 +26,13 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      initialRouteName="home"
+      initialRouteName="index"
       screenOptions={({ route }) => ({
         tabBarHideOnKeyboard: true,
         headerShown: false,
 
         tabBarIcon: ({ color, size }) => {
-          if (route.name === 'home') {
+          if (route.name === 'index') {
             return <Ionicons name="home" size={size} color={color} />
           } else if (route.name === 'search') {
             return <Feather name="search" size={size} color={color} />
@@ -44,7 +46,7 @@ export default function TabLayout() {
         }, 
       })}
     >
-      <Tabs.Screen name="home" /> 
+      <Tabs.Screen name="index" /> 
       <Tabs.Screen name="search" />
       <Tabs.Screen name="create-post" />
       <Tabs.Screen name="messages" />

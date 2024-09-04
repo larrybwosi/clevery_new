@@ -1,4 +1,4 @@
-import { TouchableOpacity, FlatList } from 'react-native';
+import { TouchableOpacity, FlatList, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -40,45 +40,13 @@ const TopUsers = ({ suggestedUsers, addSearch }: Users) => {
     })
     router.push(`/user/${user.id}`)
   }
-  
+  if (!suggestedUsers) return <SearchSuggestions/>
   return (
-    <View >
-      <Text className='text-[10px] pb-2 font-rregular' >Top Users</Text>
-      <FlatList
-        data={suggestedUsers?.slice(0, 3)}
-        ListEmptyComponent={<SearchSuggestions />}
-        renderItem={({ item }) => (
-          <HStack>
-            <TouchableOpacity className='flex-row items-center p-1.5' onPress={() => handleUserClick(item)}>
-              <Image
-                source={item.image!}
-                height={80}
-                width={80}
-                style='h-[50px] w-[50px] rounded-[25px] border mr-4 '
-              />
-              <View>
-                <Text className='text-sm font-rmedium'>{item.name}</Text>
-                <Text className='text-[10px] font-rregular'>{item.username}</Text>
-              </View>
-
-            </TouchableOpacity>
-          </HStack>
-        )
-        }
-        keyExtractor={(item) => item?.id?.toString()}
-      />
-    </View>
-  )
-}
-const TopServers = ({ suggestedServers }: { suggestedServers: Server[] }) => {
-  return (
-    <>
-      <Text className='text-[10px] pb-2 font-rregular' >Top Servers</Text>
-      <FlatList
-        data={suggestedServers}
-        ListEmptyComponent={<SearchSuggestions />}
-        renderItem={({ item }) => (
-          <View className='flex-row items-center p-1.5'>
+    <View>
+      <Text className='text-sm pb-2 font-rbold' >Top Users</Text>
+      {suggestedUsers?.slice(0, 3).map((item) => (
+        <HStack className='space-x-2' key={item.id}>
+          <Pressable className='flex-row items-center p-1.5' onPress={() => handleUserClick(item)}>
             <Image
               source={item.image!}
               height={80}
@@ -86,19 +54,39 @@ const TopServers = ({ suggestedServers }: { suggestedServers: Server[] }) => {
               style='h-[50px] w-[50px] rounded-[25px] border mr-4 '
             />
             <View>
-              <Text className='text-sm font-rmedium'>
-                {item.name}
-              </Text>
-
-              <Text className='text-[10px] font-rregular' >
-                {item.description}
-              </Text>
+              <Text className='text-sm font-rmedium'>{item.name}</Text>
+              <Text className='text-[10px] font-rregular'>{item.username}</Text>
             </View>
+          </Pressable>
+        </HStack>
+      ))}
+    </View>
+  )
+}
+const TopServers = ({ suggestedServers }: { suggestedServers: Server[] }) => {
+  if (!suggestedServers) return <SearchSuggestions/>
+  return (
+    <>
+      <Text className='text-sm pb-2 font-rbold m-3' >Top Servers</Text>
+      {suggestedServers?.map((item) => (
+        <View className='flex-row items-center p-1.5' key={item.id}>
+          <Image
+            source={item.image!}
+            height={80}
+            width={80}
+            style='h-[50px] w-[50px] rounded-full border mr-4'
+          />
+          <View>
+            <Text className='text-sm font-rmedium'>
+              {item.name}
+            </Text>
+            
+            <Text className='text-[10px] font-rregular' >
+              {item.description}
+            </Text>
           </View>
-        )
-        }
-        keyExtractor={(item) => item?.id?.toString()}
-      />
+        </View>
+      ))}
     </>
   )
 }
@@ -168,14 +156,14 @@ const Suggestions: React.FC<SuggestionsProps> = ({
   };
 
   return (
-    <View className='px-1 py-2'>
+    <ScrollView className='px-1 py-2'>
       {renderRecentSearches()}
-      <Text className='text-[10px] pb-2 font-rregular'>
+      <Text className='text-lg pb-2 font-rbold'>
         Suggestions
       </Text>
       <TopUsers suggestedUsers={suggestedUsers} addSearch={addSearch} />
       <TopServers suggestedServers={suggestedServers} />
-    </View>
+    </ScrollView>
   );
 };
 

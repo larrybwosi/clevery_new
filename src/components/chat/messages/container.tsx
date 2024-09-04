@@ -86,7 +86,7 @@ const MessagesContainer: React.FC<Props> = ({
         renderItem={({ item }: { item: any }) => (
           <Message
             item={item}
-            onDelete={() => { }}
+            onDelete={() => {}}
             onLongPress={() => togglePopup()}
             onClose={() => togglePopup()}
           />
@@ -109,7 +109,7 @@ const MessagesContainer: React.FC<Props> = ({
           </View>
         )}
       />
-      <PopupComponent isVisible={popupVisible} onClose={closePopup} />
+      <PopupComponent isVisible={popupVisible} onClose={closePopup} username='Clevery' setMessage={setNewMessage} />
     </View>
   );
 };

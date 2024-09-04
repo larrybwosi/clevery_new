@@ -6,7 +6,7 @@ const UserComment = ({comment}:{comment:Comment}) => {
   return (
     <View>
       <AuthorInfo
-       author={comment.user}
+       author={comment.author}
        timestamp={comment.createdAt}
        iscomment
       />

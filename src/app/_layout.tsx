@@ -8,8 +8,9 @@ import { useFonts } from 'expo-font';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Providers, pusherConnector, useThemeStore } from '../lib';
 
-import "./global.css"
-
+import "../../global.css"
+ 
+SplashScreen.preventAutoHideAsync();
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID
 GoogleSignin.configure({
@@ -21,41 +22,8 @@ export {
 } from 'expo-router'; 
 
 export const unstable_settings = {
-  initialRouteName: 'home',
+  initialRouteName: 'index',
 };
-
-
-function useNotificationObserver() {
-  useEffect(() => {
-    let isMounted = true;
-
-    function redirect(notification: Notifications.Notification) {
-      const url = notification.request.content.data?.url;
-      if (url) {
-        router.push(url);
-      }
-    }
-
-    Notifications.getLastNotificationResponseAsync()
-      .then(response => {
-        if (!isMounted || !response?.notification) {
-          return;
-        }
-        redirect(response?.notification);
-      });
-
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      redirect(response.notification);
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.remove();
-    };
-  }, []);
-}
-
-SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -80,22 +48,6 @@ export default function RootLayout() {
     if (error) throw error;
     if (loaded) SplashScreen.hideAsync();
     pusherConnector()
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const url = response.notification.request.content.data.url;
-      Linking.openURL(url);
-    });
-
-
-    const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
-
-    TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
-      console.log('Received a notification in the background!  ', data);
-      // Do something with the notification data
-    });
-
-    Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
-
-    return () => subscription.remove();
   }, [error, loaded]);
 
 
@@ -110,7 +62,6 @@ function RootLayoutNav() {
 
   const { mode } = useThemeStore();
   const defaultMode = useColorScheme()
-  useNotificationObserver()
   const lightmode = () => {
     if (mode === "default") return defaultMode;
     return mode;
@@ -133,8 +84,8 @@ function RootLayoutNav() {
         <Stack.Screen name="user/[id]" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="post/[id]" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="settings/[setting]" options={{ presentation: 'card', headerShown: false }} />
-        {/* <Stack.Screen name="edit-post/[postid]" options={{ presentation: 'card', headerShown: false }} />
-        <Stack.Screen name="users" options={{ presentation: 'modal', headerShown: false }} /> */}
+        <Stack.Screen name="edit-post/[postid]" options={{ presentation: 'card', headerShown: false }} />
+        <Stack.Screen name="users" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="editprofile" options={{ presentation: 'modal', headerShown: false }} />
       </Stack>
     </ThemeProvider>

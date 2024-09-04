@@ -21,15 +21,15 @@ const fetchOptimizedImage = async (source: string, width: number, height: number
 };
 
 const Image: React.FC<ImageProps> = memo(({ source, width, height, style }) => {
-  const { data: optimizedImageUrl, isLoading } = useQuery({
-    queryKey: ['optimizedImage', source, width, height],
-    queryFn: () => fetchOptimizedImage(source, width, height),
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+  // const { data: optimizedImageUrl, isLoading } = useQuery({
+  //   queryKey: ['optimizedImage', source, width, height],
+  //   queryFn: () => fetchOptimizedImage(source, width, height),
+  //   staleTime: Infinity,
+  //   gcTime: Infinity,
+  //   refetchOnMount: false,
+  //   refetchOnWindowFocus: false,
+  //   refetchOnReconnect: false,
+  // });
 
   const memoizedSkeleton = useMemo(() => (
     <Skeleton
@@ -38,13 +38,13 @@ const Image: React.FC<ImageProps> = memo(({ source, width, height, style }) => {
     />
   ), [style]);
 
-  if (isLoading) {
-    return memoizedSkeleton;
-  }
+  // if (isLoading) {
+  //   return memoizedSkeleton;
+  // }
 // console.log(optimizedImageUrl)
   return (
     <ExpoImage
-      source={{ uri: optimizedImageUrl }}
+      source={{ uri: source }}
       alt='image'
       // contentFit="cover"
       className={` ${style}`}

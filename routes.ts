@@ -30,6 +30,7 @@ const postsPaths = {
   getPostsByAuthorId: (id: string) => `/posts/author/${id}`,
   updatePost: (id: string) => `/posts/${id}`,
   interactPost: (id: string) => `/posts/${id}/interact`,
+  interactComment: (id: string) => `/posts/${id}/interact`,
   deletePost: (id: string) => `/posts/${id}`,
 };
 

@@ -1,8 +1,7 @@
-import { FlatList, TouchableOpacity } from 'react-native';
+import { FlatList, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Post as PostType, Server, User } from '@/types';
-import Image from '../image';
 import { View, Text } from '../themed';
 import { HStack } from '@/components/ui/hstack'
 interface Link {
@@ -19,10 +18,10 @@ interface SearchResultsProps {
 const UserItem: React.FC<User> = ({ id, username, image, name }) => (
   <TouchableOpacity className="flex-row items-center p-4 rounded-lg mb-2 shadow-sm">
     <Image
-      source={image!}
-      height={80}
-      width={80}
-      style='h-[50px] w-[50px] rounded-[25px] border '
+      source={{uri:image!}}
+      // height={80}
+      // width={80}
+      className='h-[50px] w-[50px] rounded-[25px] border '
     />
     <Text className="ml-4 text-sm font-rregular">{username || name}</Text>
   </TouchableOpacity>
@@ -32,10 +31,10 @@ const ServerItem: React.FC<Server> = ({ id, name, image }) => (
   <TouchableOpacity className="flex-row items-center p-4 rounded-lg mb-2 shadow-sm">
 
     <Image
-      source={image || ''}
-      height={80}
-      width={80}
-      style='h-[50px] w-[50px] rounded-[25px] border '
+      source={{uri:image || ''}}
+      // height={80}
+      // width={80}
+      className='h-[50px] w-[50px] rounded-[25px] border '
     />    <Text className="ml-4 text-sm font-rregular">{name}</Text>
   </TouchableOpacity>
 );
@@ -53,10 +52,10 @@ const Post: React.FC<PostType> = ({ id, content, createdAt, author }) => (
       <View>
         <View className="flex-row items-center mb-2">
           <Image
-            source={author.image!}
-            height={80}
-            width={80}
-            style='h-[50px] w-[50px] rounded-[25px] border'
+            source={{uri:author.image!}}
+            // height={80}
+            // width={80}
+            className='h-[50px] w-[50px] rounded-[25px] border'
           />
           <Text className="ml-2 font-rbold">{author.name}</Text>
         </View>

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FlatList, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, TextInput, TouchableOpacity, PanResponder, GestureResponderEvent, PanResponderGestureState } from 'react-native';
 import { router } from 'expo-router';
 
 import { Loader, SearchResults, Suggestions, SearchTabBar as TabBar, Text, View } from '@/components';
@@ -17,12 +17,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearch }) => (
   <TextInput
     placeholder="Search"
     onChangeText={setSearch}
-    className="p-2 my-4 bg-gray-500 rounded-lg"
+    className="p-2 my-4 bg-transparent border border-gray-500 text-white rounded-lg"
   />
 );
 
 const ExploreComponent: React.FC = () => {
   const [selectedTabBar, setSelectedTabBar] = useState<TabBarOptions>('recents');
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const {
     setQuery, 
     searchType, 
@@ -40,8 +41,38 @@ const ExploreComponent: React.FC = () => {
     setSearchType(mapTabBarToSearchType(selectedTabBar));
   };
 
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderMove: (event: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+      if (gestureState.dx < -50) {
+        setSwipeDirection('left');
+      } else if (gestureState.dx > 50) {
+        setSwipeDirection('right');
+      } else {
+        setSwipeDirection(null);
+      }
+    },
+    onPanResponderRelease: (event, gestureState) => {
+      if (swipeDirection === 'left') {
+        const nextTab = getNextTab('left');
+        setSelectedTabBar(nextTab);
+      } else if (swipeDirection === 'right') {
+        const previousTab = getNextTab('right');
+        setSelectedTabBar(previousTab);
+      }
+      setSwipeDirection(null);
+    },
+  });
+
+  const getNextTab = (direction: 'left' | 'right'): TabBarOptions => {
+    const tabs: TabBarOptions[] = ['recents', 'people', 'media-links', 'files'];
+    const currentIndex = tabs.indexOf(selectedTabBar);
+    const nextIndex = direction === 'left' ? (currentIndex + 1) % tabs.length : (currentIndex - 1 + tabs.length) % tabs.length;
+    return tabs[nextIndex];
+  };
+
   return (
-    <View className="flex-1 mt-7">
+    <View className="flex-1 mt-7" {...panResponder.panHandlers}>
       <SearchBar setSearch={handleSetSearch} />
       <TabBar
         selected={selectedTabBar}

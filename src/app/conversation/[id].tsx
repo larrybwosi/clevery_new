@@ -16,7 +16,9 @@ import {
 } from '@/lib';
 import { Loader, MessageInput, Text, View, ErrorMessage, MessagesContainer } from '@/components';
 import { Message } from '@/types';
-import { uploadFile } from '@/lib/utils';
+import { useImageUploader } from '@/lib/uploadthing';
+import { Alert } from 'react-native';
+import { openSettings } from 'expo-linking';
 
 interface NewMessage {
   caption: string;
@@ -96,10 +98,24 @@ const UserMessages: React.FC = () => {
   }, [conversation?.messages]);
 
   const chooseFile = useCallback(async () => {
-    const file = await selectImage();
-    if (file) {
-      setNewMessage((prev) => ({ ...prev, file:file[0] }));
-    }
+    const file = await openImagePicker({
+      // input: , // Matches the input schema from the FileRouter endpoint
+      source: "library", // or "camera"
+      onInsufficientPermissions: () => {
+        Alert.alert(
+          "No Permissions",
+          "You need to grant permission to your Photos to use this",
+          [
+            { text: "Dismiss" },
+            { text: "Open Settings", onPress: openSettings },
+          ],
+        );
+      },
+    });
+    console.log(file);
+    // if (file) {
+    //   setNewMessage((prev) => ({ ...prev, file:file[0] }));
+    // }
   }, []);
 
   const handleSend = useCallback(async () => {
@@ -109,7 +125,7 @@ const UserMessages: React.FC = () => {
 
     let fileUrl = undefined
     if (file) { 
-      fileUrl = await uploadFile(file)
+      // fileUrl = await uploadFile(file)
     }
     await sendMessage({
       conversationId: conversation.id,
@@ -118,13 +134,24 @@ const UserMessages: React.FC = () => {
         file:fileUrl
       }
     });
-
+// [{"customId": null, "key": "ff8ab8be-5f6c-4b04-979a-ce2cc35073e0-vmbbu5.jpg", "name": "image 2.jpg", "serverData": {"imageId": "file-5a773d260e1e593e3331dc19ddfc2816a5fae98a-jpg", "url": "https://cdn.sanity.io/files/mqczcmfz/production/5a773d260e1e593e3331dc19ddfc2816a5fae98a.jpg"}, "size": 61966, "type": "image/jpeg", "url": "https://utfs.io/f/ff8ab8be-5f6c-4b04-979a-ce2cc35073e0-vmbbu5.jpg"}]
     setNewMessage({ caption: '', file: undefined});
   }, [newMessage, conversation, id, sendMessage]);
 
   const closeFile = useCallback(() => {
     setNewMessage((prev) => ({ ...prev, file: undefined }));
   }, []);
+
+  
+  const { openImagePicker, isUploading } = useImageUploader("imageUploader", {
+    /**
+     * Any props here are forwarded to the underlying `useUploadThing` hook.
+     * Refer to the React API reference for more info.
+     */
+    onClientUploadComplete: () => Alert.alert("Upload Completed"),
+    onUploadError: (error) => Alert.alert("Upload Error", error.message),
+  });
+  
 
   const handleMessageChange = useCallback((text: string) => {
     setNewMessage((prev) => ({ ...prev, caption: text }));

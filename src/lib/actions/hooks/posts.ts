@@ -104,6 +104,17 @@ export const useCommentPost = () => {
   });
 };
 
+export const useLikeComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (commentId: string) => postsApi.likeComment(commentId),
+    onSuccess: (data:any) => {
+      queryClient.invalidateQueries({queryKey: queryKeys.post(data.postId)});
+      queryClient.invalidateQueries({queryKey: queryKeys.posts});
+    }
+  });
+}
+
 export const useDeletePost = () => {
   const queryClient = useQueryClient();
   return useMutation({

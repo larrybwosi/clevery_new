@@ -1,13 +1,19 @@
 import { memo, useCallback, useState, useRef } from 'react';
 import { Feather } from '@expo/vector-icons';
-import { TouchableOpacity, Dimensions, NativeSyntheticEvent, NativeScrollEvent, Animated, ScrollView } from 'react-native';
+import { Dimensions, NativeSyntheticEvent, NativeScrollEvent, ScrollView, PanResponder, GestureResponderEvent, PanResponderGestureState, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolate,
+} from 'react-native-reanimated';
 
 import { Chat, Groups, ServerList, Text, View } from '@/components';
 
 interface FilterItem {
   name: string;
-  icon: string;
+  icon: keyof typeof Feather.glyphMap;
 }
 
 const FILTER_ITEMS: FilterItem[] = [
@@ -21,8 +27,29 @@ const ITEM_WIDTH = width / FILTER_ITEMS.length;
 
 const Messages: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('chats');
-  const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollX = useSharedValue(0);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderMove: (event: GestureResponderEvent, gestureState: PanResponderGestureState) => {
+      if (gestureState.dx < -50) {
+        const nextTab = getNextTab('left');
+        setActiveFilter(nextTab);
+        scrollViewRef.current?.scrollTo({ x: FILTER_ITEMS.findIndex(item => item.name === nextTab) * width, animated: true });
+      } else if (gestureState.dx > 50) {
+        const previousTab = getNextTab('right');
+        setActiveFilter(previousTab);
+        scrollViewRef.current?.scrollTo({ x: FILTER_ITEMS.findIndex(item => item.name === previousTab) * width, animated: true });
+      }
+    },
+  });
+
+  const getNextTab = (direction: 'left' | 'right'): string => {
+    const currentIndex = FILTER_ITEMS.findIndex(item => item.name === activeFilter);
+    const nextIndex = direction === 'left' ? (currentIndex + 1) % FILTER_ITEMS.length : (currentIndex - 1 + FILTER_ITEMS.length) % FILTER_ITEMS.length;
+    return FILTER_ITEMS[nextIndex].name;
+  };
 
   const getFilterName = useCallback((filter: string): string => {
     switch (filter) {
@@ -34,34 +61,40 @@ const Messages: React.FC = () => {
   }, []);
 
   const handlePress = useCallback((): void => {
-    if (activeFilter === 'chats') router.navigate("/users");
+    if (activeFilter === 'chats') router.push("/users");
     else if (activeFilter === 'status') {/* voiceCallHandler(); */ }
-    else if (activeFilter === 'servers') router.navigate("/create-server");
+    else if (activeFilter === 'servers') router.push("/create-server");
   }, [activeFilter]);
 
   const AddButton: React.FC = memo(() => (
-    <TouchableOpacity
+    <Pressable
       className='flex-row border border-gray-500 rounded-full p-2 ml-auto gap-1.5'
       onPress={handlePress}
     >
       <Feather name="plus" size={20} color='gray' />
-      <Text className='text-right font-rmedium font-sm'>
+      <Text className='text-right font-rmedium text-sm'>
         {activeFilter === 'chats' ? 'Add Friend' : activeFilter === 'servers' ? 'Create Server' : 'Create Group'}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   ));
 
   const FilterIcon: React.FC<{ item: FilterItem, index: number }> = memo(({ item, index }) => {
-    const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-    const scale = scrollX.interpolate({
-      inputRange,
-      outputRange: [1, 1.2, 1],
-      extrapolate: 'clamp',
-    });
-    const opacity = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.5, 1, 0.5],
-      extrapolate: 'clamp',
+    const animatedStyle = useAnimatedStyle(() => {
+      const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+      const scale = interpolate(
+        scrollX.value,
+        inputRange,
+        [1, 1.2, 1],
+      );
+      const opacity = interpolate(
+        scrollX.value,
+        inputRange,
+        [0.7, 1, 0.7],
+      );
+      return {
+        transform: [{ scale }],
+        opacity,
+      };
     });
 
     const handlePress = () => {
@@ -70,53 +103,59 @@ const Messages: React.FC = () => {
     };
 
     return (
-      <TouchableOpacity
+      <Pressable
         className='flex-1 items-center justify-center py-2'
         onPress={handlePress}
       >
-        <Animated.View style={{ transform: [{ scale }] }}>
-          <Feather name={item.icon as any} size={24} color="#007aff" style={{ opacity }} />
+        <Animated.View style={animatedStyle}>
+          <Feather name={item.icon} size={24} color="#007aff" />
         </Animated.View>
-      </TouchableOpacity>
+      </Pressable>
     );
   });
 
-  const Filter: React.FC = memo(() => (
-    <View className='px-4 pt-4 pb-2'>
-      <View className='flex-row justify-between mb-4 items-center'>
-        <Text className='font-rmedium text-2xl text-light'>
-          {getFilterName(activeFilter)}
-        </Text>
-        <AddButton />
-      </View>
+  const Filter: React.FC = memo(() => {
+    const indicatorStyle = useAnimatedStyle(() => {
+      const translateX = interpolate(
+        scrollX.value,
+        FILTER_ITEMS.map((_, i) => i * width),
+        FILTER_ITEMS.map((_, i) => i * ITEM_WIDTH)
+      );
+      return {
+        transform: [{ translateX }],
+      };
+    });
 
-      <View className='flex-row justify-around items-center'>
-        {FILTER_ITEMS.map((item, index) => (
-          <FilterIcon key={item.name} item={item} index={index} />
-        ))}
+    return (
+      <View className='px-4 pt-4 pb-2' {...panResponder.panHandlers}>
+        <View className='flex-row justify-between mb-4 items-center'>
+          <Text className='font-rmedium text-2xl text-light'>
+            {getFilterName(activeFilter)}
+          </Text>
+          <AddButton />
+        </View>
+
+        <View className='flex-row justify-around items-center'>
+          {FILTER_ITEMS.map((item, index) => (
+            <FilterIcon key={item.name} item={item} index={index} />
+          ))}
+        </View>
+        <Animated.View
+          className='absolute bottom-0 left-0 h-0.75 bg-white'
+          style={[
+            {
+              width: ITEM_WIDTH,
+            },
+            indicatorStyle
+          ]}
+        />
       </View>
-      <Animated.View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: ITEM_WIDTH,
-          height: 3,
-          backgroundColor: '#007aff',
-          transform: [{
-            translateX: scrollX.interpolate({
-              inputRange: FILTER_ITEMS.map((_, i) => i * width),
-              outputRange: FILTER_ITEMS.map((_, i) => i * ITEM_WIDTH),
-              extrapolate: 'clamp',
-            }),
-          }],
-        }}
-      />
-    </View>
-  ));
+    );
+  });
 
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>): void => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
+    scrollX.value = contentOffsetX;
     const index = Math.round(contentOffsetX / width);
     setActiveFilter(FILTER_ITEMS[index].name);
   }, []);
@@ -125,21 +164,17 @@ const Messages: React.FC = () => {
     <View className='flex-1 mt-7.5'>
       <Filter />
       <Animated.ScrollView
-        ref={scrollViewRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
-        )}
-        onMomentumScrollEnd={handleScroll}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
+        ref={scrollViewRef}
       >
-        {FILTER_ITEMS.map((item, index) => (
+        {FILTER_ITEMS.map((item) => (
           <View key={item.name} style={{ width }}>
             {item.name === 'chats' && <Chat />}
-            {item.name === 'status' && <Groups />}
+            {/* {item.name === 'status' && <Groups />} */}
             {item.name === 'servers' && <ServerList />}
           </View>
         ))}
@@ -147,5 +182,4 @@ const Messages: React.FC = () => {
     </View>
   );
 };
-
 export default memo(Messages);

@@ -25,6 +25,8 @@ interface MessagingContextValue {
   sendMessage: (conversationId: string, message: string) => Promise<Message>;
 }
 
+
+
 const MessagingContext = createContext<MessagingContextValue | null>(null);
 
 // const queryClient = new QueryClient();
@@ -42,65 +44,7 @@ interface MessagingProviderProps {
  */
 export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }) => {
   const { profile } = useProfileStore();
-
-  const { data: conversations = [], isLoading, error, refetch } = useGetConversations()
-
-  const queryClient = useQueryClient();
-
-  const {
-    mutateAsync: sendMessageMutation,
-    isPending: sendingMessage,
-  } = useSendMessage();
-
-  /**
-   * Subscribes to Pusher channels for each conversation
-   */
-  const subscribeToPusherChannels = useCallback(async () => {
-    console.log('Subscribing to Pusher channels for conversations');
-    if (!pusher || !profile?.id) {
-      console.log('Pusher not initialized or user not logged in');
-      return;
-    }
-
-    conversations.forEach(async conversation => {
-      try {
-        await pusher.subscribe({
-          channelName: `private-${conversation.id}`,
-          onEvent: (event: PusherEvent) => {
-            console.log('Pusher event received:', event.eventName);
-            if (event.eventName === 'new-message') {
-              const data = event.data as { conversationId: string; message: Message; senderName: string; senderImage: string };
-              handleNewMessage(data);
-            }
-          }
-        });
-        console.log(`Subscribed to channel: private-${conversation.id}`);
-      } catch (error) {
-        console.error(`Error subscribing to channel for conversation ${conversation.id}:`, error);
-      }
-    });
-  }, [conversations, profile?.id]);
-
-  /**
-   * Handles a new message event
-   * @param data - The new message data
-   */
-  const handleNewMessage = useCallback((data: { conversationId: string; message: Message; senderName: string; senderImage: string }) => {
-    console.log('New message received:', data);
-    queryClient.setQueryData(['conversations', profile?.id], (oldData: Conversation[] | undefined) => 
-      oldData?.map(conv => 
-        conv.id === data.conversationId
-          ? { ...conv, lastMessage: data.message, unreadCount: conv.unreadMessages + 1 }
-          : conv
-      )
-    );
-
-    if (AppState.currentState !== 'active') {
-      showNotification(data.conversationId, data.senderName, data.message.text, data.senderImage);
-    }
-  }, [profile?.id]);
-
-  /**
+    /**
    * Shows a notification for a new message using @notifee
    * @param conversationId - ID of the conversation
    * @param senderName - Name of the message sender
@@ -157,6 +101,65 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
       console.error('Error showing notification:', error);
     }
   }, []);
+
+
+  const { data: conversations = [], isLoading, error, refetch } = useGetConversations()
+  const queryClient = useQueryClient();
+
+  const {
+    mutateAsync: sendMessageMutation,
+    isPending: sendingMessage,
+  } = useSendMessage();
+
+  /**
+   * Subscribes to Pusher channels for each conversation
+   */
+  const subscribeToPusherChannels = useCallback(async () => {
+    console.log('Subscribing to Pusher channels for conversations');
+    if (!pusher || !profile?.id) {
+      console.log('Pusher not initialized or user not logged in');
+      return;
+    }
+
+    conversations.forEach(async conversation => {
+      try {
+        await pusher.subscribe({
+          channelName: `private-${conversation.id}`,
+          onEvent: (event: PusherEvent) => {
+            console.log('Pusher event received:', event.eventName);
+            if (event.eventName === 'new-message') {
+              const data = event.data as { conversationId: string; message: Message; senderName: string; senderImage: string };
+              handleNewMessage(data);
+            }
+          }
+        });
+        console.log(`Subscribed to channel: private-${conversation.id}`);
+      } catch (error) {
+        console.error(`Error subscribing to channel for conversation ${conversation.id}:`, error);
+      }
+    });
+  }, [conversations, profile?.id]);
+
+  /**
+   * Handles a new message event
+   * @param data - The new message data
+   */
+  const handleNewMessage = useCallback((data: { conversationId: string; message: Message; senderName: string; senderImage: string }) => {
+    console.log('New message received:', data);
+    queryClient.setQueryData(['conversations', profile?.id], (oldData: Conversation[] | undefined) => 
+      oldData?.map(conv => 
+        conv.id === data.conversationId
+          ? { ...conv, lastMessage: data.message, unreadCount: conv.unreadMessages + 1 }
+          : conv
+      )
+    );
+
+    if (AppState.currentState !== 'active') {
+      showNotification(data.conversationId, data.senderName, data.message.text, data.senderImage);
+    }
+  }, [profile?.id]);
+
+
 
   useEffect(() => {
     if (profile.id) {

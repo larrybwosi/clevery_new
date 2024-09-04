@@ -1,9 +1,9 @@
-import { TouchableOpacity, FlatList } from 'react-native';
+import { Pressable, FlatList } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 
-import { Loader, MenuItems, Text, UserInfo, View } from '@/components';
+import { HStack, Loader, MenuItems, Text, UserInfo, View } from '@/components';
 import { formatDateString, useProfileStore } from '@/lib';
 import Image from '@/components/image';
 
@@ -32,7 +32,7 @@ const ProfilePage = () => {
         width={350}
         style='w-full justify-end items-center h-52' 
       />
-      <TouchableOpacity 
+      <Pressable 
         style={{
           position: 'absolute',
           top: 40,
@@ -41,10 +41,10 @@ const ProfilePage = () => {
           borderRadius: 20,
           padding: 8,
         }} 
-        onPress={() => router.navigate("/editprofile")}
+        onPress={() => router.push("/editprofile")}
       >
         <Feather name='edit' size={24} color="white" />
-      </TouchableOpacity>
+      </Pressable>
 
       <View className='flex-row justify-between'>
         <UserInfo profile={profile} />
@@ -59,19 +59,29 @@ const ProfilePage = () => {
       </View>
 
       <View className='mx-2.5'>
-        <Text className='font-rmedium mt-3.5'>About Me: <Text className='font-pregular mt-2.5 text-xs ml-3'>{profile.bio}</Text></Text>
-        <Text className='font-rmedium mt-3.5'>Member Since: <Text className='font-pregular mt-2.5 text-xs ml-3'>{profile.createdAt && formatDateString(profile.createdAt)}</Text></Text>
+        <Text className='font-rmedium mt-3.5'>
+          About Me : 
+          <Text className='font-pmedium mt-2.5 text-xs ml-3'>
+            {profile.bio}
+          </Text>
+        </Text>
+        <Text className='font-rmedium mt-3.5'>
+          Member Since : {' '}
+          <Text className='font-pregular mt-2.5 text-xs ml-3'>
+            {profile.createdAt && formatDateString(profile.createdAt)}
+          </Text>
+        </Text>
       </View>
 
       <View className='flex-row justify-between items-center p-5 me-12 ms-12'>
         {['profile', 'gallery'].map((button) => (
-          <TouchableOpacity 
+          <Pressable 
             key={button}
             onPress={() => setActiveButton(button)}
             className={`flex flex-row gap-2.5 ${activeButton === button ? 'bg-light px-[2px] rounded-[5px] h-7' : ''}`}
           >
             <Text className={`font-rmedium tex-sm ${activeButton === button ? 'text-white mr-2' : ''}`}>{button.charAt(0).toUpperCase() + button.slice(1)}</Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
 
@@ -98,7 +108,7 @@ const FriendsComponent = ({friends}:any) => {
         data={friends}
         keyExtractor={(item) => item?.id}
         renderItem={({ item }) => (
-          <TouchableOpacity className='flex-row items-center px-4xs py-1' activeOpacity={1} onPress={() =>{}}>
+          <HStack className='flex flex-row items-center px-4xs py-1 space-x-1'>
             <View className='mr-2.5'>
               <Image 
                 source={ item.image?item.image:"https://via.placeholder.com/150" } 
@@ -112,7 +122,7 @@ const FriendsComponent = ({friends}:any) => {
               <Text className='font-rmedium mt-1.5 text-sm'>{item.name}</Text>
               <Text className='text-gray-400 text-xs font-rthin' >@{item.username || item.name}</Text>
             </View>
-          </TouchableOpacity>
+          </HStack>
         )}
       />
     </View>
