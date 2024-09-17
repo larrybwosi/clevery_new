@@ -75,7 +75,7 @@ const Account = () => {
         <FormField
           title="Username"
           autoCapitalize={"none"}
-          handleChangeText={(text: any) => handleFieldChange('username', text)}
+          onChangeText={(text: any) => handleFieldChange('username', text)}
           key="username"
           placeholder="your username"
           value={editedFields.username!}
@@ -85,7 +85,7 @@ const Account = () => {
           otherStyles="mt-7"
           placeholder="your name"
           value={editedFields.name}
-          handleChangeText={(text: any) => handleFieldChange('name', text)}
+          onChangeText={(text: any) => handleFieldChange('name', text)}
           key="name"
         />
 
@@ -95,7 +95,7 @@ const Account = () => {
           autoCapitalize={"none"}
           placeholder="email"
           otherStyles="mt-5 mb-5"
-          handleChangeText={(text: any) => handleFieldChange('email', text)}
+          onChangeText={(text: any) => handleFieldChange('email', text)}
           keyboardType="email-address"
         />
 

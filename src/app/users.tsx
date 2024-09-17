@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 
-import { ErrorMessage, InviteFriends, LoadingUsers } from '@/components';
+import { ErrorMessage, InviteFriends } from '@/components';
 import { useAddFriend, useUsers, useProfileStore } from '@/lib';
 import { User } from '@/types';
 
 const AddFriends: React.FC = () => {
   const  [filteredUsers, setFilteredUsers] = useState([])
   const { profile, setProfile} = useProfileStore();
-  const { data: allUsers, isPending: loadingUsers, isError: errorUsers } = useUsers();
+  const { data: allUsers, isError: errorUsers } = useUsers();
   const { mutateAsync: addFriend } = useAddFriend();
   const { id, friends } =profile
   

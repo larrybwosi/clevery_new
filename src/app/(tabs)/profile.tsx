@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Pressable, FlatList, Dimensions } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import Animated, {
   useSharedValue,
@@ -14,7 +14,7 @@ import { HStack, Loader, MenuItems, Text, UserInfo, View } from '@/components';
 import { formatDateString, useProfileStore } from '@/lib';
 import Image from '@/components/image';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState(0);

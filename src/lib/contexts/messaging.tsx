@@ -1,45 +1,30 @@
 import { createContext, useContext, useEffect, useCallback, useMemo } from 'react';
 import { PusherEvent } from '@pusher/pusher-websocket-react-native';
 import { useQueryClient } from '@tanstack/react-query';
-import { AppState } from 'react-native';
+import { AppState, AppStateStatus } from 'react-native';
 import notifee, { 
-  AndroidImportance, 
-  AndroidStyle, 
-  AndroidCategory, 
   EventType 
 } from '@notifee/react-native';
 
 import { useGetConversations, useSendMessage } from '@/lib/actions/hooks/conversation';
-import { NOTIFICATION_CHANNELS } from '../notifications';
+import { showDirectMessageNotification } from '../notifications';
 import { useProfileStore } from '@/lib/zustand/store';
 import { Conversation, Message } from '@/types';
 import { pusher } from '@/lib/pusher/config';
-
-const NOTIFICATION_CHANNEL_ID = NOTIFICATION_CHANNELS['ONLINE_FRIENDS']
 
 /**
  * Represents the value provided by the MessagingContext
  */
 interface MessagingContextValue {
-  /** List of user conversations */
   conversations: Conversation[];
-  /** Boolean indicating if conversations are loading */
   isLoading: boolean;
-  /** Any error that occurred while fetching conversations */
   error: Error | null;
-  /** Function to send a message */
   sendMessage: (conversationId: string, message: string) => Promise<Message>;
 }
 
 const MessagingContext = createContext<MessagingContextValue | null>(null);
 
-// const queryClient = new QueryClient();
-
-/**
- * Props for the MessagingProvider component
- */
 interface MessagingProviderProps {
-  /** Child components */
   children: React.ReactNode;
 }
 
@@ -48,104 +33,12 @@ interface MessagingProviderProps {
  */
 export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }) => {
   const { profile } = useProfileStore();
-    /**
-   * Shows a notification for a new message using @notifee
-   * @param conversationId - ID of the conversation
-   * @param senderName - Name of the message sender
-   * @param messageContent - Content of the message
-   * @param senderImage - URL of the sender's profile image
-   */
-  const showNotification = useCallback(async (conversationId: string, senderName: string, messageContent: string, senderImage: string): Promise<void> => {
-    try {
-      const channelId = await notifee.createChannel({
-        id: NOTIFICATION_CHANNEL_ID,
-        name: 'New Messages',
-        importance: AndroidImportance.HIGH,
-        sound: 'default',
-      });
-
-      await notifee.displayNotification({
-        title: `New message from ${senderName}`,
-        body: messageContent,
-        android: {
-          channelId,
-          largeIcon: senderImage,
-          importance: AndroidImportance.HIGH,
-          style: {
-            type: AndroidStyle.MESSAGING,
-            person: {
-              name: senderName,
-              icon: senderImage,
-            },
-            messages: [
-              {
-                text: messageContent,
-                timestamp: Date.now(),
-              },
-            ],
-          },
-          category: AndroidCategory.MESSAGE,
-          actions: [
-            {
-              title: 'Reply',
-              input: {
-                placeholder: 'Type your reply...',
-                allowFreeFormInput: true,
-              },
-              pressAction: {
-                id: 'reply',
-              },
-            },
-          ],
-        },
-        data: { conversationId },
-      });
-      console.log('Notification displayed for new message');
-    } catch (error) {
-      console.error('Error showing notification:', error);
-    }
-  }, []);
-
-  const { data: conversations = [], isLoading, error, refetch } = useGetConversations()
+  const { data: conversations = [], isLoading, error, refetch } = useGetConversations();
   const queryClient = useQueryClient();
-
-  const {
-    mutateAsync: sendMessageMutation,
-    isPending: sendingMessage,
-  } = useSendMessage();
-
-  /**
-   * Subscribes to Pusher channels for each conversation
-   */
-  const subscribeToPusherChannels = useCallback(async () => {
-    // console.log('Subscribing to Pusher channels for conversations');
-    if (!pusher || !profile?.id) {
-      console.log('Pusher not initialized or user not logged in');
-      return;
-    }
-
-    conversations.forEach(async conversation => {
-      try {
-        await pusher.subscribe({
-          channelName: `private-${conversation.id}`,
-          onEvent: (event: PusherEvent) => {
-            console.log('Pusher event received:', event.eventName);
-            if (event.eventName === 'new-message') {
-              const data = event.data as { conversationId: string; message: Message; senderName: string; senderImage: string };
-              handleNewMessage(data);
-            }
-          }
-        });
-        // console.log(`Subscribed to channel: private-${conversation.id}`);
-      } catch (error) {
-        console.error(`Error subscribing to channel for conversation ${conversation.id}:`, error);
-      }
-    });
-  }, [conversations, profile?.id]);
+  const { mutateAsync: sendMessageMutation } = useSendMessage();
 
   /**
    * Handles a new message event
-   * @param data - The new message data
    */
   const handleNewMessage = useCallback((data: { conversationId: string; message: Message; senderName: string; senderImage: string }) => {
     console.log('New message received:', data);
@@ -158,21 +51,61 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
     );
 
     if (AppState.currentState !== 'active') {
-      showNotification(data.conversationId, data.senderName, data.message.text, data.senderImage);
+      showDirectMessageNotification(data.conversationId, data.senderName, data.message.text, data.senderImage);
     }
-  }, [profile?.id]);
+  }, [profile?.id, queryClient]);
 
+  /**
+   * Subscribes to Pusher channels for each conversation
+   */
+  const subscribeToPusherChannels = useCallback(() => {
+    if (!pusher || !profile?.id) {
+      console.log('Pusher not initialized or user not logged in');
+      return;
+    }
 
+    conversations.forEach(conversation => {
+      pusher.subscribe({
+        channelName: `private-${conversation.id}`,
+        onEvent: (event: PusherEvent) => {
+          if (event.eventName === 'new-message') {
+            handleNewMessage(event.data as { conversationId: string; message: Message; senderName: string; senderImage: string });
+          }
+        }
+      }).catch(error => console.error(`Error subscribing to channel for conversation ${conversation.id}:`, error));
+    });
+  }, [conversations, profile?.id, handleNewMessage]);
+
+  /**
+   * Unsubscribes from all Pusher channels
+   */
+  const unsubscribeFromPusherChannels = useCallback(() => {
+    if (!pusher || !profile?.id) return;
+    conversations.forEach(conversation => {
+      pusher.unsubscribe({ channelName: `private-${conversation.id}` })
+        .catch(error => console.error(`Error unsubscribing from channel for conversation ${conversation.id}:`, error));
+    });
+  }, [conversations, profile?.id]);
+
+  /**
+   * Handles app state changes
+   */
+  const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
+    if (nextAppState === 'active') {
+      subscribeToPusherChannels();
+      refetch();
+    } else if (nextAppState === 'background' || nextAppState === 'inactive') {
+      unsubscribeFromPusherChannels();
+    }
+  }, [subscribeToPusherChannels, unsubscribeFromPusherChannels, refetch]);
 
   useEffect(() => {
     if (profile.id) {
-      // console.log('User logged in, setting up Pusher subscriptions');
-
-      const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
+      const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
         if (type === EventType.ACTION_PRESS && detail.pressAction?.id === 'reply') {
           const { input, notification } = detail;
           if (input && notification?.data?.conversationId) {
-            sendMessageMutation({ conversationId: notification.data.conversationId as string, message:{text: input }});
+            sendMessageMutation({ conversationId: notification.data.conversationId as string, message: { text: input } });
           }
         }
       });
@@ -181,16 +114,12 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
         if (type === EventType.ACTION_PRESS && detail.pressAction?.id === 'reply') {
           const { input, notification } = detail;
           if (input && notification?.data?.conversationId) {
-            sendMessageMutation({ conversationId: notification.data.conversationId as string, message:{text: input }});
+            sendMessageMutation({ conversationId: notification.data.conversationId as string, message: { text: input } });
           }
         }
       });
 
-      return () => {
-        unsubscribe();
-      };
-    } else {
-      console.log('User not logged in, skipping setup');
+      return unsubscribeNotifee;
     }
   }, [profile?.id, sendMessageMutation]);
 
@@ -199,51 +128,31 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
       subscribeToPusherChannels();
     }
 
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (nextAppState === 'active') {
-        // Re-subscribe to pusher channels when app is active
-        
-      }
-    });
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      // console.log('Cleaning up MessagingProvider');
       subscription.remove();
-      if (pusher && profile?.id) {
-        conversations.forEach(conversation => {
-          pusher.unsubscribe({channelName: `private-${conversation.id}`});
-        });
-        // console.log('Unsubscribed from all conversation channels');
-      }
+      unsubscribeFromPusherChannels();
     };
-  }, [pusher, conversations, profile?.id, subscribeToPusherChannels, refetch]);
+  }, [pusher, profile?.id, subscribeToPusherChannels, unsubscribeFromPusherChannels, handleAppStateChange]);
 
   const contextValue = useMemo<MessagingContextValue>(() => ({
     conversations,
     isLoading,
     error,
     sendMessage: (conversationId: string, message: string) => 
-      sendMessageMutation({ conversationId, message:{text: message } }),
-  }), [conversations, isLoading, error, refetch, sendMessageMutation]);
+      sendMessageMutation({ conversationId, message: { text: message } }),
+  }), [conversations, isLoading, error, sendMessageMutation]);
 
   return (
     <MessagingContext.Provider value={contextValue}>
       {children}
     </MessagingContext.Provider>
   );
-}
-
-/**
- * Wrapper component to provide React Query context
- */
-export const MessagingProviderWithReactQuery: React.FC<MessagingProviderProps> = ({ children }) => (
-    <MessagingProvider>{children}</MessagingProvider>
-);
+};
 
 /**
  * Custom hook to use the messaging context
- * @returns The messaging context value
- * @throws Error if used outside of MessagingProvider
  */
 export const useMessaging = (): MessagingContextValue => {
   const context = useContext(MessagingContext);

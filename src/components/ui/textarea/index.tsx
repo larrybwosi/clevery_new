@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { createTextarea } from '@gluestack-ui/textarea';
 import { View, TextInput, Platform } from 'react-native';
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
@@ -11,8 +10,9 @@ import { withStyleContextAndStates } from '@gluestack-ui/nativewind-utils/withSt
 import { cssInterop } from 'nativewind';
 import { withStates } from '@gluestack-ui/nativewind-utils/withStates';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
+import { forwardRef } from 'react';
 
-const TextareaWrapper = React.forwardRef<
+const TextareaWrapper = forwardRef<
   React.ElementRef<typeof View>,
   React.ComponentProps<typeof View>
 >(({ ...props }, ref) => {
@@ -65,7 +65,7 @@ const textareaInputStyle = tva({
 type ITextareaProps = React.ComponentProps<typeof UITextarea> &
   VariantProps<typeof textareaStyle>;
 
-const Textarea = React.forwardRef<
+const Textarea = forwardRef<
   React.ElementRef<typeof UITextarea>,
   ITextareaProps
 >(({ className, variant = 'default', size = 'md', ...props }, ref) => {
@@ -82,7 +82,7 @@ const Textarea = React.forwardRef<
 type ITextareaInputProps = React.ComponentProps<typeof UITextarea.Input> &
   VariantProps<typeof textareaInputStyle>;
 
-const TextareaInput = React.forwardRef<
+const TextareaInput = forwardRef<
   React.ElementRef<typeof UITextarea.Input>,
   ITextareaInputProps
 >(({ className, ...props }, ref) => {

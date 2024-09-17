@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee, { AndroidImportance, AndroidStyle, AndroidCategory, EventType } from '@notifee/react-native';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { useCallback } from 'react';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -89,6 +90,56 @@ interface DisabledChannelsState {
   enableChannel: (channel: NOTIFICATION_CHANNELS) => void;
   isChannelDisabled: (channel: NOTIFICATION_CHANNELS) => boolean;
 }
+  const showDmNotification = useCallback(async (conversationId: string, senderName: string, messageContent: string, senderImage: string): Promise<void> => {
+    try {
+      const channelId = await notifee.createChannel({
+        id: NOTIFICATION_CHANNELS['DIRECT_MESSAGE'],
+        name: 'New Messages',
+        importance: AndroidImportance.HIGH,
+        sound: 'default',
+      });
+
+      await notifee.displayNotification({
+        title: `New message from ${senderName}`,
+        body: messageContent,
+        android: {
+          channelId,
+          largeIcon: senderImage,
+          importance: AndroidImportance.HIGH,
+          style: {
+            type: AndroidStyle.MESSAGING,
+            person: {
+              name: senderName,
+              icon: senderImage,
+            },
+            messages: [
+              {
+                text: messageContent,
+                timestamp: Date.now(),
+              },
+            ],
+          },
+          category: AndroidCategory.MESSAGE,
+          actions: [
+            {
+              title: 'Reply',
+              input: {
+                placeholder: 'Type your reply...',
+                allowFreeFormInput: true,
+              },
+              pressAction: {
+                id: 'reply',
+              },
+            },
+          ],
+        },
+        data: { conversationId },
+      });
+      console.log('Notification displayed for new message');
+    } catch (error) {
+      console.error('Error showing notification:', error);
+    }
+  }, []);
 
 const useDisabledChannelsStore = create<DisabledChannelsState>()(
   persist(

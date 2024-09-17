@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, View as RNView, Text as RNText } from 'react-native';
+import { Pressable, ScrollView, View as RNView } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import Animated, {
   FadeIn,
   FadeOut,

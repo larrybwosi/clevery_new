@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import {  Pressable, Dimensions, Image, FlatList } from 'react-native';
+import { Pressable, Dimensions, Image, FlatList } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withSpring, interpolate, useAnimatedScrollHandler } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, interpolate, useAnimatedScrollHandler } from 'react-native-reanimated';
 import { Text, View } from '@/components';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';

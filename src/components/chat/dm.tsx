@@ -12,14 +12,15 @@ import Animated, {
 import { Text } from '@/components/themed';
 import { useMessaging } from '@/lib/contexts/messaging';
 import UserCard from './user-card';
+import Loader from '../states/loading';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const Chat = () => {
-  const { conversations } = useMessaging();
+  const { conversations, isLoading } = useMessaging();
 
   const navigate = (userId: string) => {
-    router.navigate(`/conversation/${userId}`);
+    router.navigate(`/channel?id=${userId}`);
   };
 
   const navigateToUsers = () => {
@@ -83,6 +84,7 @@ const Chat = () => {
     </Animated.View>
   ), [navigate]);
 
+  if(isLoading) return <Loader loadingText='Loading your Dm'/>
   return (
     <View className="flex-1">
       <FlatList

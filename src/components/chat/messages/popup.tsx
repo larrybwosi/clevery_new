@@ -1,99 +1,119 @@
-import { useCallback, useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { AntDesign, Feather, FontAwesome6 } from '@expo/vector-icons';
-import Animated, { FadeIn, SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useCallback, useState } from 'react';
+import { FlatList, KeyboardAvoidingView, Platform, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeIn, SlideInUp, SlideOutDown, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Text, View } from '@/components/themed';
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
 
-interface Props { 
-  isVisible: boolean; 
-  onClose: () => void, 
-  setMessage:any,
-  username:string
+interface Props {
+  isVisible: boolean;
+  onClose: () => void;
+  setMessage: (message: string) => void;
+  username: string;
 }
 
-const PopupComponent = ({ isVisible, onClose, setMessage, username }:Props ) => {
+const PopupComponent = ({ isVisible, onClose, setMessage, username }: Props) => {
   const [editMessage, setEditMessage] = useState('');
+  const scale = useSharedValue(0);
+
   const data = [
     { icon: 'corner-up-left', text: 'Reply' },
     { icon: 'copy', text: 'Copy Text' },
     { icon: 'map-pin', text: 'Pin Message' },
     { icon: 'link', text: 'Copy Link' },
+    { icon: 'edit-3', text: 'Edit Message' },
+    { icon: 'trash-2', text: 'Delete Message' },
   ];
 
-  const reactions = ['👍', '❤️', '😂', '😮', '😢', '😡'];
+  const reactions = ['👍', '❤️', '😂', '😮', '😢', '😡', '🎉', '🔥'];
 
-  const renderItem = useCallback(({ item, index }: { item: any; index: number }) => (
-    <Animated.View entering={FadeIn.delay(index * 100).springify()}>
-      <Pressable className='flex-row items-center py-1'>
-        <LinearGradient
-          colors= {['#3498db', '#2980b9']}
-          start= {[0, 0]}
-          end= {[1, 1]}
-          className="w-12 h-12 rounded-full justify-center items-center mr-3"
-        >
-          <Feather name={item.icon} size={20} color="#FFFFFF" />
-        </LinearGradient>
-        <Text className='text-white text-lg font-rmedium'>
-          {item.text}
-        </Text>
-      </Pressable>
-    </Animated.View>
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: withSpring(scale.value) }],
+    };
+  });
+
+  const renderItem = useCallback(({ item }: { item: any }) => (
+    <TouchableOpacity className="flex-row items-center p-3 mb-2 bg-gray-800 rounded-lg">
+      <Feather name={item.icon} size={24} color="#fff" />
+      <Text className="ml-3 text-white font-semibold">{item.text}</Text>
+    </TouchableOpacity>
   ), []);
 
-  const renderReaction = useCallback((emoji: string, index: number) => (
-    <Animated.View key={emoji} entering={FadeIn.delay(index * 50).springify()}>
-      <Pressable className=" bg-[gba(255, 255, 255, 0.2)] rounded-full items-center justify-center w-8 h-8 mr-2">
-        <Text className="text-white text-xl">{emoji}</Text>
-      </Pressable>
+  const renderReaction = useCallback((emoji: string) => (
+    <Animated.View 
+      entering={FadeIn.delay(200)}
+      className="mr-2"
+    >
+      <TouchableOpacity 
+        className="bg-gray-700 rounded-full p-2" 
+        onPress={() => {
+          scale.value = 1.2;
+          setTimeout(() => {
+            scale.value = 1;
+          }, 100);
+        }}
+      >
+        <Animated.Text style={animatedStyle} className="text-2xl">{emoji}</Animated.Text>
+      </TouchableOpacity>
     </Animated.View>
   ), []);
 
   if (!isVisible) return null;
-  const handleEdit=async()=>{
 
-  }
+  const handleEdit = async () => {
+    setMessage(editMessage);
+    onClose();
+  };
 
   return (
-    <Modal isOpen={isVisible} onClose={onClose} size="full" className='border-gray-50'>
-      <View className='flex-1 ' />
-      <ModalContent className=" m-0 rounded-t-[20px] bg-gray-50 shadow-md mb-3 ">
-        <ModalHeader>
-          <Text className="font-rbold text-lg">Reactions</Text>
-          <ModalCloseButton>
-            <AntDesign name="close" size={24} color="#666" />
-          </ModalCloseButton>
-        </ModalHeader>
-        <ModalBody className="max-h-[70%]">
-          <FlatList
-            data={reactions}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-          />
-        </ModalBody>
-        <ModalFooter>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={100}
-            className="w-full"
-          >
-            <View className="flex-row items-center mt-2.5">
+    <Modal isOpen={isVisible} onClose={onClose} className='w-full flex-1 mb-4'>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1 justify-end"
+      >
+        <Animated.View
+          entering={SlideInUp.springify().damping(15)}
+          exiting={SlideOutDown.springify().damping(15)}
+          className="bg-gray-900 rounded-t-3xl overflow-hidden"
+        >
+          <ModalContent className="p-4">
+            <ModalBody>
+              <Text className="text-lg text-gray-300 mb-4">Quick Actions</Text>
+              <FlatList
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.text}
+              />
+
+              <Text className="text-lg text-gray-300 my-4">React with Emoji</Text>
+              <View className="flex-row flex-wrap justify-start mb-4">
+                {reactions.map(renderReaction)}
+              </View>
+
+              <Text className="text-lg text-gray-300 mb-2">Edit Message</Text>
               <TextInput
-                className="flex-1 border border-gray-300 rounded-full px-4 py-2 mr-2"
+                className="bg-gray-800 text-white p-3 rounded-lg mb-4"
+                placeholder="Edit your message..."
+                placeholderTextColor="#9CA3AF"
                 value={editMessage}
                 onChangeText={setEditMessage}
-                placeholder={ `Reply to ${username}...`}
               />
-              <TouchableOpacity onPress={handleEdit} >
-                <FontAwesome6 name={"paper-plane"} size={24} color="#007AFF" />
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
-        </ModalFooter>
-      </ModalContent>
+            </ModalBody>
+          </ModalContent>
+
+          <ModalFooter>
+            <Pressable
+              className="bg-blue-500 py-3 px-6 rounded-lg"
+              onPress={handleEdit}
+            >
+              <Text className="text-white font-semibold">Save Changes</Text>
+            </Pressable>
+          </ModalFooter>
+        </Animated.View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
 
-export default PopupComponent;
+export default React.memo(PopupComponent);

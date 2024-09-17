@@ -3,7 +3,6 @@ export { View ,Text} from "@/components/themed";
 export {default as Groups} from "@/components/chat/status";
 export {default as Chat} from "@/components/chat/dm";
 export {default as ServerList} from "@/components/chat/servers";
-// export {default as Gallery} from "@/components/Profile/Gallery"; 
 export {default as Account} from "@/components/profile/account"; 
 export {default as MenuItems} from "@/components/profile/menu"; 
 export {default as FriendRequests} from "@/components/profile/friend-requests"; 
@@ -13,23 +12,17 @@ export {default as Notifications} from "@/components/profile/notifications";
 export {default as MessagesContainer} from "@/components/chat/messages/container"; 
 export {default as MessageInput} from "@/components/chat/messages/input";
 export {default as UserComment} from "@/components/posts/Comment";
-// export {default as ImageWithCaption} from "@/components/Messages/ImageCont";
-// export {default as UserCard} from "@/components/UserCard"; 
 export {default as Loader} from "@/components/states/loading";
 export {default as ErrorMessage} from "@/components/states/error";
 export {default as Header} from "@/components/chat/header";
-// export {default as UploadImage} from "@/components/Servers/upload-image";
-export {default as ChannelHeader} from "@/components/servers/channel-header"
 export {default as Create} from "@/components/servers/create"
-// export {default as MessagesContainer} from '@/components/Messages/MessageContainer'
 export {default as Suggestions} from "@/components/search/suggestions"
 export {default as SearchResults} from "@/components/search/results"
 export {default as InviteFriends} from '@/components/shared/invite'
 export {default as LoadingUsers} from '@/components/shared/loading-users'
 export {default as FormField} from '@/components/shared/form_field'
 export { default as LogoutComponent } from '@/components/profile/log-out'
-export { default as ServerComponent } from '@/components/servers'
-export { default as Badge } from '@/components/badge/user'
+// export { default as Badge } from '@/components/badge/user'
 
 
 // Importing components

@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Pressable, Text as RNText } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import Animated, {
   FadeIn,
   FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
   useAnimatedScrollHandler,
   interpolate,
   Extrapolation,

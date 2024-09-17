@@ -1,4 +1,5 @@
 const gluestackPlugin = require('@gluestack-ui/nativewind-utils/tailwind-plugin');
+import { hairlineWidth } from "nativewind/theme";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -251,6 +252,10 @@ module.exports = {
         '25.5': '102px',
         '26.5': '106px',
         '27.5': '110px',
+      },
+      borderWidth: {
+        hairline: hairlineWidth(),
+        DEFAULT: hairlineWidth(),
       },
     },
   },

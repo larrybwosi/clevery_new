@@ -183,12 +183,8 @@ const UserMessages: React.FC = () => {
       </View>
 
       <MessagesContainer
-        conversation={conversation!}
         messages={sortedMessages}
         setNewMessage={(text) => setNewMessage((prev) => ({ ...prev, caption: text }))}
-        newMessage={newMessage}
-        closeFile={closeFile}
-        createdAt={conversation?.createdAt!}
       />
       {isTyping && <Text className="text-gray-500 italic ml-2">{conversation?.user?.name} is typing...</Text>}
       <MessageInput

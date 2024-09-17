@@ -1,103 +1,145 @@
-import { useState } from 'react';
-import { TouchableOpacity, Dimensions } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  FadeIn,
+  FadeOut,
+} from 'react-native-reanimated';
+import { Feather } from '@expo/vector-icons';
+import { MasonryFlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 
-import { } from '@/components/themed';
-import Loader from '@/components/states/loading';
-import { Button, Text, View } from '@/components';
-import { Overlay } from '@gluestack-ui/overlay';
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-interface GalleryProps {
-  images: string[];
-  loading?: boolean;
+interface GalleryImage {
+  id: string;
+  uri: string;
+  width: number;
+  height: number;
 }
 
-const { width } = Dimensions.get('window');
-const columnWidth = width / 3 - 8; // 3 columns with 4px gap on each side
+interface GalleryProps {
+  images: GalleryImage[];
+  onAddImages: () => void;
+}
 
-const Gallery: React.FC<GalleryProps> = ({ images, loading }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+const GalleryPage: React.FC<GalleryProps> = ({ images, onAddImages }) => {
+  const opacity = useSharedValue(0);
 
-  const renderItem = ({ item }: { item: string }) => {
+  useEffect(() => {
+    opacity.value = withSpring(1, { damping: 20, stiffness: 90 });
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
+  const renderItem = ({ item }: { item: GalleryImage }) => {
+    const imageWidth = SCREEN_WIDTH / 2 - 12; // 2 columns with 8px gap
+    const aspectRatio = item.width / item.height;
+    const imageHeight = imageWidth / aspectRatio;
+
     return (
-      <TouchableOpacity
-        onPress={() => setSelectedImage(item)}
-        className="m-1 overflow-hidden rounded-lg"
-        style={{ width: columnWidth, height: columnWidth * 1.5 }}
+      <Animated.View
+        entering={FadeIn.duration(500)}
+        exiting={FadeOut.duration(500)}
+        style={[styles.imageContainer, { height: imageHeight }]}
       >
         <Image
-          source={{ uri: item }}
-          style={{ width: '100%', height: '100%' }}
+          source={{ uri: item.uri }}
+          style={[styles.image, { aspectRatio }]}
           contentFit="cover"
-          transition={1000}
-        // placeholder={require('@/assets/images/placeholder.png')}
         />
-      </TouchableOpacity>
+      </Animated.View>
     );
   };
 
-  if (loading) return <Loader loadingText="Creating your masterpiece..." />;
-
-  if (images?.length < 1) {
-    return (
-      <View className="flex-1 justify-center items-center p-5">
-        <Ionicons name="images-outline" size={64} color="#888" />
-        <Text className="text-lg font-medium text-center mt-4 mb-2">
-          Your gallery is empty
-        </Text>
-        <Text className="text-sm text-center mb-6">
-          Add some images to start creating your beautiful grid.
-        </Text>
-        <Button
-          icon={<Ionicons name="add-circle-outline" size={24} color="white" />}
-          buttonStyle={{
-            backgroundColor: '#4CAF50',
-            borderRadius: 25,
-            paddingHorizontal: 20,
-          }}
-          titleStyle={{ marginLeft: 10 }}
-          onPress={() => router.push('/add-image')}
-        >Add Image</Button>
-      </View>
-    );
-  }
+  const EmptyGallery = () => (
+    <View style={styles.emptyContainer}>
+      <Feather name="image" size={64} color="#a3a3a3" />
+      <Text style={styles.emptyTitle}>Your gallery is empty</Text>
+      <Text style={styles.emptyDescription}>
+        Add some amazing photos to showcase your life and experiences!
+      </Text>
+      <TouchableOpacity style={styles.addButton} onPress={onAddImages}>
+        <Feather name="plus" size={24} color="#ffffff" />
+        <Text style={styles.addButtonText}>Add Images</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
-    <View className="flex-1">
-      {/* <MasonryFlashList
-        data={images}
-        numColumns={3}
-        renderItem={renderItem}
-        estimatedItemSize={columnWidth * 1.5}
-        contentContainerStyle={{ paddingHorizontal: 4 }}
-      /> */}
-      <Overlay
-        // onBackdropPress={() => setSelectedImage(null)}
-        // overlayStyle={{ backgroundColor: 'transparent', padding: 0 }}
-        // fullScreen
-        isOpen={!!selectedImage}
-      >
-        <View className="flex-1 bg-black/80">
-          <TouchableOpacity
-            onPress={() => setSelectedImage(null)}
-            className="absolute top-10 right-5 z-10"
-          >
-            <Ionicons name="close-circle" size={32} color="white" />
-          </TouchableOpacity>
-          {selectedImage && (
-            <Image
-              source={{ uri: selectedImage }}
-              className="w-full h-full"
-              contentFit="contain"
-              transition={300}
-            />
-          )}
-        </View>
-      </Overlay>
-    </View>
+    <Animated.View style={[styles.container, animatedStyle]}>
+      {images.length > 0 ? (
+        <MasonryFlashList
+          data={images}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.masonry}
+          estimatedItemSize={200}
+        />
+      ) : (
+        <EmptyGallery />
+      )}
+    </Animated.View>
   );
 };
 
-export default Gallery;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f3f4f6',
+  },
+  masonry: {
+    paddingHorizontal: 4,
+    paddingTop: 4,
+  },
+  imageContainer: {
+    padding: 4,
+  },
+  image: {
+    width: '100%',
+    borderRadius: 8,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyTitle: {
+    fontFamily: 'rbold',
+    fontSize: 24,
+    color: '#1f2937',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyDescription: {
+    fontFamily: 'rregular',
+    fontSize: 16,
+    color: '#4b5563',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3b82f6',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+  },
+  addButtonText: {
+    fontFamily: 'rmedium',
+    fontSize: 16,
+    color: '#ffffff',
+    marginLeft: 8,
+  },
+});
+
+export default GalleryPage;

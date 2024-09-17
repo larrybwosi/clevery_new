@@ -2,20 +2,26 @@ import { FlatList, TouchableOpacity } from 'react-native'
 import { router } from 'expo-router'
 
 import { useServers } from '@/lib'
-import { Ionicons } from '@expo/vector-icons'
-import LoadingServers from '../servers/loading'
-import { Text, View } from '../themed'
-import ServerCard from '../servers/card'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import LoadingServers from '@/components/servers/loading'
+import ServerCard from '@/components/servers/card'
+import { Text, View } from '@/components/themed'
 
 export default function ServerList() {
 
-  const { data: servers, isLoading: loading, error } = useServers()
+  const { 
+    data: servers, 
+    isLoading: loading, 
+    error 
+  } = useServers()
   
   const navigateToCreateServer = () => {
     router.navigate(`/create-server`)
   };
 
-  if (servers?.items?.length === 0) {
+  if (loading) return <LoadingServers />
+  if (error) return <LoadingServers />
+  if (servers?.length === 0) {
     return (
       <View className="flex-1 justify-center items-center p-5">
         <Ionicons name="server-outline" size={64} color="#4B5563" />
@@ -34,8 +40,6 @@ export default function ServerList() {
       </View>
     );
   }
-  if (loading) return <LoadingServers />
-  if (error) return <LoadingServers />
   return (
     <View style={{ flex: 1 }} >
       <FlatList

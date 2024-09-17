@@ -113,10 +113,10 @@ export const Badge: React.FC<{ popularity: number }> = ({ popularity }) => {
   const badgeProps: BadgeProps = 
     popularity <= 2 ? { text: "Newcomer", colors: ['#4CAF50', '#45B649'], icon: "leaf-outline" } :
     popularity <= 4 ? { text: "Explorer", colors: ['#3498db', '#2980b9'], icon: "compass-outline" } :
-    popularity <= 6 ? { text: "Contributor", colors: ['#e67e22', '#d35400'], icon: "trophy-outline", animation: require('@/assets/animations/circle.json') } :
-    popularity <= 8 ? { text: "VIP", colors: ['#8e44ad', '#9b59b6'], icon: "diamond-outline", elite: true, animation: require('@/assets/animations/empty.json') } :
-    popularity <= 9 ? { text: "Master", colors: ['#c0392b', '#e74c3c'], icon: "flame-outline", elite: true, animation: require('@/assets/animations/fire.json') } :
-    { text: "Legend", colors: ['#1abc9c', '#16a085'], icon: "star-outline", elite: true, animation: require('@/assets/animations/star.json') };
+    popularity <= 6 ? { text: "Contributor", colors: ['#e67e22', '#d35400'], icon: "trophy-outline",} :
+    popularity <= 8 ? { text: "VIP", colors: ['#8e44ad', '#9b59b6'], icon: "diamond-outline", elite: true } :
+    popularity <= 9 ? { text: "Master", colors: ['#c0392b', '#e74c3c'], icon: "flame-outline", elite: true} :
+    { text: "Legend", colors: ['#1abc9c', '#16a085'], icon: "star-outline", elite: true };
 
   return <BadgeBase {...badgeProps} />;
 };

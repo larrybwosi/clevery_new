@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { FlatList, TextInput, Pressable, Dimensions, NativeSyntheticEvent } from 'react-native';
+import { TextInput, Pressable, Dimensions, NativeSyntheticEvent } from 'react-native';
 import { router } from 'expo-router';
 import Animated, {
   useSharedValue,
@@ -13,6 +13,7 @@ import { useCombinedSearch } from '@/lib/actions/hooks/search';
 import { Feather } from '@expo/vector-icons';
 import { NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
+import { FlashList } from '@shopify/flash-list';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -122,12 +123,10 @@ const ExploreComponent = () => {
           suggestedServers={topServers || []}
           suggestedUsers={topCreators || []}
           addSearch={(item) => handleSetSearch(item.name)}
-          onClearAllSearches={() => handleSetSearch('')}
           onClearSearchHistory={() => handleSetSearch('')}
-          searchHistory={[]}
         />
       ),
-      <FlatList
+      <FlashList
         key="users"
         data={results?.users?.length > 0 ? results.users : topCreators}
         renderItem={({ item }) => <UserItem item={item} />}

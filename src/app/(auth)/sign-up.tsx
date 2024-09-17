@@ -3,7 +3,7 @@ import { View, Text, ScrollView, SafeAreaView, Animated } from "react-native";
 import { Link, router } from "expo-router";
 import * as WebBrowser from 'expo-web-browser';
 import { endpoint, showToastMessage } from "@/lib";
-import { FormField } from "@/components";
+import { Button, FormField } from "@/components";
 import { useAuth } from "@/lib/contexts/auth";
 import { GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { MaterialIcons } from '@expo/vector-icons';
@@ -71,7 +71,7 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor:' #111827' }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }}>
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
           <Text className="text-3xl font-rbold text-center mb-5 text-white">
@@ -104,6 +104,12 @@ const SignUp = () => {
             otherStyles="mt-7"
             autoCapitalize="none"
           />
+            <Button 
+              className="rounded-lg bg-cyan-600 h-14 mb-4"
+              onPress={submit}
+            >
+              <Text className="text-white font-rbold text-lg">Sign In</Text>
+            </Button>
 
           <View style={{ marginTop: 20, alignItems: 'center' }}>
             <Text className="font-rregular text-gray-400">Or sign up with:</Text>

@@ -1,7 +1,7 @@
 import { FlatList } from 'react-native';
-import { HStack } from '../ui/hstack';
-import { Skeleton } from '../ui/skeleton';
-import { VStack } from '../ui/vstack';
+import { HStack } from '@/components/ui/hstack';
+import { Skeleton } from '@/components/ui/skeleton';
+import { VStack } from '@/components/ui/vstack';
 
 const ServerCardSkeleton = () => {
   return (

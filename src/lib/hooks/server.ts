@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   useChannel,
   useChannelMessages,
@@ -10,46 +10,52 @@ import {
 } from '@/lib/actions/hooks/servers';
 
 export const useChannelData = (channelId: string) => {
-  const { 
-    data: channel, 
-    isLoading: channelLoading, 
-    error: channelError 
+  const {
+    data: channel,
+    isLoading: channelLoading,
+    error: channelError
   } = useChannel(channelId);
 
-  const { 
-    data: messages, 
-    isLoading: messagesLoading, 
-    error: messagesError 
+  const {
+    data: messages,
+    isLoading: messagesLoading,
+    error: messagesError
   } = useChannelMessages(channelId);
 
   const { mutateAsync: sendMessage, isPending: sendMessageLoading } = useSendChannelMessage();
   const { mutateAsync: editMessage, isPending: editMessageLoading } = useEditChannelMessage();
   const { mutateAsync: deleteMessage, isPending: deleteMessageLoading } = useDeleteChannelMessage();
-  
-  const serverId = channel?.serverId || "";
 
-  const { 
-    mutate: updateChannel, 
-    isPending: updateChannelLoading 
+  const serverId = useMemo(() => channel?.serverId || "", [channel]);
+
+  const {
+    mutate: updateChannel,
+    isPending: updateChannelLoading
   } = useUpdateChannel(serverId, channelId);
 
-  const { 
-    mutate: deleteChannel, 
-    isPending: deleteChannelLoading 
+  const {
+    mutate: deleteChannel,
+    isPending: deleteChannelLoading
   } = useDeleteChannel(serverId);
 
   const isLoading = channelLoading || messagesLoading;
   const error = channelError || messagesError;
 
-  const sendChannelMessage = useCallback(async(content: string) => {
-    if (serverId && channelId && content) {
-     await sendMessage({ channelId, serverId, message: { text: content } });
+  const initialRenderRef = useRef(true);
+
+  const sendChannelMessage = useCallback(async (content: string) => {
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+      return;
+    }
+    if (serverId && channelId && content.trim()) {
+      await sendMessage({ channelId, serverId, message: { text: content.trim() } });
     }
   }, [channelId, serverId, sendMessage]);
 
   const editChannelMessage = useCallback((messageId: string, content: string) => {
-    if (serverId) {
-      editMessage({ serverId, channelId, messageId, text: content });
+    if (serverId && content.trim()) {
+      editMessage({ serverId, channelId, messageId, text: content.trim() });
     }
   }, [channelId, serverId, editMessage]);
 

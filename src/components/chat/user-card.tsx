@@ -1,9 +1,10 @@
 import { Pressable } from 'react-native';
 
-import { Text, View } from '../themed';
+import { Text, View } from '@/components/themed';
 import { Conversation } from '@/types';
-import { HStack } from '../ui/hstack';
+import { HStack } from '@/components/ui/hstack';
 import { Image } from 'expo-image';
+import { multiFormatDateString } from '@/lib';
 interface UserCardProps {
   conversation: Conversation
   onSelectUser: (id: string) => void;
@@ -13,9 +14,7 @@ interface UserCardProps {
 const UserCard: React.FC<UserCardProps> = ({ conversation, onSelectUser }) => {
   const { id, user: { image, name, username }, lastMessage,unreadCount } = conversation;
   const isOnline = true;
-  const isTyping = false;
-  const unreadMessages = 3
-
+  const isTyping = false; 
   return (
     <Pressable className='flex-row items-center py-1 pl-2' onPress={() => onSelectUser(id)}>
       <HStack className='flex-1 my-4 px-3'>
@@ -39,9 +38,13 @@ const UserCard: React.FC<UserCardProps> = ({ conversation, onSelectUser }) => {
         <Text className='mt-1.5 font-rthin text-[10px] '>{lastMessage}</Text>
       </View>
       </HStack>
-      <Pressable className='items-center  border rounded-full py-1 px-2 mr-5 bg-blue-600'>
-        <Text className='text-gray-400 font-rthin text-[11px]'>{unreadCount}</Text>
-      </Pressable>
+      {unreadCount > 0 &&
+        <Pressable className='items-center  border rounded-full py-1 px-2 mr-5 bg-blue-600'>
+          {/* {isTyping ? <Text className='text-white text-[10px] font-rthin'>Typing...</Text> : <Text className='text-white text-[10px] font-rthin'>Last seen {multiFormatDateString(lastMessage)}</Text>} */}
+
+          <Text className='text-white text-[10px] font-rthin'>{unreadCount}</Text>
+        </Pressable>
+      }
     </Pressable>
   );
 };

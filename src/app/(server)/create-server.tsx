@@ -9,8 +9,8 @@ import { router } from 'expo-router';
 const CreateServer = () => {
   const { profile } = useProfileStore();
   const [serverDetails, setServerDetails] = useState<CreateServerType>({
-    name: `${profile.name}'s server`,
-    description: 'Lets connect',
+    name: ``,
+    description: '',
     image: '',
     members: [],
   });
@@ -34,7 +34,7 @@ const CreateServer = () => {
 
     try {
       console.log(serverDetails)
-      const server = await createServer(serverDetails );
+      const server = await createServer(serverDetails);
 
       setServerDetails({
         name: '',
@@ -72,7 +72,6 @@ if(creatingServer)return <Loader loadingText='Creating your server'/>
         type='server'
       />
       <Modal visible={isPopupVisible} onTouchCancel={()=>{}} onDismiss={()=>setPopupVisible(false)} animationType="slide">
-        
         <InviteFriends
          onInvitePress={addMember} 
          buttonText='add user' 
@@ -82,6 +81,7 @@ if(creatingServer)return <Loader loadingText='Creating your server'/>
          users={profile?.friends}
         />
       </Modal>
+      
     </ScrollView>
   );
 };

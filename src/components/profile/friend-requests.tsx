@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import Animated, {
@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { Text, View } from '@/components/themed';
+import { Image } from 'expo-image';
 
 // Mock data for friend requests
 const mockFriendRequests = [
@@ -70,7 +71,7 @@ const FriendRequestCard = ({ request, onAccept, onDecline }) => {
       className="bg-white rounded-lg shadow-md mb-4 overflow-hidden"
     >
       <View className="flex-row items-center p-4">
-        <Image 
+        <Image
           source={{ uri: request.avatar }} 
           className="w-16 h-16 rounded-full mr-4" 
         />

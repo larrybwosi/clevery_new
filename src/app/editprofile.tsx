@@ -78,19 +78,19 @@ const hobbies = [
   const handleSubmit = async () => {
       const updated = { id: userinfo.id, ...profile, ...connections, image: avatarUri }
       console.log(updated)
-    // setIsLoading(true);
+    setIsLoading(true);
     
-    // try {
-    //   const updated = { id: userinfo.id, ...profile, ...connections, image: avatarUri }
-    //   const response = await updateProfile(updated)
-    //   updateProfileLocaly(response)
-    //   showToastMessage("Profile Updated");
-    //   router.replace("/profile")
-    // } catch (error) {
-    //   console.log(error)
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    try {
+      const updated = { id: userinfo.id, ...profile, ...connections, image: avatarUri }
+      const response = await updateProfile(updated)
+      updateProfileLocaly(response)
+      showToastMessage("Profile Updated");
+      router.replace("/profile")
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   };
 
   // Animations

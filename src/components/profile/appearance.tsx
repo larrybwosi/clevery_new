@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
 import { TouchableOpacity, View, ScrollView, Pressable } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming, FadeIn, FadeOut } from 'react-native-reanimated';
 import { Ionicons, Feather } from '@expo/vector-icons';
@@ -15,13 +15,11 @@ const ThemeDescription = {
 
 const Appearance = () => {
   const { mode, setMode } = useThemeStore();
-  const [expandedSection, setExpandedSection] = useState('');
 
   const Custom = Animated.createAnimatedComponent(View);
   const CustomText = Animated.createAnimatedComponent(Text);
   const toggleTheme = useCallback((newMode: 'light' | 'dark' | 'default') => {
     setMode(newMode);
-    showToastMessage(`Theme changed to ${newMode} mode`);
   }, [setMode]);
 
   const MenuItem = memo(({ iconName, label, description }: { iconName: any; label: string; description: string }) => {

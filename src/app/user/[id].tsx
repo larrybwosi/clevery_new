@@ -16,12 +16,12 @@ import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Box, HStack, Loader, Text, View, VStack } from '@/components';
-import { formatDateString, useThemeStore, useUser } from '@/lib';
+import MembersList from '@/components/servers/member-list';
+import UserInfo from '@/components/profile/user-info';
+import { formatDateString, useUser } from '@/lib';
+import { Badge } from '@/components/ui/badge';
 import Image from '@/components/image';
 import { User } from '@/types';
-import UserInfo from '@/components/profile/user-info';
-import MembersList from '@/components/servers/member-list';
-import { Badge } from '@/components/ui/badge';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
@@ -37,6 +37,7 @@ interface UserBannerProps {
 }
 
 const UserBanner: React.FC<UserBannerProps> = ({ bannerImage, scrollY }) => {
+  
   const animatedStyle = useAnimatedStyle(() => {
     const scale = interpolate(
       scrollY.value,

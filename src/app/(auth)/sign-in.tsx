@@ -9,8 +9,8 @@ import Animated, {
   FadeIn,
   FadeInDown
 } from 'react-native-reanimated';
-import { Button, FormField, Toast, ToastDescription, ToastTitle, useToast } from "@/components";
-import { googleSignIn, useAuth } from "@/lib/contexts/auth";
+import { Button, FormField, Loader, Toast, ToastDescription, ToastTitle, useToast } from "@/components";
+import { useAuth } from "@/lib/contexts/auth";
 import { GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import * as WebBrowser from 'expo-web-browser';
 import { endpoint, useProfileStore } from "@/lib";
@@ -69,6 +69,7 @@ const SignIn = () => {
   
   useEffect(() => {
     if(profile?.id.trim()) {
+      handleToast()
       router.replace('/')
     }
   }, [profile]);
@@ -86,12 +87,12 @@ const SignIn = () => {
   });
 
  const handleGoogleSignIn = async () => {
-    await googleSignIn();
+    await signIn("google");
     
     setTimeout(async() => {
-    const user = await userApi.getCurrentUser();
-    setProfile(user);
-        router.replace('/');
+      const user = await userApi.getCurrentUser();
+      setProfile(user);
+      router.replace('/');
     }, 3000);
 };
 
@@ -115,23 +116,17 @@ const SignIn = () => {
     }
     try {
 
-      console.log(form)
-      const result = await signIn("credentials",{
+      await signIn("credentials",{
         email,
         password
-      })
-      router.navigate('/editprofile')
+      }) 
       
     } catch (error) {
       console.error("Sign-in",error)
     } 
   };
 
-  const signInWithProvider = async (provider: AuthProviders) => {
-    if (provider === 'google') return handleGoogleSignIn();
-    if (provider === 'facebook') return signIn("github");
-    if (provider === 'github') return signIn("github")
-  };
+  if(loading) return <Loader loadingText="Signing in..."/>
 
   return (
     <SafeAreaView className="bg-gray-900 h-full">
@@ -181,7 +176,7 @@ const SignIn = () => {
                 <GoogleSigninButton
                   size={GoogleSigninButton.Size.Wide}
                   color={GoogleSigninButton.Color.Dark}
-                  onPress={() => signInWithProvider("google")}
+                  onPress={handleGoogleSignIn}
                   className="font-rmedium"
                 />
               </View>

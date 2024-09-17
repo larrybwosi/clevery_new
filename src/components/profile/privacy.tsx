@@ -27,7 +27,7 @@ const PrivacySection = ({ title, content, icon }) => {
   });
 
   return (
-    <View className="mb-4 bg-white rounded-lg shadow-md overflow-hidden">
+    <View className="mb-4 rounded-lg shadow-md overflow-hidden">
       <Pressable onPress={toggleExpand} className="flex-row items-center justify-between p-4">
         <View className="flex-row items-center">
           <Feather name={icon} size={24} color="#4A90E2" className="mr-3" />
@@ -37,11 +37,9 @@ const PrivacySection = ({ title, content, icon }) => {
           <Feather name="chevron-down" size={24} color="#4A90E2" />
         </Animated.View>
       </Pressable>
-      {expanded && (
-        <Animated.View entering={FadeIn} exiting={FadeOut} className="p-4 bg-blue-50">
-          <Text className="text-base font-rregular">{content}</Text>
-        </Animated.View>
-      )}
+      <Animated.View entering={FadeIn} exiting={FadeOut} className="p-4">
+        <Text className="text-base font-rregular">{content}</Text>
+      </Animated.View>
     </View>
   );
 };

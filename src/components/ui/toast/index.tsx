@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { createToast, createToastHook } from '@gluestack-ui/toast';
 import { Text, View, Platform } from 'react-native';
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
@@ -12,6 +11,7 @@ import {
 import { withStyleContextAndStates } from '@gluestack-ui/nativewind-utils/withStyleContextAndStates';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { ToastPlacement } from '@gluestack-ui/toast/lib/typescript/types';
+import { forwardRef } from 'react';
 
 export const useToast = createToastHook(Motion.View, AnimatePresence);
 const SCOPE = 'TOAST';
@@ -159,7 +159,7 @@ type IToastProps = React.ComponentProps<typeof UIToast> & {
   className?: string;
 } & VariantProps<typeof toastStyle>;
 
-export const Toast = React.forwardRef<
+export const Toast = forwardRef<
   React.ElementRef<typeof UIToast>,
   IToastProps
 >(({ className, variant = 'solid', action = 'muted', ...props }, ref) => {
@@ -177,7 +177,7 @@ type IToastTitleProps = React.ComponentProps<typeof UIToast.Title> & {
   className?: string;
 } & VariantProps<typeof toastTitleStyle>;
 
-export const ToastTitle = React.forwardRef<
+export const ToastTitle = forwardRef<
   React.ElementRef<typeof UIToast.Title>,
   IToastTitleProps
 >(({ className, size = 'md', ...props }, ref) => {
@@ -205,7 +205,7 @@ type IToastDescriptionProps = React.ComponentProps<
   className?: string;
 } & VariantProps<typeof toastDescriptionStyle>;
 
-export const ToastDescription = React.forwardRef<
+export const ToastDescription = forwardRef<
   React.ElementRef<typeof UIToast.Description>,
   IToastDescriptionProps
 >(({ className, size = 'md', ...props }, ref) => {

@@ -1,12 +1,12 @@
 import { Pressable } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 
 import { Text, View } from '../themed';
 import { memo } from 'react';
 
 interface MenuItemProps {
-  iconName: any;
+  iconName: keyof typeof Feather.glyphMap;
   label: string;
   route: string;
 }
@@ -34,6 +34,7 @@ const MenuItems: React.FC = () => {
   return (
     <View className='rounded-[10px] p-[1px] m-1 gap-3 mt-4 '>
       <MenuItem iconName="user" label="Account" route="account" />
+      <MenuItem iconName="activity" label="Activity" route="activity" />
       <MenuItem iconName="moon" label="Appearance" route="appearance" />
       <MenuItem iconName="bell" label="Notification preferences" route="notifications" />
       <MenuItem iconName="smartphone" label="Devices" route="devices" />
@@ -46,6 +47,7 @@ const MenuItems: React.FC = () => {
       <MenuItem iconName="info" label="About Us" route="about" />
       <MenuItem iconName="star" label="Feedback" route="feedback" />
       <MenuItem iconName="log-out" label="Logout" route="logout" />
+      <MenuItem iconName="activity" label="Logout" route="logout" />
     </View>
   );
 };

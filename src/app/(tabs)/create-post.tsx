@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect, memo } from 'react';
-import { ScrollView, TextInput, Image, Pressable, Text as RNText, Alert, Linking, TextInputComponent } from 'react-native';
+import { ScrollView, TextInput, Image, Pressable, Text as RNText, Alert, Linking } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { ErrorMessage, Input, InputField, Loader, Text, Toast, ToastDescription, ToastTitle, useToast, View } from '@/components';
+import { ErrorMessage, Loader, Text, Toast, ToastDescription, ToastTitle, useToast, View } from '@/components';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCreatePost, useDeletePost, usePost, useUpdatePost } from '@/lib';
 import { useImageUploader } from '@/lib/uploadthing';
@@ -212,7 +212,7 @@ const CreateUpdatePost = () => {
         </Textarea>
       </Animated.View>
 
-      <Animated.View entering={FadeIn.delay(200).duration(500)} className="mb-6  p-4 rounded-lg bg-zinc-700">
+      <Animated.View entering={FadeIn.delay(200).duration(500)} className="mb-6  p-4 rounded-lg bg-gray-700">
         <Text className="text-xl font-rmedium text-gray-800 mb-2">Images</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {images.map((image, index) => (
@@ -230,8 +230,8 @@ const CreateUpdatePost = () => {
           {images.length < 3 && (
             <AnimatedPressable 
               onPress={handleAddImage}
-              className="w-28 h-28 bg-blue-100 rounded-lg items-center justify-center"
-              entering={FadeIn.delay(300)}
+              className="w-28 h-28 bg-blue-200 rounded-lg items-center justify-center"
+              entering={FadeIn.delay(200)}
             >
               <Feather name="plus" size={28} color="#4A90E2" />
             </AnimatedPressable>
@@ -274,6 +274,17 @@ const CreateUpdatePost = () => {
         </View>
       </Animated.View>
 
+      <Animated.View entering={FadeIn.delay(500).duration(500)} className="mt-6 bg-yellow-100 rounded-lg p-4">
+        <RNText className="text-lg font-rmedium mb-2">Posting Tips</RNText>
+        <RNText className="text-base font-rregular">
+          • Keep your content engaging and positive
+          {'\n'}• Use relevant tags to increase visibility
+          {'\n'}• High-quality images can make your post stand out
+          {'\n'}• Respect others' privacy when posting
+          {'\n'}• {isUpdating ? 'Update your post to reflect new information or changes' : 'Review your post before publishing'}
+        </RNText>
+      </Animated.View>
+
       <Animated.View entering={FadeIn.delay(400).duration(500)} className="mt-4 gap-5">
         <AnimatedPressable
           onPress={handlePost}
@@ -299,17 +310,6 @@ const CreateUpdatePost = () => {
             Delete Post
           </Text>
         </AnimatedPressable>}
-      </Animated.View>
-
-      <Animated.View entering={FadeIn.delay(500).duration(500)} className="mt-6 bg-yellow-100 rounded-lg p-4">
-        <RNText className="text-lg font-rmedium mb-2">Posting Tips</RNText>
-        <RNText className="text-base font-rregular">
-          • Keep your content engaging and positive
-          {'\n'}• Use relevant tags to increase visibility
-          {'\n'}• High-quality images can make your post stand out
-          {'\n'}• Respect others' privacy when posting
-          {'\n'}• {isUpdating ? 'Update your post to reflect new information or changes' : 'Review your post before publishing'}
-        </RNText>
       </Animated.View>
     </ScrollView>
   );

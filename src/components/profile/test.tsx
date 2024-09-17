@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { ScrollView, Pressable, Dimensions, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import Animated, {
   FadeIn,
   FadeInDown,

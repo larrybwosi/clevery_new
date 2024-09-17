@@ -28,9 +28,9 @@ export const serverApi = {
    * @returns A promise that resolves to an API response containing a paginated list of servers.
    * @throws Error with a descriptive message if the request fails.
    */
-  getAllServers: async (): Promise<PaginatedResponse<FullModel<Server>>> => {
+  getAllServers: async (): Promise<FullModel<Server[]>> => {
     try {
-      const response = await axios.get<PaginatedResponse<FullModel<Server>>>(`${endpoint}${apiPaths.servers}`);
+      const response = await axios.get<FullModel<Server[]>>(`${endpoint}${apiPaths.servers}`);
       return response.data;
     } catch (error) {
       throw handleApiError(error, "Failed to fetch servers");
@@ -292,4 +292,12 @@ export const serverApi = {
       throw handleApiError(error, `Failed to delete channel with ID ${channelId}`);
     }
   },
+  deleteMembers: async (serverId: string, members: string[]): Promise<void> => {
+    try {
+      const response = await axios.post<void>(`${endpoint}${apiPaths.deleteServerMembers(serverId)}`, {members});
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error, `Failed to delete members with IDs ${members}`);
+    }
+  }
 };

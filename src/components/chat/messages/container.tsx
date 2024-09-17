@@ -1,127 +1,65 @@
-import { useState, useCallback, memo } from 'react';
-import { FlatList, TextInput, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
+import React, { useState, memo } from 'react';
+import { FlashList } from '@shopify/flash-list';
 
-import { Channel, Conversation, Message as MessageType } from '@/types';
-import { Text, View } from '@/components/themed';
-import Header from '../header';
+import { Message as MessageType } from '@/types';
+import { View } from '@/components/themed';
 import PopupComponent from './popup';
 import MessageItem from './item';
-
-type NewMessage = {
-  caption: string;
-  file: string | undefined;
-};
+import Header from '../header';
 
 type Props = {
-  conversation?: Conversation,
+  currentChat: any
+  isChannel?: boolean
   messages: MessageType[]
-  setNewMessage: (text: string) => void;
-  closeFile: () => void;
-  newMessage: NewMessage;
-  createdAt: string;
-  channel?: Channel;
+  setNewMessage: (text: string) => void; 
 };
-
-type ImageWithCaptionProps = {
-  source: string;
-  onCaptionChange: (caption: string) => void;
-  closeFile: () => void;
-  showInputs: boolean;
-};
-
 const MessagesContainer: React.FC<Props> = ({
-  conversation,
   messages,
+  isChannel,
+  currentChat,
   setNewMessage,
-  closeFile,
-  newMessage,
-  createdAt,
-  channel,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
 
   const togglePopup = () => setPopupVisible(!popupVisible);
   const closePopup = () => setPopupVisible(false);
 
-  const ImageWithCaption: React.FC<ImageWithCaptionProps> = useCallback(({
-    source,
-    onCaptionChange,
-    closeFile,
-    showInputs,
-  }) => {
-    const isImage = /\.(jpg|jpeg|png|gif)$/i.test(source);
-
-    return (
-      <View className="flex-1 items-center justify-center -mt-6 mb-5 mr-4">
-        <View className="border-b border-gray-300 rounded-lg overflow-hidden">
-          <TouchableOpacity onPress={closeFile} className="absolute top-2 right-2 z-10">
-            <Ionicons name="close" size={24} color="#007aff" />
-          </TouchableOpacity>
-          {isImage ? (
-            <Image source={{ uri: source }} style={{ resizeMode: 'cover',width: 224, height: 208 }} />
-          ) : (
-            <View className="w-56 h-12 mb-2 flex-row items-center">
-              <Ionicons name="document" size={24} color="black" />
-              <Text className="ml-2 truncate">{source}</Text>
-            </View>
-          )}
-          {showInputs && (
-            <TextInput
-              className="bg-white p-2 text-base"
-              placeholder="Add a caption"
-              onChangeText={onCaptionChange}
-            />
-          )}
-        </View>
-      </View>
-    );
-  }, []);
-
   const handleReply = (replyText, messageId) => {
     console.log(replyText, messageId);
-    // Handle the reply logic here
+    //TODO: Handle the reply logic here
   };
 
   const handleReact = (reaction, messageId) => {
     console.log(reaction, messageId);
-    // Handle the reaction logic here
+    //TODO: Handle the reaction logic here
   };
   return (
     <View className="flex-1">
-      <FlatList
+      <FlashList
         data={messages}
         renderItem={({ item }: { item: any }) => (
           <MessageItem
             message={item}
             onReply={handleReply}
             onReact={handleReact}
-            // onEdit={() => {}}
-            // onDelete={() => {}}
           />
         )}
         keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={() => <Header user={conversation?.user} messages={messages} created={createdAt} channel={channel} />}
-        ListFooterComponent={() => (
-          <View className="h-3/4">
-            <View className="ml-1/2 -mt-12">
-              {newMessage?.file && (
-                <ImageWithCaption
-                  source={newMessage?.file!}
-                  showInputs={true}
-                  onCaptionChange={setNewMessage}
-                  closeFile={closeFile}
-                />
-              )}
-            </View>
-          </View>
+        ListHeaderComponent={() => (
+          <Header
+            name={currentChat?.name || currentChat?.user?.name}
+            created={currentChat?.created}
+            description={currentChat?.description}
+            image={currentChat?.user?.image}
+            isChannel={isChannel}
+          />
         )}
+        estimatedItemSize={100}
+        showsVerticalScrollIndicator={false}
       />
       <PopupComponent isVisible={popupVisible} onClose={closePopup} username='Clevery' setMessage={setNewMessage} />
     </View>
   );
 };
 
-export default memo(MessagesContainer);
+export default React.memo(MessagesContainer);

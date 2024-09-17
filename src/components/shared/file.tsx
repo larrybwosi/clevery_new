@@ -118,9 +118,7 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
               </Pressable>
               <Pressable
                 onPress={() => {
-                  pdfUploader.openDocumentPicker({
-                    input: { foo: "bar" },
-                  });
+                  pdfUploader.openDocumentPicker({});
                 }}
                 className="flex w-full flex-row items-center gap-4 p-4 active:bg-zinc-900"
               >

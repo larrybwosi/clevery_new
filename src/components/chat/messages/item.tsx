@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { TextInput, Pressable, Linking, Text as RNText, View as RNView, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import { TextInput, Linking, Text as RNText, View as RNView, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,13 +9,14 @@ import Animated, {
   FadeIn,
   FadeOut,
   runOnJS,
+  withTiming,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import Image from '@/components/image';
 import { Text, View } from '@/components/themed'; 
 import { formatDateString } from '@/lib';
-import MessageOptionsPopup from './options';
+import PopupComponent from './popup';
 
 interface Message {
   id: string;
@@ -40,58 +41,107 @@ interface Message {
 }
 
 
-const MessageSeparator = ({ timestamp }: { timestamp: string }) => (
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const MessageSeparator: React.FC<{ timestamp: string }> = React.memo(({ timestamp }) => (
   <RNView className='flex-row items-center my-3'>
     <RNView className='flex-1 h-[0.35px] bg-gray-400' />
-    <Text className="font-rregular mx-2 text-[8px]">
-      {formatDateString(timestamp)}
-    </Text>
+    <Text className="font-rregular mx-2 text-[8px]">{formatDateString(timestamp)}</Text>
     <RNView className='flex-1 h-[0.35px] bg-gray-400' />
   </RNView>
+));
+
+const ReactionButton: React.FC<{ reaction: string; count: number; onPress: () => void }> = React.memo(
+  ({ reaction, count, onPress }) => (
+    <Pressable
+      className="bg-gray-100 px-2 py-1 rounded-full mr-2 mb-2 flex-row items-center"
+      onPress={onPress}
+    >
+      <Text className="mr-1">{reaction}</Text>
+      <Text className="text-xs text-gray-600 font-rmedium">{count}</Text>
+    </Pressable>
+  )
 );
-const MessageItem: React.FC<{ 
-  message: Message; 
+
+const MessageContent: React.FC<{ text: string }> = React.memo(({ text }) => {
+  const parts = useMemo(() => text.split(/(@\w+)|(https?:\/\/[^\s]+)/g), [text]);
+  
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part?.startsWith('@')) {
+          return <RNText key={index} className="text-blue-500 font-rmedium">{part}</RNText>;
+        } else if (part?.startsWith('http')) {
+          return (
+            <RNText
+              key={index}
+              className="text-blue-500 underline font-rmedium"
+              onPress={() => Linking.openURL(part)}
+            >
+              {part}
+            </RNText>
+          );
+        }
+        return <Text key={index} className="font-rregular">{part}</Text>;
+      })}
+    </>
+  );
+});
+
+interface MessageItemProps {
+  message: Message;
   onReply: (text: string, messageId: string) => void;
   onReact: (reaction: string, messageId: string) => void;
   previousMessage?: Message;
-}> = ({ message, onReply, onReact, previousMessage }) => {
+}
+
+const MessageItem: React.FC<MessageItemProps> = ({ message, onReply, onReact, previousMessage }) => {
   const [replyText, setReplyText] = useState('');
-  const [showReactions, setShowReactions] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const translateX = useSharedValue(0);
   const context = useSharedValue({ x: 0 });
-  const longPressTimeout = useRef<NodeJS.Timeout | null>(null);
-  const [isReplying, setIsReplying] = useState(false);
-const [isPopupVisible, setIsPopupVisible] = useState(false);
 
-
-const messageOptions = [
-  { icon: 'at-sign', label: 'Mention', onPress: () => { /* Handle mention */ } },
-  { icon: 'copy', label: 'Copy', onPress: () => { /* Handle copy */ } },
-  { icon: 'smile', label: 'React', onPress: () => { /* Handle react */ } },
-  { icon: 'pin', label: 'Pin', onPress: () => { /* Handle pin */ } },
-  // Add more options as needed
-];
-
-  const handleReply = () => {
+  const handleReply = useCallback(() => {
     if (!replyText.trim()) return;
-    setIsReplying(true);
     onReply(replyText, message.id);
-  }
-   const gesture = Gesture.Pan()
+    setReplyText('');
+    setIsReplying(false);
+  }, [replyText, message.id, onReply]);
+
+  const handleLongPress = useCallback(() => {
+    setIsPopupVisible(true);
+  }, []);
+
+  const handleClosePopup = useCallback(() => {
+    setIsPopupVisible(false);
+  }, []);
+
+  const handleSetMessage = useCallback((newMessage: string) => {
+    // Implement the logic to update the message
+    console.log('Update message:', newMessage);
+  }, []);
+
+  const SWIPE_THRESHOLD = 50; // Minimum distance to trigger the swipe action
+  const ACTIVATION_THRESHOLD = 20; // Minimum distance to start the gesture
+
+  const gesture = Gesture.Pan()
+    .minDistance(ACTIVATION_THRESHOLD)
+    .activeOffsetX([-ACTIVATION_THRESHOLD, ACTIVATION_THRESHOLD])
     .onStart(() => {
       'worklet';
       context.value = { x: translateX.value };
     })
     .onUpdate((event) => {
       'worklet';
-      translateX.value = event.translationX + context.value.x;
-      translateX.value = Math.max(0, Math.min(translateX.value, 100));
+      translateX.value = Math.max(0, Math.min(event.translationX + context.value.x, 100));
     })
     .onEnd(() => {
       'worklet';
-      if (translateX.value > 50) {
-        runOnJS(setIsReplying)(true);
-        runOnJS(handleReply)();
+      if (translateX.value > SWIPE_THRESHOLD) {
+        runOnJS(setIsReplying)(!isReplying);
+        translateX.value = withTiming(100, { duration: 150 });
       }
       translateX.value = withSpring(0, { damping: 15 });
     });
@@ -106,38 +156,10 @@ const messageOptions = [
       { translateX: interpolate(translateX.value, [0, 100], [-100, 0], Extrapolation.CLAMP) },
     ],
   }));
-
-  useEffect(() => {
-    if (isReplying) {
-      if (longPressTimeout.current) clearTimeout(longPressTimeout.current);
-    }
-  }, [isReplying]);
-
-  const renderTextWithMentionsAndLinks = (text: string) => {
-    const parts = text.split(/(@\w+)|(https?:\/\/[^\s]+)/g);
-    
-    return parts.map((part, index) => {
-      if (part?.startsWith('@')) {
-        return <RNText key={index} className="text-blue-500 font-rmedium">{part}</RNText>;
-      } else if (part?.startsWith('http')) {
-        return (
-          <RNText
-            key={index}
-            className="text-blue-500 underline font-rmedium"
-            onPress={() => Linking.openURL(part)}
-          >
-            {part}
-          </RNText>
-        );
-      }
-      return <Text key={index} className="font-rregular">{part}</Text>;
-    });
-  };
-
-  const renderFile = () => {
+  const renderFile = useCallback(() => {
     if (!message.file) return null;
     if (message.file.match(/\.(jpeg|jpg|gif|png)$/i)) {
-      return <Image source={message.file} width={270} height={288} style="w-full h-60 border border-gray-300 rounded-[10px] shadow-lg" />
+      return <Image source={message.file} width={270} height={288} style="w-full h-60 border border-gray-300 rounded-[10px] shadow-lg" />;
     }
     return (
       <View className="flex-row items-center mt-2 bg-gray-100 p-2 rounded-lg">
@@ -145,27 +167,25 @@ const messageOptions = [
         <Text className="ml-2 text-gray-600 font-rmedium">Attached file</Text>
       </View>
     );
-  };
+  }, [message.file]);
 
-  const renderReactions = () => {
+  const renderReactions = useCallback(() => {
     if (!message.reactions) return null;
     return (
       <View className="flex-row flex-wrap mt-2">
         {Object.entries(message.reactions).map(([reaction, users]) => (
-          <Pressable
+          <ReactionButton
             key={reaction}
-            className="bg-gray-100 px-2 py-1 rounded-full mr-2 mb-2 flex-row items-center"
+            reaction={reaction}
+            count={users.length}
             onPress={() => onReact(reaction, message.id)}
-          >
-            <Text className="mr-1">{reaction}</Text>
-            <Text className="text-xs text-gray-600 font-rmedium">{users.length}</Text>
-          </Pressable>
+          />
         ))}
       </View>
     );
-  };
+  }, [message.reactions, message.id, onReact]);
 
-  const renderReplyPreview = () => {
+  const renderReplyPreview = useCallback(() => {
     if (!message.replyTo) return null;
     return (
       <View className="bg-gray-100 p-2 rounded-lg mb-2">
@@ -177,17 +197,17 @@ const messageOptions = [
         </Text>
       </View>
     );
-  };
+  }, [message.replyTo]);
 
   const isNewSender = !previousMessage || previousMessage.sender.name !== message.sender.name;
 
-  
   if (message.isSeparator) {
     return <MessageSeparator timestamp={message?.timestamp} />;
   }
 
   return (
-    <GestureDetector gesture={gesture}>
+    <>
+      <GestureDetector gesture={gesture}>
       <Animated.View className="flex-row mb-1">
         <Animated.View style={[rReplyStyle]} className="absolute left-0 h-full justify-center">
           <View className="bg-blue-500 p-2 rounded-r-lg">
@@ -195,20 +215,10 @@ const messageOptions = [
           </View>
         </Animated.View>
         <Animated.View style={[rStyle]} className="flex-1">
-          <Pressable
-            onLongPress={() => {
-              longPressTimeout.current = setTimeout(() => setIsReplying(true), 500);
-            }}
-            onPressOut={() => {
-              if (longPressTimeout.current) {
-                clearTimeout(longPressTimeout.current);
-              }
-            }}
-          >
+          <AnimatedPressable onLongPress={() => setIsPopupVisible(true)}>
             <View className="px-4">
               {isNewSender && (
                 <View className="flex-row items-center mt-2 mb-1">
-                  
                   <Image
                     source={message.sender?.image}
                     width={80}
@@ -225,33 +235,16 @@ const messageOptions = [
                 {!isNewSender && <View className="w-6" />}
                 <View className="flex-1">
                   {renderReplyPreview()}
-                  <Text className="text-gray-700 mb-1">{renderTextWithMentionsAndLinks(message.text)}</Text>
+                  <Text className="text-gray-700 mb-1">
+                    <MessageContent text={message.text} />
+                  </Text>
                   {renderFile()}
                   {renderReactions()}
                 </View>
               </View>
               <Text className="text-xs text-gray-500 font-rregular mt-1">{message.timestamp}</Text>
             </View>
-          </Pressable>
-          {showReactions && (
-            <Animated.View 
-              entering={FadeIn.duration(200)} 
-              exiting={FadeOut.duration(200)}
-              className="flex-row justify-around mt-2 bg-gray-100 p-2 rounded-lg mx-4"
-            >
-              {['👍', '❤️', '😂', '😮', '😢', '😡'].map(reaction => (
-                <Pressable
-                  key={reaction}
-                  onPress={() => {
-                    onReact(reaction, message.id);
-                    setShowReactions(false);
-                  }}
-                >
-                  <Text className="text-2xl">{reaction}</Text>
-                </Pressable>
-              ))}
-            </Animated.View>
-          )}
+          </AnimatedPressable>
           {isReplying && (
             <Animated.View 
               entering={FadeIn.duration(200)} 
@@ -266,12 +259,7 @@ const messageOptions = [
               />
               <Pressable
                 className="bg-blue-500 p-2 rounded-lg items-center"
-                onPress={() => {
-                  onReply(replyText, message.id);
-                  setReplyText('');
-                  setIsReplying(false);
-                  translateX.value = withSpring(0, { damping: 15 });
-                }}
+                onPress={handleReply}
               >
                 <Feather name='send' size={24} color="white" />
               </Pressable>
@@ -280,7 +268,14 @@ const messageOptions = [
         </Animated.View>
       </Animated.View>
     </GestureDetector>
+    <PopupComponent
+      isVisible={isPopupVisible}
+      onClose={handleClosePopup}
+      setMessage={handleSetMessage}
+      username={message.sender.name}
+    />
+    </>
   );
 };
 
-export default MessageItem;
+export default React.memo(MessageItem);

@@ -1,10 +1,9 @@
-import { Pressable, TouchableOpacity } from 'react-native';
+import { Pressable } from 'react-native';
 import { router } from 'expo-router';
-// import { Image } from 'expo-image';
+import { Image } from 'expo-image';
 
 import { multiFormatDateString } from '@/lib';
 import { Text, View } from '../themed';
-import Image from '../image';
 
 type AuthorInfoProps = {
   author: {
@@ -24,9 +23,7 @@ const AuthorInfo = ({ author, timestamp,iscomment }:AuthorInfoProps) => {
           {author?.image &&
            <Image 
             source={author?.image} 
-            width={80}
-            height={80}
-            style='mr-2.5 w-[50px] h-[50px] rounded-3xl'
+            style={{marginRight:10, width:50, height:50, borderRadius:20}}
           />
           }
         </Pressable>

@@ -48,6 +48,8 @@ export interface User extends BaseModel {
   posts?: string[] | null;
   userScore?: string;
   postCount?: number;
+  connections:any
+  achievements:any
 }
 
 // Comment interface
@@ -194,6 +196,7 @@ export interface CreateServerData {
   name: string;
   description?: string | null;
   image?: string | null;
+  members:string[]
 }
 
 export interface CreateChannelData {

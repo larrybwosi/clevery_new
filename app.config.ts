@@ -55,7 +55,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   owner: 'larrydean',
   runtimeVersion: {
-    policy: 'sdkVersion',
+    policy: 'appVersion',
   },
 });
 

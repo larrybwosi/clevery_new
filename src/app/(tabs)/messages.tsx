@@ -1,11 +1,10 @@
 import { memo, useCallback, useState, useRef } from 'react';
-import { Feather } from '@expo/vector-icons';
-import { Dimensions, NativeSyntheticEvent, NativeScrollEvent, ScrollView, PanResponder, GestureResponderEvent, PanResponderGestureState, Pressable } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
+import { Dimensions, NativeSyntheticEvent, NativeScrollEvent, PanResponder, GestureResponderEvent, PanResponderGestureState, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
   interpolate,
 } from 'react-native-reanimated';
 
@@ -29,7 +28,7 @@ const ITEM_WIDTH = width / FILTER_ITEMS.length;
 const Messages: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('chats');
   const scrollX = useSharedValue(0);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<Animated.ScrollView>(null);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,

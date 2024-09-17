@@ -1,7 +1,9 @@
-import React from 'react';
-import { Image, TouchableOpacity, ScrollView } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
+import Animated, { 
+  FadeInDown, 
+  FadeInRight 
+} from 'react-native-reanimated';
 
 import { CreateServerData, CreateChannelData, User } from '@/types';
 import { selectImage } from '@/lib';
@@ -15,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import { ChevronDownIcon } from '../ui/icon';
 import { Switch } from '../ui/switch';
 import { useTheme } from '@react-navigation/native';
+import { Image } from 'expo-image';
+import { ScrollView } from 'react-native-gesture-handler';
 
 type Fields = CreateServerData | CreateChannelData;
 
@@ -24,7 +28,7 @@ interface CreateProps {
   fields: Fields;
   setFields: React.Dispatch<React.SetStateAction<Fields>>;
   setSelectedUsers?: React.Dispatch<React.SetStateAction<User[]>>;
-  setPopupVisible?: (visible: boolean) => void;
+  setPopupVisible?: (visible: boolean) => void; 
   type: 'server' | 'channel';
   loading: boolean;
 }
@@ -34,7 +38,7 @@ const AnimatedVStack = Animated.createAnimatedComponent(VStack);
 const InfoCard = ({ title, description, icon }) => (
   <Animated.View 
     entering={FadeInRight.delay(300).duration(500)} 
-    className="bg-gray-800 p-4 rounded-lg mb-4"
+    className="shadow-sm p-4 flex-1 rounded-lg mb-4"
   >
     <HStack className="items-center mb-2">
       <Feather name={icon} size={20} color="#60A5FA" />
@@ -45,14 +49,14 @@ const InfoCard = ({ title, description, icon }) => (
 );
 
 const MembersList = ({ selectedUsers, setPopupVisible }) => (
-  <VStack className="space-y-2 mb-4">
+  <VStack className="space-y-2 mb-4 mr-[50%]">
     <Text className="text-lg font-rmedium text-gray-300">Members:</Text>
     <HStack className="space-x-2  flex-wrap">
       {selectedUsers?.map((user) => (
         <View key={user.id} className="bg-gray-700 rounded-full p-1 mb-2">
           <Image
             source={{ uri: user.image }}
-            className="w-8 h-8 rounded-full"
+            style={{width:32, height:32, borderRadius:16}}
           />
         </View>
       ))}
@@ -60,13 +64,11 @@ const MembersList = ({ selectedUsers, setPopupVisible }) => (
         className="w-10 h-10 rounded-full bg-blue-600 justify-center items-center mb-2"
         onPress={() => setPopupVisible?.(true)}
       >
-        <Feather name='user-plus' size={20} color="white" />
+        <Feather name='user-plus' size={20} color="gray" />
       </TouchableOpacity>
     </HStack>
   </VStack>
 );
-
-
 
 const ChannelTypeSelect = ({ fields, setFields }) => (
   <Select  onValueChange={(value) => setFields({ ...fields, type: value })} className='w-full my-8 bg-transparent'>
@@ -112,7 +114,7 @@ const Create: React.FC<CreateProps> = ({
 
   return (
     <ScrollView className="flex-1 bg-gray-900">
-      <View className="p-6">
+      <View className="p-2">
         <AnimatedVStack className='space-y-6 items-center' entering={FadeInDown.duration(500)}>
           <Text className="text-3xl font-rbold text-white mb-2">Create Your {title}</Text>
           <Text className="text-base text-gray-400 text-center font-pmedium mb-6">
@@ -137,6 +139,7 @@ const Create: React.FC<CreateProps> = ({
 
           {isServer && (
             <UploadImage
+            //@ts-ignore
               image={fields.image!}
               chooseImage={chooseImage}
               removeImage={() => setFields({ ...fields, image: '' })}
@@ -148,7 +151,7 @@ const Create: React.FC<CreateProps> = ({
             value={fields.name}
             placeholder={isServer ? "e.g., Awesome Gaming Squad" : "e.g., general-chat"}
             onChangeText={(text) => setFields({ ...fields, name: text })}
-            otherStyles=" border-gray-700"
+            otherStyles=" border-gray-700 mb-6 ml-3"
           />
 
           <FormField
@@ -156,7 +159,7 @@ const Create: React.FC<CreateProps> = ({
             value={fields.description!}
             placeholder={isServer ? "Describe what your server is about" : "What's this channel for?"}
             onChangeText={(text) => setFields({ ...fields, description: text })}
-            otherStyles=" border-gray-700"
+            otherStyles=" border-gray-700 mb-6 ml-3"
           />
 
           {isServer && <MembersList selectedUsers={selectedUsers} setPopupVisible={setPopupVisible} />}
@@ -165,6 +168,7 @@ const Create: React.FC<CreateProps> = ({
           {!isServer && 
           <>
           <Text className="text-base font-pregular text-gray-300 mb-2 mr-auto ml-3">Private</Text>
+            {/* @ts-ignore */}
             <Switch size="md" isDisabled={false} value={fields?.isPrivate}
              onValueChange={(value) => setFields({ ...fields, isPrivate: value })}
              className='bg-transparent mr-[70%] mb-6'

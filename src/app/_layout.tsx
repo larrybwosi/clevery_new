@@ -94,6 +94,7 @@ function RootLayoutNav() {
         <Stack.Screen name="editprofile" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="welcome" options={{ presentation: 'modal', headerShown: false }} />
         <Stack.Screen name="invitation" options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="channel" options={{ presentation: 'card', headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );

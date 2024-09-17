@@ -1,4 +1,3 @@
-import { request,PERMISSIONS, requestMultiple } from "react-native-permissions";
 import { Platform } from "react-native";
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -182,24 +181,6 @@ export function parseIncomingMessage(messageObj:any) {
   // Return the modified object with the "data" property removed and its value parsed
   return { ...restOfMessageObj, data: dataObj };
 }
-export const requestAndUpdatePermissions = async () => {
-  if (Platform.OS === 'ios') {
-    // Request camera and mic permissions on iOS
-    const results = await requestMultiple([
-      PERMISSIONS.IOS.CAMERA,
-      PERMISSIONS.IOS.MICROPHONE,
-    ]);
-  } else if (Platform.OS === 'android') {
-    // Request camera, mic, bluetooth and notification permissions on Android
-    await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
-    const results = await requestMultiple([
-      PERMISSIONS.ANDROID.CAMERA,
-      PERMISSIONS.ANDROID.RECORD_AUDIO,
-      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-      PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
-    ]);
-  }
-};
 
 /**
  * Given an image URL, returns an optimized image URL

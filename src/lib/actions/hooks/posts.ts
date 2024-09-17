@@ -7,7 +7,7 @@ import {
 import { postsApi } from '@/lib/actions/posts';
 import { CreatePostData, Post, PostQuery } from '@/types';
 
-const queryKeys = {
+export const queryKeys = {
   posts: ['posts'],
   topPosts: ['topPosts'],
   post: (id: string) => ['post', id],

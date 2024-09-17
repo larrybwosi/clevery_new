@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ScrollView, TouchableOpacity, Switch, Image } from 'react-native';
+import { ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { Text, View } from '@/components/themed';
+import { Image } from 'expo-image';
 
 // Mock data for notifications
 const mockNotifications = [
@@ -73,7 +74,7 @@ const NotificationItem = ({ notification }) => {
       className="rounded-lg shadow-sm mb-4 p-4"
     >
       <View className="flex-row items-center">
-        <Image 
+        <Image
           source={{ uri: notification.avatar }} 
           className="w-12 h-12 rounded-full mr-4" 
         />

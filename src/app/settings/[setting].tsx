@@ -10,6 +10,7 @@ import PrivacyPage from '@/components/profile/privacy';
 import TermsOfServicePage from '@/components/profile/terms';
 import SecurityPage from '@/components/profile/security';
 import HelpSupportPage from '@/components/profile/about';
+import ActivityPage from '@/components/profile/activity';
 
 const Settings = () => {
   const { setting } = useLocalSearchParams();
@@ -33,6 +34,8 @@ const renderContent = (setting: string | any) => {
   switch (setting) {
     case 'account':
       return <Account />;
+    case 'activity':
+      return <ActivityPage />;
     case 'appearance':
       return <Appearance />;
     case 'notifications':
@@ -52,7 +55,7 @@ const renderContent = (setting: string | any) => {
     case 'help':
       return <HelpSupportPage />;
     case 'logout':
-      return <LogoutComponent onCancel={()=>{}} onLogout={()=>{}} username={profile.username || profile.name} />;
+      return <LogoutComponent />;
     default:
       return <MenuItems />;
   }

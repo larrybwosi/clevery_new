@@ -29,7 +29,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ image, chooseImage, removeIma
       ) : (
         <Pressable
           onPress={chooseImage}
-          className="w-32 h-32 rounded-[58px] border-2 border-white border-dashed flex items-center justify-center"
+          className="w-32 h-32 rounded-[58px] border-2 border-gray-500 border-dashed flex items-center justify-center"
         >
           <Feather name="camera" size={34} color="gray" />
           <Feather

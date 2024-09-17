@@ -18,7 +18,9 @@ const queryKeys = {
 export const useServers = () => {
   return useQuery({
     queryKey: queryKeys.servers, 
-    queryFn: () => serverApi.getAllServers()
+    queryFn: () => serverApi.getAllServers(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -106,7 +108,10 @@ export const useSendChannelMessage = () => {
 export const useChannelMessages = (channelId: string) => {
   return useQuery({
     queryKey: queryKeys.messages(channelId),
-    queryFn:()=>serverApi.getChannelMessages(channelId)
+    queryFn:()=>serverApi.getChannelMessages(channelId),
+    enabled: Boolean(channelId),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -158,6 +163,15 @@ export const useDeleteChannel = (serverId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (channelId: string) => serverApi.deleteChannel(serverId, channelId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: queryKeys.channels(serverId)});
+    }
+  });
+};
+export const useDeleteMembers = (serverId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (members: string[]) => serverApi.deleteMembers(serverId, members),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: queryKeys.channels(serverId)});
     }

@@ -1,11 +1,10 @@
-import React, { memo, useState, useCallback } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { ActivityIndicator, Alert, Linking, Pressable, TextInput } from 'react-native';
 import  Feather  from '@expo/vector-icons/Feather';
 import  FontAwesome  from '@expo/vector-icons/FontAwesome';
 import { View } from '@/components/themed';
 import { useDocumentUploader, useImageUploader } from '@/lib/uploadthing';
 import { Ionicons } from '@expo/vector-icons';
-import { Input } from '@/components/ui/input';
 
 interface MessageInputProps {
   caption: string;
@@ -14,8 +13,8 @@ interface MessageInputProps {
   onSend: () => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = memo(({ caption, onMessageChange, onSend, sending }) => {
-  const [file, setFile] = useState<string | null>(null);
+const MessageInput: React.FC<MessageInputProps> = ({ caption, onMessageChange, onSend, sending }) => {
+  const [file, setFile] = React.useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (file) {
@@ -83,6 +82,6 @@ const MessageInput: React.FC<MessageInputProps> = memo(({ caption, onMessageChan
       </View>
     </>
   );
-});
+};
 
-export default MessageInput;
+export default React.memo(MessageInput);

@@ -1,24 +1,17 @@
 import { FlatList, Pressable } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 
 import { Post as PostType, Server, User } from '@/types';
-import { View, Text } from '../themed';
+import { View, Text } from '@/components/themed';
 import { HStack } from '@/components/ui/hstack'
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { Image } from 'expo-image';
 
 interface Link {
   id: number;
   title: string;
   url: string;
   icon: string;
-}
-
-interface File {
-  id: number;
-  name: string;
-  size: string;
-  type: 'pdf' | 'doc' | 'xls';
 }
 
 interface LinkItemProps {

@@ -74,7 +74,8 @@ export {
   useServer,
   useServerChannels,
   useServerMembers,
-  useTopServers
+  useTopServers,
+  useDeleteMembers
 } from "./actions/hooks/servers";
 
 export { useChannelData } from "./hooks/server"

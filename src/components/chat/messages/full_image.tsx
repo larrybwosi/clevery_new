@@ -80,7 +80,7 @@ const FullScreenImage = ({ uri, onClose, isOpen }) => {
           <Image 
             source={{ uri }} 
             className="absolute top-0 left-0 right-0 bottom-0"
-            resizeMode="cover"
+            contentFit="cover"
           />
         </Animated.View>
         <TouchableOpacity 

@@ -13,8 +13,6 @@ import {
 import { Text, View } from '../themed';
 import { Image } from 'expo-image';
 
-const blurhash =
-  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 const OverlappingImages = memo(({ images, numberofcomments }:any) => (
   <View className="flex-row items-center gap-4xs py-[2.5px]">
     <View className="flex-row overflow-hidden w-12.5">
@@ -36,7 +34,8 @@ const AuthorInfo = memo(({ author, timestamp, iscomment }: any) => (
       {author?.image && (
         <Image
           source={author?.image}
-          style={{marginRight:10, borderRadius: 25, borderWidth: 1, borderColor: 'gray', width: 50, height: 50, zIndex: 1, resizeMode: 'cover'}}
+          style={{marginRight:10, borderRadius: 25, borderWidth: 1, borderColor: 'gray', width: 50, height: 50, zIndex: 1 }}
+          contentFit='cover'
         />
         // 'mr-2.5 w-[50px] h-[50px] rounded-3xl'
       )}

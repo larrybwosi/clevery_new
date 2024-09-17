@@ -12,12 +12,12 @@ import Animated, {
   withTiming,
   useAnimatedScrollHandler,
   interpolate,
-  Extrapolate,
+  Extrapolation,
 } from 'react-native-reanimated';
-import { Text,View } from '@/components/themed';
 import { Modal, ModalContent, ModalBody, ModalFooter } from '@/components/ui/modal';
-import { endpoint } from '@/lib';
+import { Text,View } from '@/components/themed';
 import { Button } from '@/components/ui/button';
+import { endpoint } from '@/lib';
 
 const FeedbackPage = () => {
   const theme = useTheme();
@@ -41,9 +41,9 @@ const FeedbackPage = () => {
   });
 
   const headerStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollY.value, [0, 100], [1, 0], Extrapolate.CLAMP),
+    opacity: interpolate(scrollY.value, [0, 100], [1, 0], Extrapolation.CLAMP),
     transform: [
-      { translateY: interpolate(scrollY.value, [0, 100], [0, -50], Extrapolate.CLAMP) },
+      { translateY: interpolate(scrollY.value, [0, 100], [0, -50], Extrapolation.CLAMP) },
     ],
   }));
 

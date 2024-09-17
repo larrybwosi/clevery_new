@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import { Text, Button, View } from '@/components';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  FadeIn, 
+  FadeOut 
+} from 'react-native-reanimated';
 import {
   Modal,
   ModalContent,

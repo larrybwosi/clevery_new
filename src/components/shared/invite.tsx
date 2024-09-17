@@ -7,7 +7,6 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Image } from 'expo-image';
 
 import { Text, View } from '../themed';
-import { showToastMessage } from '@/lib';
 import { User } from '@/types';
 import { VStack } from '../ui/vstack';
 import { HStack } from '../ui/hstack';
