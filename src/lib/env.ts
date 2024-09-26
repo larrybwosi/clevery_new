@@ -6,8 +6,8 @@ export const env =({
 })
  
 
-export const endpoint ='https://clevery-api.vercel.app/api/'
-// export const endpoint ='http://192.168.42.236:3000/api/'
+// export const endpoint ='https://clevery-api.vercel.app/api/'
+export const endpoint ='http://192.168.42.236:3000/api/'
 
 
 export const StreamConfig ={

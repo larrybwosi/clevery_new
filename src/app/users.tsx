@@ -7,10 +7,22 @@ import { User } from '@/types';
 
 const AddFriends: React.FC = () => {
   const  [filteredUsers, setFilteredUsers] = useState([])
-  const { profile, setProfile} = useProfileStore();
-  const { data: allUsers, isError: errorUsers } = useUsers();
-  const { mutateAsync: addFriend } = useAddFriend();
-  const { id, friends } =profile
+  
+  const { 
+    profile, 
+    setProfile
+  } = useProfileStore();
+  const { id, friends } = profile
+
+  const { 
+    data: allUsers, 
+    isError: errorUsers 
+  } = useUsers();
+
+  const { 
+    mutateAsync: addFriend,
+    isPending:addingUser
+  } = useAddFriend();
   
   const handleAddFriend = async (user:User) => {
    const res= await addFriend( user.id);
@@ -38,6 +50,7 @@ const AddFriends: React.FC = () => {
     <InviteFriends
       selectedUsers={[]}
       buttonText='Add Friend'
+      loading={addingUser}
       onClose={()=>router.back()}
       onInvitePress={handleAddFriend}
       removeUser={()=>{}}

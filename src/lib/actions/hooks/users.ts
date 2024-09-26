@@ -68,6 +68,7 @@ export const useAddFriend = () => {
     mutationFn: (friendId: string) => userApi.addFriend(friendId),
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: queryKeys.friends});
+      queryClient.invalidateQueries({queryKey: ['conversations']});
     }
   });
 };

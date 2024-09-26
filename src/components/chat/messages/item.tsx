@@ -17,6 +17,7 @@ import Image from '@/components/image';
 import { Text, View } from '@/components/themed'; 
 import { formatDateString } from '@/lib';
 import PopupComponent from './popup';
+import { HStack } from '@/components/ui/hstack';
 
 interface Message {
   id: string;
@@ -44,13 +45,17 @@ interface Message {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const MessageSeparator: React.FC<{ timestamp: string }> = React.memo(({ timestamp }) => (
-  <RNView className='flex-row items-center my-3'>
-    <RNView className='flex-1 h-[0.35px] bg-gray-400' />
-    <Text className="font-rregular mx-2 text-[8px]">{formatDateString(timestamp)}</Text>
-    <RNView className='flex-1 h-[0.35px] bg-gray-400' />
-  </RNView>
-));
+const MessageSeparator: React.FC<{ message: Message }> = React.memo(({ message }) =>{ 
+  if (!message.isSeparator) return null;
+
+  return(
+    <RNView className='flex-row items-center my-3'>
+      <RNView className='flex-1 h-[0.35px] bg-gray-400' />
+      <Text className="font-rregular mx-2 text-[8px]">{message.text}</Text>
+      <RNView className='flex-1 h-[0.35px] bg-gray-400' />
+    </RNView>
+  )
+});
 
 const ReactionButton: React.FC<{ reaction: string; count: number; onPress: () => void }> = React.memo(
   ({ reaction, count, onPress }) => (
@@ -65,11 +70,11 @@ const ReactionButton: React.FC<{ reaction: string; count: number; onPress: () =>
 );
 
 const MessageContent: React.FC<{ text: string }> = React.memo(({ text }) => {
-  const parts = useMemo(() => text.split(/(@\w+)|(https?:\/\/[^\s]+)/g), [text]);
+  const parts = useMemo(() => text?.split(/(@\w+)|(https?:\/\/[^\s]+)/g), [text]);
   
   return (
     <>
-      {parts.map((part, index) => {
+      {parts?.map((part, index) => {
         if (part?.startsWith('@')) {
           return <RNText key={index} className="text-blue-500 font-rmedium">{part}</RNText>;
         } else if (part?.startsWith('http')) {
@@ -199,12 +204,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onReply, onReact, pr
     );
   }, [message.replyTo]);
 
-  const isNewSender = !previousMessage || previousMessage.sender.name !== message.sender.name;
+  const isNewSender = !previousMessage || previousMessage?.sender?.name !== message?.sender?.name;
 
+  
   if (message.isSeparator) {
-    return <MessageSeparator timestamp={message?.timestamp} />;
+    return <MessageSeparator message={message} />;
   }
-
+  
   return (
     <>
       <GestureDetector gesture={gesture}>
@@ -225,8 +231,11 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onReply, onReact, pr
                     height={80}
                     style="rounded-2xl border border-gray-300 h-10 w-10 mr-3"
                   />
-                  <Text className="ml-2 font-rbold text-gray-800">{message.sender.name}</Text>
-                  {message.sender.isAdmin && (
+                  <HStack space='2xl' className='justify-between'>
+                    <Text className="ml-2 font-rbold text-gray-800">{message?.sender?.name}</Text>
+                    <Text className='text-[8px] font-rregular'>{formatDateString(message.createdAt)}</Text>
+                  </HStack>
+                  {message?.sender?.isAdmin && (
                     <Feather name="shield" size={14} color="#4B5563" className="ml-1" />
                   )}
                 </View>
@@ -242,7 +251,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onReply, onReact, pr
                   {renderReactions()}
                 </View>
               </View>
-              <Text className="text-xs text-gray-500 font-rregular mt-1">{message.timestamp}</Text>
+              <Text className="text-xs text-gray-500 font-rregular mt-1">{message?.timestamp}</Text>
             </View>
           </AnimatedPressable>
           {isReplying && (
@@ -272,7 +281,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onReply, onReact, pr
       isVisible={isPopupVisible}
       onClose={handleClosePopup}
       setMessage={handleSetMessage}
-      username={message.sender.name}
+      username={message?.sender?.name}
     />
     </>
   );

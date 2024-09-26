@@ -292,7 +292,7 @@ const ActivityPage = () => {
               <Animated.View
                 key={membership.id}
                 entering={FadeIn.duration(500).delay(index * 100)}
-                className="bg-white rounded-xl p-4 shadow-md mb-3"
+                className="rounded-xl p-4 shadow-md mb-3"
               >
                 <Text className="text-base font-rbold">{`Server: ${membership.serverName}`}</Text>
                 <Text className="text-sm text-gray-500">{`Role: ${membership.role}`}</Text>

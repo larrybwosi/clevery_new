@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, memo } from 'react';
-import { FlatList, Dimensions, TouchableOpacity } from 'react-native';
+import { FlatList, Dimensions, TouchableOpacity,} from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import Animated, {
@@ -17,6 +17,8 @@ import Animated, {
 import { Loader, MenuItems, Text, UserInfo, View } from '@/components';
 import { formatDateString, useProfileStore } from '@/lib';
 import Image from '@/components/image';
+import {  Image as RNImage  } from 'expo-image';
+import item from '@/components/chat/messages/item';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -51,8 +53,8 @@ const ProfilePage = () => {
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const height = interpolate(
       scrollY.value,
-      [0, 100],
-      [250, 100],
+      [0, 175],
+      [250, 175],
       Extrapolation.CLAMP
     );
 
@@ -88,7 +90,7 @@ const ProfilePage = () => {
     if (tabIndex === 0) {
       return (
         <FlatList
-          data={[{ type: 'menu' }, { type: 'friends' }, { type: 'hobbies' }]}
+          data={[{ type: 'hobbies' }, { type: 'menu' }, { type: 'friends' }]}
           renderItem={renderItem}
           keyExtractor={item => item.type}
         />
@@ -101,15 +103,17 @@ const ProfilePage = () => {
   const toggleVisitors = useCallback(() => {
     setShowVisitors((prev) => !prev);
   }, []);
+  
 
   return (
     <View className="flex-1 bg-gray-100">
       <Animated.View style={[headerAnimatedStyle, { overflow: 'hidden' }]}>
-        <Image 
-          source={ profile.bannerImage ? profile.bannerImage : 'https://via.placeholder.com/350x250' } 
-          height={250}
-          width={350}
+        <Image
+          source={profile.bannerImage ? profile.bannerImage : 'https://via.placeholder.com/350x250'} 
+          // height={250}
+          // width={350}
           style="w-full justify-end items-center h-full" 
+          // style={{alignItems:'center',width:350, }} 
         />
       </Animated.View>
       
@@ -133,18 +137,18 @@ const ProfilePage = () => {
         scrollEventThrottle={16}
         className="flex-1"
       >
-        <Animated.View style={userInfoAnimatedStyle} className="bg-white rounded-t-3xl -mt-6 pt-4 px-4">
+        <Animated.View style={userInfoAnimatedStyle} className="rounded-t-3xl -mt-6 pt-4 px-4">
           <View className="flex-row justify-between items-start">
             <UserInfo profile={profile} />
             <View className="flex-row justify-between items-center gap-3 mr-4 mt-3">
               {Object.entries(stats).map(([label, number]) => (
                 <TouchableOpacity 
                   key={label} 
-                  className="flex-col items-center bg-gray-100 p-2 rounded-lg"
+                  className="flex-col items-center bg-gray-500 p-2 rounded-lg"
                   onPress={label === 'Visitors' ? toggleVisitors : undefined}
                 >
                   <Text className="font-rbold text-lg">{number}</Text>
-                  <Text className="font-rmedium text-xs text-gray-600">{label}</Text>
+                  <Text className="font-rmedium text-xs text-gray-800">{label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -173,7 +177,7 @@ const ProfilePage = () => {
               }}
               className={`px-6 py-2 rounded-full ${activeTab === index ? 'bg-blue-500' : 'bg-gray-200'}`}
             >
-              <Text className={`font-rmedium ${activeTab === index ? 'text-white' : 'text-gray-700'}`}>{tab}</Text>
+              <Animated.Text className={`font-rmedium ${activeTab === index ? 'text-gray-300' : 'text-gray-700'}`}>{tab}</Animated.Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -197,7 +201,7 @@ const ProfilePage = () => {
 
 const FriendsComponent = React.memo(({friends}:any) => {
   if(!friends || friends.length === 0) return <Text className="p-4 text-center">You have no friends yet</Text>;
-console.log(friends)
+
   return (
     <View className="mt-2 p-4 rounded-lg">
       <Text className="font-rmedium text-lg mb-4">Your Friends</Text>
@@ -206,9 +210,9 @@ console.log(friends)
         keyExtractor={(item) => item?.id}
         renderItem={({ item }) => (
           <View className="flex-row items-center mb-4">
-            <Image 
-              source={ item.image ? item.image : "https://via.placeholder.com/50" } 
-              style="w-12 h-12 rounded-full mr-4" 
+            <RNImage 
+              source={{uri:item.image ? item.image : "https://via.placeholder.com/50"}}
+              style={{width:48,height:48, borderRadius:24, marginRight:1, borderColor:'gray', borderWidth:1, marginLeft:2}}
               height={48}
               width={48}
             />
@@ -230,9 +234,14 @@ const HobbiesComponent = React.memo(({ hobbies }:any) => {
       <Text className="font-rmedium text-lg mb-4">Hobbies</Text>
       <View className="flex-row flex-wrap">
         {hobbies.map((hobby, index) => (
-          <View key={index} className="bg-gray-200 rounded-full px-3 py-1 m-1">
-            <Text className="text-sm">{hobby}</Text>
-          </View>
+          <Animated.View
+            key={hobby}
+            className={`m-1 p-2 bg-gray-500 rounded-full z-10 shadow-sm `}
+          >
+            <Text className={`font-rmedium`}>
+              {hobby}
+            </Text>
+          </Animated.View>
         ))}
       </View>
     </View>
@@ -260,11 +269,11 @@ const VisitorsModal = memo(({ visitors, isVisible, onClose }:any) => {
 
   return (
     <View className="absolute inset-0 bg-black bg-opacity-50 justify-end">
-      <Animated.View style={modalStyle} className="bg-white rounded-t-3xl p-6">
+      <Animated.View style={modalStyle} className="rounded-t-3xl p-6">
         <View className="flex-row justify-between items-center mb-4">
           <Text className="font-rbold text-xl">Recent Visitors</Text>
           <TouchableOpacity onPress={onClose}>
-            <Feather name="x" size={24} />
+            <Feather name="x" size={24} color='gray' />
           </TouchableOpacity>
         </View>
         <FlatList

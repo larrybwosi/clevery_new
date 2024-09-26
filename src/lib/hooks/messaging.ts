@@ -145,7 +145,7 @@ const useUnifiedMessaging = () => {
     setNewMessage(prev => ({ ...prev, caption: text }));
   }, []);
 
-  const sortedMessages = useMemo(() => sortMessages({ messages }), [messages]);
+  const sortedMessages = useMemo(() => sortMessages( messages ), [messages]);
 
   return {
     messages: sortedMessages,

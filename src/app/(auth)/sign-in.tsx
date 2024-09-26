@@ -13,12 +13,10 @@ import { Button, FormField, Loader, Toast, ToastDescription, ToastTitle, useToas
 import { useAuth } from "@/lib/contexts/auth";
 import { GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import * as WebBrowser from 'expo-web-browser';
-import { endpoint, useProfileStore } from "@/lib";
+import { useProfileStore } from "@/lib";
 import { userApi } from "@/lib/actions/users";
 
 WebBrowser.maybeCompleteAuthSession();
-
-type AuthProviders = "google" | "facebook" | "github";
 
 const SignIn = () => {
   const { loading, signIn, user } = useAuth();
@@ -67,12 +65,12 @@ const SignIn = () => {
     formOpacity.value = withDelay(500, withSpring(1));
   }, []);
   
-  // useEffect(() => {
-  //   if(profile?.id.trim()) {
-  //     handleToast()
-  //     router.replace('/')
-  //   }
-  // }, [profile]);
+  useEffect(() => {
+    if(profile?.id?.trim()) {
+      handleToast()
+      router.replace('/')
+    }
+  }, [profile]);
 
   const logoAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -91,6 +89,7 @@ const SignIn = () => {
     
     setTimeout(async() => {
       const user = await userApi.getCurrentUser();
+      console.log(user)
       setProfile(user);
       router.replace('/');
     }, 3000);
@@ -100,7 +99,7 @@ const SignIn = () => {
     
     const { email, password } = form
     
-    if (!email.trim()|| !password.trim()) {
+    if (!email?.trim()|| !password?.trim()) {
   
       showNewToast({
         title:'error !',
@@ -120,6 +119,8 @@ const SignIn = () => {
         email,
         password
       }) 
+
+      // setForm({email:'',password:''})
       
     } catch (error) {
       console.error("Sign-in",error)

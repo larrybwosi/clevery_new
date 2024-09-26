@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { SafeAreaView, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import Animated from 'react-native-reanimated';
@@ -26,9 +26,9 @@ function Channel() {
     error
   } = useUnifiedMessaging();
 
-  const memoizedMessages = useMemo(() => messages, [messages]);
 
   if (isLoading) return <Loader loadingText='Loading your conversation' />;
+  if(error) return <ErrorMessage message='An error Occured while loading your conversation'/>
   
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -54,7 +54,7 @@ function Channel() {
         <MessagesContainer
           isChannel={isChannel}
           currentChat={currentChat}
-          messages={memoizedMessages}
+          messages={messages}
           setNewMessage={(text)=>handleMessageChange(text)}
         />
 

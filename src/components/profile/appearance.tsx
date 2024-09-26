@@ -16,11 +16,10 @@ const ThemeDescription = {
 const Appearance = () => {
   const { mode, setMode } = useThemeStore();
 
-  const Custom = Animated.createAnimatedComponent(View);
   const CustomText = Animated.createAnimatedComponent(Text);
-  const toggleTheme = useCallback((newMode: 'light' | 'dark' | 'default') => {
+  const toggleTheme = (newMode: 'light' | 'dark' | 'default') => {
     setMode(newMode);
-  }, [setMode]);
+  };
 
   const MenuItem = memo(({ iconName, label, description }: { iconName: any; label: string; description: string }) => {
     const animatedStyle = useAnimatedStyle(() => ({

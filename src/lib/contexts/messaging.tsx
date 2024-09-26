@@ -11,6 +11,7 @@ import { showDirectMessageNotification } from '../notifications';
 import { useProfileStore } from '@/lib/zustand/store';
 import { Conversation, Message } from '@/types';
 import { pusher } from '@/lib/pusher/config';
+import { parseIncomingMessage } from '../utils';
 
 /**
  * Represents the value provided by the MessagingContext
@@ -68,7 +69,9 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
         channelName: `private-${conversation.id}`,
         onEvent: (event: PusherEvent) => {
           if (event.eventName === 'new-message') {
-            handleNewMessage(event.data as { conversationId: string; message: Message; senderName: string; senderImage: string });
+            const cleanedObject = parseIncomingMessage(event);
+            console.log(cleanedObject)
+            handleNewMessage(cleanedObject as { conversationId: string; message: Message; senderName: string; senderImage: string });
           }
         }
       }).catch(error => console.error(`Error subscribing to channel for conversation ${conversation.id}:`, error));

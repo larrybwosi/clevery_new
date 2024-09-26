@@ -75,14 +75,14 @@ const Chat = () => {
     );
   }
 
-  const renderItem = useCallback(({ item, index }) => (
+  const renderItem = ({ item, index }) => (
     <Animated.View entering={FadeInDown.delay(index * 100).duration(500)}>
       <UserCard
         conversation={item}
         onSelectUser={navigate}
       />
     </Animated.View>
-  ), [navigate]);
+  ) 
 
   if(isLoading) return <Loader loadingText='Loading your Dm'/>
   return (

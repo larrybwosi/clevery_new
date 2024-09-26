@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { Pressable, View } from 'react-native';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ import { queryKeys } from '@/lib/actions/hooks/posts';
 import { router } from 'expo-router';
 
 
-export default function Home() {
+function Home() {
   const [refreshing, setRefreshing] = useState(false);
 
   const {
@@ -36,6 +36,7 @@ export default function Home() {
     refetchOnWindowFocus: false
   });
 
+  
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     refetch().then(() => setRefreshing(false));
@@ -47,7 +48,7 @@ export default function Home() {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const keyExtractor = useCallback((item) => item?.id?.toString(), []);
+  const keyExtractor = (item) => item?.id;
 
   const renderItem = useCallback(({ item }) => (
     <Post key={item?.id} {...item} />
@@ -63,7 +64,7 @@ export default function Home() {
 
   // Flatten posts data from all pages
   const flattenedData = data?.pages.flatMap(page => page?.posts) || [];
-
+  
   return (
     <View className='pt-7.5 flex-1'>
       <Pressable onPress={handlePress}>
@@ -88,3 +89,4 @@ export default function Home() {
     </View>
   );
 }
+export default memo(Home)

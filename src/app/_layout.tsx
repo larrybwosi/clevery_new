@@ -8,8 +8,8 @@ import { useFonts } from 'expo-font';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Providers, pusherConnector, useThemeStore } from '../lib';
 
-import "../../global.css"
-// import "./styles.css"
+// import "../../global.css"
+import "./styles.css"
  
 SplashScreen.preventAutoHideAsync();
 

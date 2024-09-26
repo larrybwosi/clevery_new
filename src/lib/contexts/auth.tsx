@@ -1,20 +1,17 @@
-import { createContext, Suspense, useCallback, useContext, useEffect } from 'react';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import React, { createContext, useContext, useCallback, useEffect } from 'react';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 import { useAuthStore, useProfileStore } from '@/lib/zustand/store';
-import { showToastAlert } from '@/components/alert';
 import { userApi } from '@/lib/actions/users';
 import { endpoint } from '@/lib/env';
 import { Loader } from '@/components';
 
-// Configuration variables
 const API_BASE_URL = endpoint;
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY = 1000; // 1 second
 
-/**
- * Represents the structure of a user object.
- */
 interface User {
   id: string;
   email: string;
@@ -22,16 +19,6 @@ interface User {
   image?: string;
 }
 
-/**
- * Props for the AuthProvider component
- */
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-/**
- * Authentication context
- */
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -42,72 +29,56 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-/**
- * AuthProvider component that wraps the application and provides authentication context
- */
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, setLoading } = useAuthStore();
   const { profile, setProfile } = useProfileStore();
 
-  useEffect(() => {
-    const checkCurrentUser = async () => {
-      if (profile?.id) return;
-      try {
-        setLoading(true);
-        const currentAccount = await userApi.getCurrentUser();
-        if (!currentAccount) {
-          router.navigate('sign-up');
-        } else {
-          setProfile(currentAccount);
-        }
-      } catch (error) {
-        console.error('Error checking current user:', error);
-        router.replace('sign-in');
-      } finally {
-        setLoading(false);
+  const checkCurrentUser = useCallback(async () => {
+    if (profile?.id) return;
+    try {
+      setLoading(true);
+      const currentAccount = await userApi.getCurrentUser();
+      if (!currentAccount) {
+        router.push('sign-up');
+      } else {
+        setProfile(currentAccount);
       }
-    };
-
-    checkCurrentUser();
-  }, []);
-
-/**
- * Handles Google Sign-In process
- * @returns Object indicating success or failure of the sign-in process
- */
-const handleGoogleSignIn = async (): Promise<{ success: boolean; serverAuthCode?: string; error?: string }> => {
-  try {
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    const res = await GoogleSignin.signIn();
-    if (!res) {
-      throw new Error('Google Sign-In failed');
+    } catch (error) {
+      console.error('Error checking current user:', error);
+      router.replace('sign-in');
+    } finally {
+      setLoading(false);
     }
-    setLoading(true);
-    const { data:{serverAuthCode} } = res;
-    const tokenResponse = await axios.get(`${API_BASE_URL}/auth/callback/google?code=${serverAuthCode}&grant_type=code_verifier`);
-    console.log(await tokenResponse.data);
-    const user = await userApi.getCurrentUser();
-    console.log('Google auth res user: ', user);
-    setLoading(false);
-    // setProfile(user);
-    return { success: true, serverAuthCode };
-  } catch (error) {
-    setLoading(false);
-    console.error('Google Sign-In Error:', error.message);
-    return { success: false, error: error.message };
-  }
-};
+  }, [profile?.id, setLoading, setProfile]);
+
+  useEffect(() => {
+    checkCurrentUser();
+  }, [checkCurrentUser]);
+
+  const handleGoogleSignIn = useCallback(async () => {
+    try {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const res = await GoogleSignin.signIn();
+      if (!res) throw new Error('Google Sign-In failed');
+      
+      setLoading(true);
+      const { serverAuthCode } = res.data;
+      const tokenResponse = await axios.post(`${API_BASE_URL}/auth/callback/google?code=${serverAuthCode}`);
+      console.log(await tokenResponse.data);
+      const user = await userApi.getCurrentUser();
+      console.log('Google auth res user: ', user);
+      return { success: true, serverAuthCode };
+    } catch (error) {
+      console.error('Google Sign-In Error:', error.message);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading]);
 
   const handleAuthSuccess = useCallback((userData: User) => {
-    showToastAlert({
-      id: 'auth-success',
-      title: 'Authentication successful',
-      description: 'You are now logged in.',
-    });
-
-    // @ts-ignore
+    //@ts-ignore
     setProfile(userData);
-    // router.replace('/');
   }, [setProfile]);
 
   const handleAuthError = useCallback((error: unknown): string => {
@@ -120,6 +91,21 @@ const handleGoogleSignIn = async (): Promise<{ success: boolean; serverAuthCode?
     return errorMessage;
   }, []);
 
+  const signInWithCredentials = useCallback(async (credentials: { email: string; password: string }, retryCount = 0) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/sign-in`, credentials);
+      handleAuthSuccess(response.data);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.status === 429 || 500 && retryCount < MAX_RETRY_ATTEMPTS) {
+        console.log(`Retrying sign-in attempt ${retryCount + 1} of ${MAX_RETRY_ATTEMPTS}`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        await signInWithCredentials(credentials, retryCount + 1);
+      } else {
+        throw error;
+      }
+    }
+  }, [handleAuthSuccess]);
+
   const signIn: AuthContextType['signIn'] = useCallback(async (provider, credentials) => {
     try {
       setLoading(true);
@@ -127,8 +113,7 @@ const handleGoogleSignIn = async (): Promise<{ success: boolean; serverAuthCode?
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password are required for credentials sign-in');
         }
-        const response = await axios.post(`${API_BASE_URL}/sign-in`, credentials);
-        handleAuthSuccess(response.data);
+        await signInWithCredentials(credentials);
       } else if (provider === 'google') {
         const { success, error } = await handleGoogleSignIn();
         if (!success) {
@@ -140,7 +125,7 @@ const handleGoogleSignIn = async (): Promise<{ success: boolean; serverAuthCode?
     } finally {
       setLoading(false);
     }
-  }, [setLoading, handleAuthSuccess, handleAuthError]);
+  }, [setLoading, handleGoogleSignIn, signInWithCredentials, handleAuthError]);
 
   const signUp: AuthContextType['signUp'] = useCallback(async (credentials) => {
     try {
@@ -157,7 +142,6 @@ const handleGoogleSignIn = async (): Promise<{ success: boolean; serverAuthCode?
   const signOut: AuthContextType['signOut'] = useCallback(async () => {
     try {
       setLoading(true);
-      // Add any necessary sign-out logic here (e.g., clearing tokens)
       setProfile(null);
       router.navigate('sign-in');
     } catch (error) {
@@ -165,30 +149,25 @@ const handleGoogleSignIn = async (): Promise<{ success: boolean; serverAuthCode?
     } finally {
       setLoading(false);
     }
-  }, [setLoading, handleAuthError]);
+  }, [setLoading, setProfile, handleAuthError]);
 
-  const contextValue: AuthContextType = {
+  const contextValue = React.useMemo(() => ({
     user,
     loading,
     signIn,
     signUp,
     signOut,
-  };
+  }), [user, loading, signIn, signUp, signOut]);
 
   return (
-    <Suspense fallback={<Loader loadingText="We're creating your space" />}>
+    <React.Suspense fallback={<Loader loadingText="We're creating your space" />}>
       <AuthContext.Provider value={contextValue}>
         {children}
       </AuthContext.Provider>
-    </Suspense>
+    </React.Suspense>
   );
 };
 
-/**
- * Custom hook to use the authentication context
- * @returns The authentication context data
- * @throws Error if used outside of an AuthProvider
- */
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (!context) {

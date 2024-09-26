@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { FlatList, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import Feather from '@expo/vector-icons/Feather';
@@ -21,6 +21,7 @@ interface Props {
   buttonText: string;
   selectedUsers: User[];
   users?: User[];
+  loading:boolean
 }
 
 
@@ -37,7 +38,13 @@ const handlePress = (name: string) => {
 };
 
 const InviteFriends: React.FC<Props> = ({ 
-  users, onInvitePress, buttonText, onClose, selectedUsers, removeUser 
+  users, 
+  onInvitePress, 
+  buttonText, 
+  onClose, 
+  selectedUsers, 
+  removeUser,
+  loading
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -71,10 +78,11 @@ const InviteFriends: React.FC<Props> = ({
       />
       <Text className="flex-1 font-rregular text-base text-gray-50">{item.name}</Text>
       <TouchableOpacity 
+        disabled={loading}
         className="bg-green-500 px-4 py-2 rounded-xl" 
         onPress={() => onInvitePress(item)}
       >
-        <Text className="font-rregular">{buttonText}</Text>
+        {!loading?<Text className="font-rregular">{buttonText}</Text>:<ActivityIndicator size={'small'}/>}
       </TouchableOpacity>
     </Animated.View>
   ), [onInvitePress, buttonText]);

@@ -146,30 +146,80 @@ export const selectImage = async () => {
 //   }
 // };
 
-export const sortMessages=({messages}:{messages:Message[]})=>{
-  if(!messages) return []
-  const sortedMessages = messages?.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())!;
-  const messagesByMonth: { [month: string]: any } = sortedMessages?.reduce((acc: any, message) => {
-    const month = formatDateString(message?.createdAt);
-    if (!acc[month]) {
-      acc[month] = [];
-    }
-    acc[month].push(message);
-    return acc;
-  }, {});
 
-  const messagesWithSeparators = () => {
-    return Object?.entries(messagesByMonth)?.flatMap(([month, messages]) => {
-      const monthSeparator = {
-        id: `month-${month}`,
-        timestamp: messages[0]?.createdAt,
+export const sortMessages = (messages: Message[]) => {
+  if (!messages?.length) return [];
+
+  const sortedMessages = messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  const result: any[] = [];
+
+  let prevTimestamp: number | null = null;
+  let prevHour: number | null = null;
+  let prevMonth: number | null = null;
+  let prevYear: number | null = null;
+  let currentGroup: Message[] = [];
+
+  const addSeparatorAndGroup = (type: string, timestamp: string) => {
+    if (currentGroup.length) {
+      result.push({
+        id: `separator-${new Date(timestamp).getTime()}`,
+        timestamp,
         isSeparator: true,
-      };
-      return [monthSeparator, ...messages];
-    });
+        type,
+        text: formatSeparatorText(timestamp),
+      });
+      result.push(...currentGroup);
+      currentGroup = [];
+    }
+  };
+
+  for (const message of sortedMessages) {
+    const messageDate = new Date(message.createdAt);
+    const messageTimestamp = messageDate.getTime();
+    const messageHour = messageDate.getHours();
+    const messageMonth = messageDate.getMonth();
+    const messageYear = messageDate.getFullYear();
+
+    if (prevTimestamp === null || messageTimestamp - prevTimestamp > 5 * 60 * 1000) {
+      addSeparatorAndGroup('group', message.createdAt);
+    } else if (prevHour === null || messageHour !== prevHour) {
+      addSeparatorAndGroup('hour', message.createdAt);
+    } else if (prevMonth === null || messageMonth !== prevMonth || messageYear !== prevYear) {
+      addSeparatorAndGroup('month', message.createdAt);
+    }
+
+    currentGroup.push(message);
+
+    prevTimestamp = messageTimestamp;
+    prevHour = messageHour;
+    prevMonth = messageMonth;
+    prevYear = messageYear;
   }
-  return messagesWithSeparators()
-}
+
+  // Add the last group
+  addSeparatorAndGroup('group', sortedMessages[sortedMessages.length - 1].createdAt);
+
+  return result;
+};
+
+const formatSeparatorText = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return 'Just now';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minute(s) ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hour(s) ago`;
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} day(s) ago`;
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)} week(s) ago`;
+  if (diffInSeconds < 31536000) return MONTH_NAMES[date.getMonth()];
+  return `${Math.floor(diffInSeconds / 31536000)} year(s) ago`;
+};
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
 export function parseIncomingMessage(messageObj:any) {
   // Remove the "data" property from the object
