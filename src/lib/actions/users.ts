@@ -25,8 +25,7 @@ export const userApi = {
   getCurrentUser: async (): Promise<Profile> => {
     try {
       const token = await registerForPushNotificationsAsync();
-
-      const response = await axios.get<Profile>(`${endpoint}${apiPaths.currentUser}&notification_token=${token}&activity=false`);
+      const response = await axios.get<Profile>(`${endpoint}${apiPaths.currentUser}?notification_token=${token}&activity=false`);
       return response.data;
     } catch (error) {
       throw handleApiError(error, "Failed to fetch current user");
@@ -54,7 +53,7 @@ export const userApi = {
     } catch (error) {
       throw handleApiError(error, "Failed to fetch users");
     }
-  },
+  }, 
 
   /**
    * Gets the top creators

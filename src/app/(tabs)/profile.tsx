@@ -288,7 +288,7 @@ const VisitorsModal = memo(({ visitors, isVisible, onClose }:any) => {
               />
               <View>
                 <Text className="font-rmedium text-sm">{item.name}</Text>
-                <Text className="text-gray-600 text-xs">Visited on {formatDateString(item.visitDate)}</Text>
+                <Text className="text-gray-600 text-xs">Visited on {multiFormatDateString(item.lastVisit)}</Text>
               </View>
             </View>
           )}

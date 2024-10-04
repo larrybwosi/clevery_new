@@ -5,7 +5,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useGetConversations, useSendMessage } from '@/lib/actions/hooks/conversation';
-import { showDirectMessageNotification } from '@/lib/notifications';
+import { displayNotifications, showDirectMessageNotification } from '@/lib/notifications';
 import { useProfileStore } from '@/lib/zustand/store';
 import { parseIncomingMessage } from '@/lib/utils';
 import { Conversation, Message } from '@/types';
@@ -34,14 +34,13 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = React.memo(({
   const conversationsRef = useRef(conversations);
   const profileIdRef = useRef(profile?.id);
 
-  // const notification =async() => {
-  //   console.log('notification');  
-  //   const notifications = await fetch(`${endpoint}/api/profile/notifications`).then( async res => await res.json());
-  //   console.log(notifications);
-  // }
+  const notification =async() => {
+    const notifications = await fetch(`${endpoint}/profile/notifications`).then( async res => await res.json());
+    await displayNotifications(notifications)
+  }
 
   useEffect(() => {
-    // notification();
+    notification();
     conversationsRef.current = conversations;
     profileIdRef.current = profile?.id;
   }, [conversations, profile?.id]);

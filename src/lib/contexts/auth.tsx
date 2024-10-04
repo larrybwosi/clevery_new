@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       const currentAccount = await userApi.getCurrentUser();
-      console.log(currentAccount)
+  
       if (!currentAccount) {
         router.push('sign-up');
       } else {

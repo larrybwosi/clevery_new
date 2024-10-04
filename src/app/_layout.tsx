@@ -64,7 +64,7 @@ export default function RootLayout() {
   };
   }, [error, loaded]);
 
-
+  
   return (
     <Providers>
       <RootLayoutNav />

@@ -133,7 +133,7 @@ export const MutualFriendsSection: React.FC<{ friends: User[] }> = ({ friends })
 export const MutualServersSection: React.FC<{ servers: Server[] }> = ({ servers }) => (
   <UserSection title="Mutual Servers" icon="server" accentColor="#10B981">
     {servers.map(server => (
-      <Pressable key={server.id}>
+      <Pressable key={server.id} className='space-y-2 mb-3'>
         <HStack className="items-center space-x-4">
           <Image source={{ uri: server.image }} style={{ width: 48, height: 48, borderRadius: 12 }} />
           <VStack className="flex-1">

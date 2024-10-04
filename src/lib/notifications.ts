@@ -1,4 +1,4 @@
-import notifee, { AndroidImportance, AndroidStyle, AndroidCategory } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidStyle, AndroidCategory, AndroidGroupAlertBehavior } from '@notifee/react-native';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
@@ -522,3 +522,127 @@ export  const showOnlineNotification = async (friend: {name,image}): Promise<voi
     console.error('Error showing online notification:', error);
   }
 };
+type NotificationItem = {
+  id: string;
+  userId: string;
+  type: string;
+  content: string;
+  data: {
+    type: string;
+    senderName?: string;
+    likerName?: string;
+  };
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export async function displayNotifications(notifications: NotificationItem[]) {
+  // Create a channel for Android
+  const channelId = await notifee.createChannel({
+    id: 'default',
+    name: 'Default Channel',
+    importance: AndroidImportance.HIGH,
+  });
+
+  // Group notifications by type
+  const groupedNotifications = notifications.reduce((acc, notification) => {
+    const { type } = notification;
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(notification);
+    return acc;
+  }, {} as Record<string, NotificationItem[]>);
+
+  // Process each group
+  for (const [type, items] of Object.entries(groupedNotifications)) {
+    if (items.length > 1) {
+      // Multiple notifications of the same type - create a summary
+      await displayGroupedNotifications(items, channelId, type);
+    } else {
+      // Single notification
+      await displaySingleNotification(items[0], channelId);
+    }
+  }
+}
+
+async function displayGroupedNotifications(
+  notifications: NotificationItem[], 
+  channelId: string, 
+  type: string
+) {
+  const groupId = `group_${type}`;
+  const firstNotification = notifications[0];
+
+  // Create individual notifications
+  for (const notification of notifications) {
+    await notifee.displayNotification({
+      id: notification.id,
+      title: getNotificationTitle(notification),
+      body: notification.content,
+      android: {
+        channelId,
+        groupId,
+        groupAlertBehavior: AndroidGroupAlertBehavior.SUMMARY,
+        style: {
+          type: AndroidStyle.INBOX,
+          lines: [notification.content],
+        },
+      },
+    });
+  }
+
+  // Create summary notification
+  await notifee.displayNotification({
+    id: `summary_${type}`,
+    title: getSummaryTitle(type, notifications.length),
+    android: {
+      channelId,
+      groupId,
+      groupSummary: true,
+      style: {
+        type: AndroidStyle.INBOX,
+        lines: notifications.map(n => n.content),
+      },
+    },
+    ios: {
+      threadId: groupId,
+      summaryArgument: notifications.length.toString(),
+      summaryArgumentCount: notifications.length,
+    },
+  });
+}
+
+async function displaySingleNotification(notification: NotificationItem, channelId: string) {
+  await notifee.displayNotification({
+    id: notification.id,
+    title: getNotificationTitle(notification),
+    body: notification.content,
+    android: {
+      channelId,
+    },
+  });
+}
+
+function getNotificationTitle(notification: NotificationItem): string {
+  switch (notification.data.type) {
+    case 'DIRECT_MESSAGE':
+      return `Message from ${notification.data.senderName}`;
+    case 'POST_LIKED':
+      return 'Post Liked';
+    default:
+      return 'New Notification';
+  }
+}
+
+function getSummaryTitle(type: string, count: number): string {
+  switch (type) {
+    case 'DIRECT_MESSAGE':
+      return `${count} new messages`;
+    case 'POST_LIKED':
+      return `${count} people liked your posts`;
+    default:
+      return `${count} new notifications`;
+  }
+}
