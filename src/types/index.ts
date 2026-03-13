@@ -48,6 +48,7 @@ export interface User extends BaseModel {
   posts?: string[] | null;
   userScore?: string;
   postCount?: number;
+  streamToken?: string;
   connections:any
   achievements:any
 }

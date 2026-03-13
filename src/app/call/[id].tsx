@@ -1,16 +1,18 @@
-import { View } from 'react-native'
-// import AudioVideoComponent from '@/components/audio-video-call'
+import { useLocalSearchParams } from 'expo-router';
+import AudioVideoComponent from '@/components/audio-video-call';
 
 const Room = () => {
-  return (
-    <View className='flex-1'>
-      {/* <AudioVideoComponent
-        channelName='test-channel'
-        callType='default'
-        video
-      /> */}
-    </View>
-  )
-}
+  const { id, video } = useLocalSearchParams<{ id: string; video: string }>();
 
-export default Room
+  if (!id) return null;
+
+  return (
+    <AudioVideoComponent
+      channelName={id}
+      callType="default"
+      video={video === 'true'}
+    />
+  );
+};
+
+export default Room;

@@ -1,7 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    // "baseUrl": ".",
+    "skipLibCheck": true,
     "paths": {
       "@/*": [
         "./src/*",
@@ -12,6 +12,11 @@
   "include": [
     "global.d.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "metro.config.js"  ]
+    "**/*.tsx",
+    "metro.config.js",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,5 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 1000 * 30,
+    },
+  },
+});
 import { 
   DarkTheme, 
   DefaultTheme, 
@@ -14,7 +23,6 @@ import { AuthProvider } from './contexts/auth';
 import { useColorScheme } from 'react-native';
 
 export const Providers = ({ children }:{children:React.ReactNode}) => {
-  const queryClient = new QueryClient();
   const defaultMode = useColorScheme()
   const { mode } = useThemeStore();
 

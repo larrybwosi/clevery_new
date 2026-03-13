@@ -8,6 +8,12 @@ import "./global.css"
 
 import { Providers, pusherConnector } from '@/lib';
 import { handleNotification } from '@/lib/notifications';
+
+// Must be defined at module level — not inside a component
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data }) => {
+  await handleNotification(data);
+});
    
 SplashScreen.preventAutoHideAsync();
  
@@ -44,27 +50,33 @@ export default function RootLayout() {
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
+  // Connect Pusher once on mount
   useEffect(() => {
-    pusherConnector()
+    pusherConnector();
+  }, []);
+
+  // Handle font loading and splash screen
+  useEffect(() => {
     if (error) throw error;
     if (loaded) SplashScreen.hideAsync();
-    
+
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-    // showNotification(notification.request.content);
-    console.log('Notification received' ,notification.request.content.data)
-  });
+      console.log('Notification received', notification.request.content.data);
+    });
 
-  responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-    console.log( 'Response received' ,response.notification.request.content.data);
-  });
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log('Response received', response.notification.request.content.data);
+    });
 
-  return () => {
-    Notifications.removeNotificationSubscription(notificationListener.current);
-    Notifications.removeNotificationSubscription(responseListener.current);
-  };
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, [error, loaded]);
 
-  
+  // Don't render until fonts are ready
+  if (!loaded && !error) return null;
+
   return (
     <Providers>
       <RootLayoutNav />
@@ -73,28 +85,26 @@ export default function RootLayout() {
 }
  
 function RootLayoutNav() {
+  useEffect(() => {
+    Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK).catch(() => {});
+  }, []);
 
-  const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
-
-  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async({ data, error, executionInfo }) => {
-    await handleNotification(data);
-  });
-
-  Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
   return (
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(server)" options={{ headerShown: false }} />
-        <Stack.Screen name="conversation/[id]" options={{ presentation: 'containedModal', headerShown: false }} />
-        <Stack.Screen name="user/[id]" options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="settings/[setting]" options={{ presentation: 'card', headerShown: false }} />
-        <Stack.Screen name="users" options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="editprofile" options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="welcome" options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="invitation" options={{ presentation: 'modal', headerShown: false }} />
-        <Stack.Screen name="channel" options={{ presentation: 'card', headerShown: false }} />
-      </Stack>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(server)" options={{ headerShown: false }} />
+      <Stack.Screen name="conversation/[id]" options={{ presentation: 'containedModal', headerShown: false }} />
+      <Stack.Screen name="call/[id]" options={{ presentation: 'fullScreenModal', headerShown: false }} />
+      <Stack.Screen name="user/[id]" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="settings/[setting]" options={{ presentation: 'card', headerShown: false }} />
+      <Stack.Screen name="users" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="editprofile" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="welcome" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="invitation" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="banners" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="channel" options={{ presentation: 'card', headerShown: false }} />
+    </Stack>
   );
 }
 

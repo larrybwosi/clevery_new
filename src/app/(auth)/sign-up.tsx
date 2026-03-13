@@ -19,15 +19,17 @@ const SignUp = () => {
 
   const submit = async () => {
     const { email, password, username } = form;
-    if (username.trim()|| email.trim()|| password.trim()){
-      return showToastMessage("Please fill in all fields")
+    if (!username.trim() || !email.trim() || !password.trim()) {
+      return showToastMessage("Please fill in all fields");
+    }
+    if (password.length < 8) {
+      return showToastMessage("Password must be at least 8 characters");
     }
     try {
-     await signUp(form);
-     router.replace("/welcome");
-     
+      await signUp(form);
+      router.replace("/welcome");
     } catch (error: any) {
-      showToastMessage("Failed to create user. Please try again.");
+      showToastMessage(error?.message ?? "Failed to create user. Please try again.");
     }
   };
 

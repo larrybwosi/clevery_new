@@ -12,6 +12,7 @@ import {
   PaginatedResponse,
   FullModel,
   ChannelMessagePayload,
+  UpdateMessagePayload,
   SendMessageDataPayload,
   DeleteMessagePayload
 } from '@/types'; // Adjust the import path as needed
@@ -215,7 +216,7 @@ export const serverApi = {
    * @returns A promise that resolves to an API response containing the updated message.
    * @throws Error with a descriptive message if the request fails.
    */
-  editChannelMessage: async (updateData: ChannelMessagePayload): Promise<FullModel<Message>> => {
+  editChannelMessage: async (updateData: UpdateMessagePayload): Promise<FullModel<Message>> => {
     try {
       const response = await axios.patch<FullModel<Message>>(
         `${endpoint}${apiPaths.editMessage(updateData.serverId, updateData.channelId, updateData.messageId)}`,

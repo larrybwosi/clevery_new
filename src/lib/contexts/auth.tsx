@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await axios.post(`${API_BASE_URL}/sign-in`, credentials);
       handleAuthSuccess(response.data);
     } catch (error) {
-      if (error instanceof AxiosError && error.response?.status === 429 || 500 && retryCount < MAX_RETRY_ATTEMPTS) {
+      if (error instanceof AxiosError && (error.response?.status === 429 || error.response?.status === 500) && retryCount < MAX_RETRY_ATTEMPTS) {
         console.warn(`Retrying sign-in attempt ${retryCount + 1} of ${MAX_RETRY_ATTEMPTS}`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         await signInWithCredentials(credentials, retryCount + 1);
@@ -148,8 +148,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut: AuthContextType['signOut'] = useCallback(async () => {
     try {
       setLoading(true);
-      setProfile(null);
-      router.push('sign-in');
+      await axios.post(`${API_BASE_URL}/sign-out`).catch(() => {});
+      setProfile({} as any);
+      router.replace('sign-in');
     } catch (error) {
       handleAuthError(error);
     } finally {

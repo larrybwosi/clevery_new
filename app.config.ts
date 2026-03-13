@@ -17,6 +17,10 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.clevery.app',
+    infoPlist: {
+      NSCameraUsageDescription: 'Camera is used for video calls.',
+      NSMicrophoneUsageDescription: 'Microphone is used for audio and video calls.',
+    },
   },
   android: {
     googleServicesFile: './google-services.json',
@@ -27,6 +31,7 @@ const config: ExpoConfig = {
       backgroundColor: '#ffffff',
     },
     versionCode: 1,
+    permissions: ['CAMERA', 'RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
   },
   web: {
     bundler: 'metro',
@@ -34,6 +39,7 @@ const config: ExpoConfig = {
     favicon: './src/assets/images/icon.png',
   },
   plugins: [
+    '@stream-io/video-react-native-sdk',
     'expo-router',
     'expo-font',
     "@react-native-google-signin/google-signin",

@@ -280,7 +280,7 @@ const AudioVideoComponent: React.FC<AudioVideoComponentProps> = ({
     return () => {
       mounted = false;
       // Only leave if the call was successfully joined
-      if (_call && client) {
+      if (_call && _client) {
         _call?.leave().catch(() => {});
         _client?.disconnectUser().catch(() => {});
       }
